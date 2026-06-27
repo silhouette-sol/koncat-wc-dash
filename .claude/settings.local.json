@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm view *)",
+      "Bash(python3 -c \"import json,sys; vs=[v for v in json.load\\(sys.stdin\\) if v.startswith\\('14.2.'\\)]; print\\(vs[-5:]\\)\")",
+      "Bash(npm audit *)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:3456)",
+      "Skill(run)",
+      "Bash(node -e ' *)",
+      "Bash(node *)",
+      "Bash(python3 *)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3456)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3456/)",
+      "Bash(kill 46472)"
+    ]
+  }
+}

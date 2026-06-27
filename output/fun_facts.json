@@ -1,0 +1,343 @@
+{
+  "generated_at": "2026-06-27T14:48:51.672693",
+  "historical_patterns": [
+    {
+      "id": "home_advantage",
+      "value": 45.3,
+      "display": "Home teams win 45.3% of WC matches"
+    },
+    {
+      "id": "avg_goals",
+      "value": 2.83,
+      "display": "2.83 goals per game across all World Cups"
+    },
+    {
+      "id": "color_wins",
+      "value": "yellow",
+      "display": "Teams in yellow jerseys have won 5 World Cups",
+      "detail": [
+        "Brazil x5"
+      ]
+    },
+    {
+      "id": "continent_rotation",
+      "value": true,
+      "display": "Every WC since 1978 won by South America or Europe \u2014 0 exceptions"
+    },
+    {
+      "id": "smallest_winner",
+      "value": "Uruguay",
+      "display": "Uruguay won 1930 and 1950 with a population of just 1.7 million"
+    }
+  ],
+  "color_wins": {
+    "yellow": {
+      "wins": 5,
+      "winners": [
+        "Brazil x5"
+      ]
+    },
+    "white": {
+      "wins": 5,
+      "winners": [
+        "Germany x4",
+        "England x1"
+      ]
+    },
+    "blue": {
+      "wins": 4,
+      "winners": [
+        "France x2",
+        "Uruguay x2"
+      ]
+    },
+    "blue_white": {
+      "wins": 3,
+      "winners": [
+        "Argentina x3"
+      ]
+    },
+    "red": {
+      "wins": 1,
+      "winners": [
+        "Spain x1"
+      ]
+    },
+    "orange": {
+      "wins": 0,
+      "winners": []
+    },
+    "green": {
+      "wins": 0,
+      "winners": []
+    },
+    "sky_blue": {
+      "wins": 0,
+      "winners": []
+    },
+    "red_white_checks": {
+      "wins": 0,
+      "winners": []
+    },
+    "maroon": {
+      "wins": 0,
+      "winners": []
+    }
+  },
+  "quirky_angles": {
+    "foreign_coaches": [
+      {
+        "team": "Canada",
+        "coach": "Jesse Marsch",
+        "nationality": "American"
+      },
+      {
+        "team": "Ghana",
+        "coach": "Carlos Queiroz",
+        "nationality": "Portuguese"
+      },
+      {
+        "team": "Norway",
+        "coach": "St\u00e5le Solbakken",
+        "nationality": "Norwegian"
+      },
+      {
+        "team": "Uruguay",
+        "coach": "Marcelo Bielsa",
+        "nationality": "Argentine"
+      },
+      {
+        "team": "Argentina",
+        "coach": "Lionel Scaloni",
+        "nationality": "Argentine"
+      },
+      {
+        "team": "Egypt",
+        "coach": "Hossam Hassan",
+        "nationality": "Egyptian"
+      },
+      {
+        "team": "Uzbekistan",
+        "coach": "Srecko Katanec",
+        "nationality": "Slovenian"
+      },
+      {
+        "team": "Ivory Coast",
+        "coach": "Emerse Fa\u00e9",
+        "nationality": "Ivorian"
+      },
+      {
+        "team": "Brazil",
+        "coach": "Dorival Junior",
+        "nationality": "Brazilian"
+      },
+      {
+        "team": "Mexico",
+        "coach": "Javier Aguirre",
+        "nationality": "Mexican"
+      },
+      {
+        "team": "Croatia",
+        "coach": "Zlatko Dali\u0107",
+        "nationality": "Croatian"
+      },
+      {
+        "team": "Turkey",
+        "coach": "Vincenzo Montella",
+        "nationality": "Italian"
+      },
+      {
+        "team": "Japan",
+        "coach": "Hajime Moriyasu",
+        "nationality": "Japanese"
+      },
+      {
+        "team": "Senegal",
+        "coach": "Aliou Ciss\u00e9",
+        "nationality": "Senegalese"
+      },
+      {
+        "team": "Australia",
+        "coach": "Tony Popovic",
+        "nationality": "Australian"
+      },
+      {
+        "team": "DR Congo",
+        "coach": "S\u00e9bastien Desabre",
+        "nationality": "French"
+      },
+      {
+        "team": "Haiti",
+        "coach": "Marc Collat",
+        "nationality": "French"
+      },
+      {
+        "team": "Iran",
+        "coach": "Amir Ghalenoei",
+        "nationality": "Iranian"
+      },
+      {
+        "team": "Cape Verde",
+        "coach": "Pedro Leit\u00e3o Brito",
+        "nationality": "Cape Verdean"
+      },
+      {
+        "team": "Panama",
+        "coach": "Thomas Christiansen",
+        "nationality": "Danish"
+      },
+      {
+        "team": "England",
+        "coach": "Thomas Tuchel",
+        "nationality": "German"
+      },
+      {
+        "team": "Ecuador",
+        "coach": "Sebasti\u00e1n Beccacece",
+        "nationality": "Argentine"
+      },
+      {
+        "team": "Belgium",
+        "coach": "Domenico Tedesco",
+        "nationality": "Italian"
+      },
+      {
+        "team": "South Africa",
+        "coach": "Hugo Broos",
+        "nationality": "Belgian"
+      },
+      {
+        "team": "Tunisia",
+        "coach": "Jalel Kadri",
+        "nationality": "Tunisian"
+      },
+      {
+        "team": "New Zealand",
+        "coach": "Darren Bazeley",
+        "nationality": "New Zealander"
+      },
+      {
+        "team": "Portugal",
+        "coach": "Roberto Martinez",
+        "nationality": "Spanish"
+      },
+      {
+        "team": "South Korea",
+        "coach": "Hong Myung-bo",
+        "nationality": "South Korean"
+      },
+      {
+        "team": "Scotland",
+        "coach": "Steve Clarke",
+        "nationality": "Scottish"
+      },
+      {
+        "team": "Spain",
+        "coach": "Luis de la Fuente",
+        "nationality": "Spanish"
+      },
+      {
+        "team": "Colombia",
+        "coach": "N\u00e9stor Lorenzo",
+        "nationality": "Argentine"
+      },
+      {
+        "team": "Iraq",
+        "coach": "Jesus Casas",
+        "nationality": "Spanish"
+      },
+      {
+        "team": "Algeria",
+        "coach": "Vladimir Petkovic",
+        "nationality": "Swiss"
+      },
+      {
+        "team": "France",
+        "coach": "Didier Deschamps",
+        "nationality": "French"
+      },
+      {
+        "team": "Austria",
+        "coach": "Ralf Rangnick",
+        "nationality": "German"
+      },
+      {
+        "team": "Morocco",
+        "coach": "Walid Regragui",
+        "nationality": "Moroccan"
+      },
+      {
+        "team": "Netherlands",
+        "coach": "Ronald Koeman",
+        "nationality": "Dutch"
+      },
+      {
+        "team": "USA",
+        "coach": "Mauricio Pochettino",
+        "nationality": "Argentine"
+      },
+      {
+        "team": "Saudi Arabia",
+        "coach": "Roberto Mancini",
+        "nationality": "Italian"
+      },
+      {
+        "team": "Switzerland",
+        "coach": "Murat Yakin",
+        "nationality": "Swiss"
+      },
+      {
+        "team": "Qatar",
+        "coach": "Marquez Lopez",
+        "nationality": "Spanish"
+      },
+      {
+        "team": "Paraguay",
+        "coach": "Gustavo Alfaro",
+        "nationality": "Argentine"
+      },
+      {
+        "team": "Cura\u00e7ao",
+        "coach": "Remko Bicentini",
+        "nationality": "Dutch"
+      },
+      {
+        "team": "Sweden",
+        "coach": "Jon Dahl Tomasson",
+        "nationality": "Danish"
+      },
+      {
+        "team": "Jordan",
+        "coach": "Hussein Ammouta",
+        "nationality": "Moroccan"
+      }
+    ],
+    "smallest_nations": [
+      {
+        "team": "Croatia",
+        "population_millions": 3.9,
+        "win_prob": 0.0074
+      },
+      {
+        "team": "Norway",
+        "population_millions": 5.5,
+        "win_prob": 0.0351
+      },
+      {
+        "team": "Switzerland",
+        "population_millions": 8.7,
+        "win_prob": 0.017
+      },
+      {
+        "team": "Portugal",
+        "population_millions": 10.3,
+        "win_prob": 0.041
+      },
+      {
+        "team": "Belgium",
+        "population_millions": 11.6,
+        "win_prob": 0.0191
+      }
+    ]
+  }
+}
