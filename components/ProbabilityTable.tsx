@@ -1,5 +1,9 @@
+'use client'
+
+import React, { useEffect, useState } from 'react'
 import { TeamComparison } from '@/lib/types'
 import DivergenceBar from './DivergenceBar'
+import ProbabilityTrend from './ProbabilityTrend'
 
 interface ProbabilityTableProps {
   teams: TeamComparison[]
@@ -9,7 +13,6 @@ interface ProbabilityTableProps {
 function parseSignal(signal: string): { label: string; color: string } {
   if (signal.includes('MODEL')) return { label: 'MODEL ↑', color: '#1D9E75' }
   if (signal.includes('MARKET')) return { label: 'MARKET ↓', color: '#D85A30' }
-  if (signal.includes('neutral')) return { label: '—', color: '#C4A882' }
   return { label: '—', color: '#C4A882' }
 }
 
@@ -51,7 +54,6 @@ function PathBadge({ team }: { team: TeamComparison }) {
       >
         {cfg.emoji} {cfg.label}
       </span>
-      {/* Tooltip */}
       <div
         className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-20 pointer-events-none
                    opacity-0 group-hover:opacity-100 transition-opacity duration-150"
@@ -67,7 +69,6 @@ function PathBadge({ team }: { team: TeamComparison }) {
             </p>
           ))}
         </div>
-        {/* Caret */}
         <div className="flex justify-center">
           <div
             className="w-0 h-0"
@@ -83,29 +84,41 @@ function PathBadge({ team }: { team: TeamComparison }) {
   )
 }
 
+interface Mover { team: string; change: number; direction: string }
+
 export default function ProbabilityTable({ teams, squadValues }: ProbabilityTableProps) {
+  const [expandedTeam, setExpandedTeam] = useState<string | null>(null)
+  const [movers, setMovers] = useState<Mover[]>([])
+
+  useEffect(() => {
+    fetch('/api/history/movers')
+      .then(r => r.json())
+      .then(d => setMovers(d.movers || []))
+      .catch(() => {})
+  }, [])
+
   const filtered = teams
-    .filter((t) => t.elo_win_prob >= 0.005)
+    .filter(t => t.elo_win_prob >= 0.005)
     .sort((a, b) => b.elo_win_prob - a.elo_win_prob)
 
-  const hasPathData = filtered.some((t) => t.path_difficulty !== null && t.path_difficulty !== undefined)
+  const hasPathData = filtered.some(t => t.path_difficulty !== null && t.path_difficulty !== undefined)
+
+  const getMoverChange = (name: string) => movers.find(m => m.team === name)
+
+  const colSpan = hasPathData ? 10 : 9
 
   return (
     <section className="bg-card border border-border rounded-sm overflow-hidden">
       <div className="px-5 py-3 border-b border-border flex items-center justify-between">
         <div>
-          <h2 className="font-display text-xl tracking-widest text-text-primary">
-            WIN PROBABILITY
-          </h2>
+          <h2 className="font-display text-xl tracking-widest text-text-primary">WIN PROBABILITY</h2>
           {hasPathData && (
             <p className="font-mono-data text-[10px] text-text-muted mt-0.5">
               Path difficulty = avg Elo of potential opponents in team&apos;s bracket half
             </p>
           )}
         </div>
-        <span className="font-mono-data text-xs text-text-muted">
-          Model vs Market · 10k simulations
-        </span>
+        <span className="font-mono-data text-xs text-text-muted">Model vs Market · 10k simulations</span>
       </div>
 
       <div className="overflow-x-auto">
@@ -123,45 +136,79 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
               )}
               <th className="text-right py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Squad €</th>
               <th className="text-center py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Signal</th>
+              <th className="w-10" />
             </tr>
           </thead>
           <tbody>
             {filtered.map((team, i) => {
               const signal = parseSignal(team.signal)
               const sqVal = lookupSquadValue(squadValues, team.name)
+              const mover = getMoverChange(team.name)
+              const isExpanded = expandedTeam === team.name
               return (
-                <tr
-                  key={team.name}
-                  className="border-b border-border/40 hover:bg-[#F0E8D8]/10 transition-colors"
-                >
-                  <td className="py-2.5 px-4 font-mono-data text-xs text-text-muted">{i + 1}</td>
-                  <td className="py-2.5 px-4">
-                    <span className="font-body text-sm font-medium text-text-primary">{team.name}</span>
-                  </td>
-                  <td className="py-2.5 px-4 text-right font-mono-data text-xs text-text-muted">{team.elo_rating}</td>
-                  <td className="py-2.5 px-4 text-right font-mono-data text-sm font-medium text-teal">
-                    {(team.elo_win_prob * 100).toFixed(1)}%
-                  </td>
-                  <td className="py-2.5 px-6">
-                    <DivergenceBar delta={team.delta} />
-                  </td>
-                  <td className="py-2.5 px-4 text-right font-mono-data text-sm font-medium text-coral">
-                    {team.market_win_prob !== null ? `${(team.market_win_prob * 100).toFixed(1)}%` : '—'}
-                  </td>
-                  {hasPathData && (
-                    <td className="py-2.5 px-4 text-center">
-                      <PathBadge team={team} />
+                <React.Fragment key={team.name}>
+                  <tr className="border-b border-border/40 hover:bg-[#F0E8D8]/10 transition-colors">
+                    <td className="py-2.5 px-4 font-mono-data text-xs text-text-muted">{i + 1}</td>
+                    <td className="py-2.5 px-4">
+                      <span className="font-body text-sm font-medium text-text-primary">{team.name}</span>
                     </td>
+                    <td className="py-2.5 px-4 text-right font-mono-data text-xs text-text-muted">{team.elo_rating}</td>
+                    <td className="py-2.5 px-4 text-right">
+                      <span className="font-mono-data text-sm font-medium text-teal">
+                        {(team.elo_win_prob * 100).toFixed(1)}%
+                      </span>
+                      {mover && (
+                        <span
+                          className="ml-1.5 font-mono-data text-[11px]"
+                          style={{ color: mover.direction === 'up' ? '#1D9E75' : '#D85A30' }}
+                        >
+                          {mover.direction === 'up' ? '+' : ''}
+                          {(mover.change * 100).toFixed(1)}%
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-2.5 px-6">
+                      <DivergenceBar delta={team.delta} />
+                    </td>
+                    <td className="py-2.5 px-4 text-right font-mono-data text-sm font-medium text-coral">
+                      {team.market_win_prob !== null ? `${(team.market_win_prob * 100).toFixed(1)}%` : '—'}
+                    </td>
+                    {hasPathData && (
+                      <td className="py-2.5 px-4 text-center">
+                        <PathBadge team={team} />
+                      </td>
+                    )}
+                    <td className="py-2.5 px-4 text-right font-mono-data text-xs text-text-muted">
+                      {formatSquadValue(sqVal)}
+                    </td>
+                    <td className="py-2.5 px-4 text-center">
+                      <span className="font-mono-data text-xs font-medium" style={{ color: signal.color }}>
+                        {signal.label}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-2 text-center">
+                      <button
+                        onClick={() => setExpandedTeam(isExpanded ? null : team.name)}
+                        className="font-mono-data text-[12px] text-text-muted hover:text-text-primary transition-colors"
+                        title="Show probability trend"
+                      >
+                        {isExpanded ? '▲' : '📈'}
+                      </button>
+                    </td>
+                  </tr>
+                  {isExpanded && (
+                    <tr className="border-b border-border/40 bg-[#1A1512]/30">
+                      <td colSpan={colSpan} className="px-5 py-3">
+                        <p className="font-mono-data text-[10px] text-text-muted mb-2">
+                          Win probability over time —{' '}
+                          <span style={{ color: '#D4622A' }}>— Model</span>{' '}
+                          <span style={{ color: '#C4A882' }}>- - Market</span>
+                        </p>
+                        <ProbabilityTrend team={team.name} />
+                      </td>
+                    </tr>
                   )}
-                  <td className="py-2.5 px-4 text-right font-mono-data text-xs text-text-muted">
-                    {formatSquadValue(sqVal)}
-                  </td>
-                  <td className="py-2.5 px-4 text-center">
-                    <span className="font-mono-data text-xs font-medium" style={{ color: signal.color }}>
-                      {signal.label}
-                    </span>
-                  </td>
-                </tr>
+                </React.Fragment>
               )
             })}
           </tbody>

@@ -12,11 +12,15 @@ import EloMovers from './EloMovers'
 import GoalTiming from './GoalTiming'
 import BiggestUpsets from './BiggestUpsets'
 import OpponentStrength from './OpponentStrength'
-import JerseyColors from './JerseyColors'
 import SmallestNations from './SmallestNations'
 import FunFact from './FunFact'
 import GroupStandings from './GroupStandings'
 import KnockoutBracket from './KnockoutBracket'
+import DailyMovers from './DailyMovers'
+import AccuracyTracker from './AccuracyTracker'
+import MyPrediction from './MyPrediction'
+import Poll from './Poll'
+import HeadToHead from './HeadToHead'
 
 // ── Time helpers ─────────────────────────────────────────────
 
@@ -25,7 +29,7 @@ function toPST(timeStr: string): string {
   if (!m) return timeStr
   const localH = parseInt(m[1])
   const localM = parseInt(m[2])
-  const offset = parseInt(m[3])          // e.g. -5
+  const offset = parseInt(m[3])
   const pstH = ((localH - offset - 7) % 24 + 24) % 24
   const h12 = pstH % 12 || 12
   const ampm = pstH < 12 ? 'am' : 'pm'
@@ -47,7 +51,7 @@ function CrazyStatOfDay({
   let line2 = ''
 
   const completed = worldcupMatches.filter(
-    (m) => m.score && (m.goals1?.length || m.goals2?.length)
+    m => m.score && (m.goals1?.length || m.goals2?.length)
   )
 
   type GoalSide = [WCMatch['goals1'], string, string]
@@ -62,9 +66,9 @@ function CrazyStatOfDay({
       for (const g of goals) { ;(byPlayer[g.name] ??= []).push(g.minute) }
       for (const [player, mins] of Object.entries(byPlayer)) {
         if (mins.length < 3) continue
-        if (mins.every((min) => !min.includes('+') && parseInt(min) <= 45)) {
+        if (mins.every(min => !min.includes('+') && parseInt(min) <= 45)) {
           line1 = <>{player} scored a first-half hat trick for <strong className="text-accent">{team}</strong> against {opp} — all three before the break.</>
-          line2 = `Minutes: ${mins.map((min) => `${min}'`).join(', ')} — the cleanest kind of hat trick.`
+          line2 = `Minutes: ${mins.map(min => `${min}'`).join(', ')} — the cleanest kind of hat trick.`
           break outer1
         }
       }
@@ -82,7 +86,7 @@ function CrazyStatOfDay({
         for (const g of goals) { ;(byPlayer[g.name] ??= []).push(g.minute) }
         for (const [player, mins] of Object.entries(byPlayer)) {
           if (mins.length >= 3) {
-            line1 = <>{player} scored a hat trick for <strong className="text-accent">{team}</strong> against {opp} ({mins.map((min) => `${min}'`).join(', ')}).</>
+            line1 = <>{player} scored a hat trick for <strong className="text-accent">{team}</strong> against {opp} ({mins.map(min => `${min}'`).join(', ')}).</>
             line2 = `Final: ${m.score!.ft[0]}–${m.score!.ft[1]}.`
             break outer2
           }
@@ -94,9 +98,8 @@ function CrazyStatOfDay({
   // P3: path difficulty stat
   if (!line1) {
     const TOUR_AVG_ELO = 1700
-    // Favorite with hard path
     const hardFav = teams
-      .filter((t) => t.path_difficulty === 'hard')
+      .filter(t => t.path_difficulty === 'hard')
       .sort((a, b) => b.elo_win_prob - a.elo_win_prob)[0]
     if (hardFav) {
       line1 = (
@@ -108,10 +111,9 @@ function CrazyStatOfDay({
       )
       line2 = hardFav.path_note ?? `Avg potential opp Elo: ${hardFav.avg_potential_opp_elo}.`
     } else {
-      // Underpriced team with easy path
       const easyUnder = teams
         .filter(
-          (t) =>
+          t =>
             t.path_difficulty === 'easy' &&
             t.market_win_prob !== null &&
             t.delta !== null &&
@@ -159,13 +161,13 @@ function CrazyStatOfDay({
     }
   }
 
-  // P5: stoppage-time goal (most recent match first)
+  // P5: stoppage-time goal
   if (!line1) {
     outer4:
     for (const m of [...completed].reverse()) {
       const sides: GoalSide[] = [[m.goals1, m.team1, m.team2], [m.goals2, m.team2, m.team1]]
       for (const [goals, team, opp] of sides) {
-        const stGoal = goals?.find((g) => g.minute.includes('+'))
+        const stGoal = goals?.find(g => g.minute.includes('+'))
         if (!stGoal) continue
         const isT1 = goals === m.goals1
         const [g1, g2] = m.score!.ft
@@ -183,9 +185,9 @@ function CrazyStatOfDay({
   if (!line1) {
     const topUpset = descriptive.upsets[0]
     const realMovers = descriptive.elo_movers.filter(
-      (mv) => mv.direction !== 'flat' && /^[A-Za-zÀ-ÿ\s&'()\-.]+$/.test(mv.team) && mv.team.length < 30
+      mv => mv.direction !== 'flat' && /^[A-Za-zÀ-ÿ\s&'()\-.]+$/.test(mv.team) && mv.team.length < 30
     )
-    const topMover = realMovers.find((mv) => mv.direction === 'up')
+    const topMover = realMovers.find(mv => mv.direction === 'up')
     if (topUpset && topUpset.surprise_score > 0.65) {
       const parts = topUpset.match.split(' vs ')
       line1 = <>Biggest shock so far: {parts[0]} beat {parts[1]} — my model gave them only{' '}<strong className="text-accent">{((1 - topUpset.t1_win_prob) * 100).toFixed(0)}%</strong> chance to win.</>
@@ -213,20 +215,17 @@ function CrazyStatOfDay({
 
 function TodayMatches({ matches }: { matches: WCMatch[] }) {
   const today = new Date().toISOString().slice(0, 10)
-  const todayMatches = matches.filter((m) => m.date === today)
+  const todayMatches = matches.filter(m => m.date === today)
   const upcoming = matches
-    .filter((m) => m.date > today && !m.score)
+    .filter(m => m.date > today && !m.score)
     .sort((a, b) => a.date.localeCompare(b.date))
 
   return (
     <section className="bg-card border border-border rounded-sm overflow-hidden">
       <div className="px-5 py-3 border-b border-border flex items-center justify-between">
-        <h2 className="font-display text-xl tracking-widest text-text-primary">
-          TODAY&apos;S MATCHES
-        </h2>
+        <h2 className="font-display text-xl tracking-widest text-text-primary">TODAY&apos;S MATCHES</h2>
         <span className="font-mono-data text-xs text-text-muted">{today}</span>
       </div>
-
       {todayMatches.length === 0 ? (
         <div className="px-5 py-4">
           <p className="font-body text-sm text-text-muted">No matches today.</p>
@@ -276,6 +275,189 @@ function TodayMatches({ matches }: { matches: WCMatch[] }) {
   )
 }
 
+// ── Upcoming predictions ───────────────────────────────────────
+
+function UpcomingPredictions({
+  matches,
+  teams,
+}: {
+  matches: WCMatch[]
+  teams: TeamComparison[]
+}) {
+  const today = new Date().toISOString().slice(0, 10)
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10)
+  const upcoming = matches.filter(m => !m.score && (m.date === today || m.date === tomorrow))
+  const [explains, setExplains] = useState<Record<string, string>>({})
+  const [explainOpen, setExplainOpen] = useState<Record<string, boolean>>({})
+  const [loadingExplain, setLoadingExplain] = useState<Record<string, boolean>>({})
+
+  if (upcoming.length === 0) return null
+
+  async function getExplain(m: WCMatch) {
+    const key = `${m.team1}-${m.team2}`
+    if (explains[key]) {
+      setExplainOpen(o => ({ ...o, [key]: !o[key] }))
+      return
+    }
+    setLoadingExplain(l => ({ ...l, [key]: true }))
+    setExplainOpen(o => ({ ...o, [key]: true }))
+    try {
+      const res = await fetch('/api/explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          term: 'match significance',
+          context: `${m.team1} vs ${m.team2} in ${m.round || 'the World Cup'}`,
+        }),
+      })
+      const data = await res.json()
+      setExplains(e => ({ ...e, [key]: data.explanation || '' }))
+    } catch {
+      setExplains(e => ({ ...e, [key]: 'Context unavailable.' }))
+    } finally {
+      setLoadingExplain(l => ({ ...l, [key]: false }))
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="font-mono-data text-[10px] text-text-muted uppercase tracking-widest">
+        Upcoming Predictions
+      </p>
+      {upcoming.map((m, i) => {
+        const t1 = teams.find(t => t.name === m.team1)
+        const t2 = teams.find(t => t.name === m.team2)
+        const p1 = t1?.elo_win_prob ?? 0
+        const p2 = t2?.elo_win_prob ?? 0
+        const total = p1 + p2
+        const norm1 = total > 0 ? p1 / total : 0.5
+        const norm2 = total > 0 ? p2 / total : 0.5
+        const fav = norm1 >= norm2 ? m.team1 : m.team2
+        const favPct = Math.max(norm1, norm2) * 100
+        const confidence = favPct >= 65 ? 'high confidence' : favPct >= 55 ? 'slight edge' : 'coin flip'
+        const key = `${m.team1}-${m.team2}`
+        const isOpen = explainOpen[key]
+        return (
+          <div
+            key={i}
+            className="bg-card border border-border rounded-sm overflow-hidden"
+            style={{ borderLeft: '3px solid #D4622A' }}
+          >
+            <div className="px-4 py-3">
+              <div className="flex items-center justify-between">
+                <span className="font-body text-sm text-text-primary">
+                  {m.team1} vs {m.team2}
+                </span>
+                <span className="font-mono-data text-[10px] text-text-muted">{m.date}</span>
+              </div>
+              {total > 0 && (
+                <div className="mt-2 space-y-1">
+                  <p className="font-mono-data text-xs text-text-muted">
+                    Model: <span className="text-teal">{fav}</span> to win ·{' '}
+                    <span className="text-accent">{confidence}</span>
+                  </p>
+                  <div className="flex justify-between font-mono-data text-[10px] text-text-muted">
+                    <span>{(norm1 * 100).toFixed(0)}%</span>
+                    <span>{(norm2 * 100).toFixed(0)}%</span>
+                  </div>
+                  <div className="h-1.5 flex rounded-sm overflow-hidden">
+                    <div style={{ width: `${norm1 * 100}%`, backgroundColor: '#1D9E75' }} />
+                    <div style={{ flex: 1, backgroundColor: '#5C3D2E' }} />
+                  </div>
+                </div>
+              )}
+              <button
+                onClick={() => getExplain(m)}
+                className="mt-2 font-mono-data text-[10px] text-text-muted hover:text-text-primary transition-colors"
+              >
+                {isOpen ? 'Show less ↑' : 'Why this matters ↓'}
+              </button>
+              {isOpen && (
+                <p className="mt-1 font-body text-xs text-text-muted italic">
+                  {loadingExplain[key] ? 'Loading...' : explains[key] || ''}
+                </p>
+              )}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// ── Yesterday's matches ────────────────────────────────────────
+
+function YesterdayMatches({ matches }: { matches: WCMatch[] }) {
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10)
+  const dayBefore = new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10)
+  const recent = matches.filter(
+    m => m.score && (m.date === yesterday || m.date === dayBefore)
+  )
+  const [recaps, setRecaps] = useState<Record<string, string>>({})
+  const [loading, setLoading] = useState<Record<string, boolean>>({})
+
+  if (recent.length === 0) return null
+
+  async function getRecap(m: WCMatch) {
+    const key = `${m.team1}-${m.team2}-${m.date}`
+    if (recaps[key] || loading[key]) return
+    setLoading(l => ({ ...l, [key]: true }))
+    try {
+      const res = await fetch('/api/recap', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ match: m }),
+      })
+      const data = await res.json()
+      setRecaps(r => ({ ...r, [key]: data.recap || 'Recap unavailable.' }))
+    } catch {
+      setRecaps(r => ({ ...r, [key]: 'Recap unavailable.' }))
+    } finally {
+      setLoading(l => ({ ...l, [key]: false }))
+    }
+  }
+
+  return (
+    <section className="bg-card border border-border rounded-sm overflow-hidden">
+      <div className="px-5 py-3 border-b border-border">
+        <h2 className="font-display text-xl tracking-widest text-text-primary">
+          YESTERDAY&apos;S MATCHES
+        </h2>
+      </div>
+      <div className="divide-y divide-border/40">
+        {recent.map((m, i) => {
+          const key = `${m.team1}-${m.team2}-${m.date}`
+          return (
+            <div key={i} className="px-5 py-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-body text-sm text-text-primary">
+                  {m.team1}{' '}
+                  <span className="font-display text-lg mx-2">
+                    {m.score!.ft[0]}–{m.score!.ft[1]}
+                  </span>{' '}
+                  {m.team2}
+                </span>
+                <button
+                  onClick={() => getRecap(m)}
+                  className="font-mono-data text-xs px-2 py-1 rounded-sm transition-colors"
+                  style={{ background: '#D4622A', color: '#F0E8D8' }}
+                >
+                  {loading[key] ? 'Generating...' : 'Get recap ↗'}
+                </button>
+              </div>
+              {recaps[key] && (
+                <p className="font-body text-sm text-text-muted italic leading-relaxed">
+                  {recaps[key]}
+                </p>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
 // ── Main DashboardTabs ────────────────────────────────────────
 
 interface DashboardTabsProps {
@@ -292,7 +474,7 @@ const TABS = ['TODAY', 'GROUPS', 'BRACKET'] as const
 type Tab = typeof TABS[number]
 
 export default function DashboardTabs({
-  teams, descriptive, funFacts, worldcupMatches, squadValues, marketSource, generatedAt,
+  teams, descriptive, funFacts, worldcupMatches, squadValues, marketSource,
 }: DashboardTabsProps) {
   const [activeTab, setActiveTab] = useState<Tab>('TODAY')
 
@@ -304,7 +486,7 @@ export default function DashboardTabs({
     <div className="space-y-0">
       {/* Tab navigation */}
       <div className="bg-card rounded-sm overflow-hidden flex mb-6">
-        {TABS.map((tab) => (
+        {TABS.map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -322,6 +504,12 @@ export default function DashboardTabs({
       {/* TODAY */}
       {activeTab === 'TODAY' && (
         <div className="space-y-6">
+          {/* 1. Daily movers */}
+          <DailyMovers />
+
+          {/* 2. Accuracy tracker */}
+          <AccuracyTracker />
+
           {/* Quick stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <StatCard label="Matches Played" value={matchesPlayed} sub="Group stage" />
@@ -330,25 +518,38 @@ export default function DashboardTabs({
             <StatCard label="Simulations" value="10k" sub={`via ${marketSource.replace(/_/g, ' ')}`} />
           </div>
 
-          {/* Crazy stat */}
+          {/* 3. My prediction */}
+          <MyPrediction />
+
+          {/* 4. Crazy stat */}
           <CrazyStatOfDay descriptive={descriptive} worldcupMatches={worldcupMatches} teams={teams} />
 
-          {/* Today's matches */}
+          {/* 5. Today's matches + upcoming predictions */}
           <TodayMatches matches={worldcupMatches} />
+          <UpcomingPredictions matches={worldcupMatches} teams={teams} />
 
-          {/* Doughnut chart */}
+          {/* 6. Yesterday's matches */}
+          <YesterdayMatches matches={worldcupMatches} />
+
+          {/* 7. Head to head */}
+          <HeadToHead teams={teams} />
+
+          {/* 8. Poll */}
+          <Poll />
+
+          {/* 9. Win probability doughnut */}
           <WinProbDoughnut teams={teams} />
 
-          {/* Win probability table */}
+          {/* 10. Win probability table */}
           <ProbabilityTable teams={teams} squadValues={squadValues} />
 
-          {/* Two-column row */}
+          {/* 11. Hot & Cold */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <GoldenBoot entries={descriptive.golden_boot} />
             <EloMovers movers={descriptive.elo_movers} />
           </div>
 
-          {/* Goal timing */}
+          {/* 12. Goal timing */}
           <GoalTiming
             bins={descriptive.goal_timing.bins}
             totalGoals={descriptive.goal_timing.total_goals}
@@ -356,19 +557,16 @@ export default function DashboardTabs({
             goldenBoot={descriptive.golden_boot}
           />
 
-          {/* Biggest upsets */}
+          {/* 13. Biggest upsets */}
           <BiggestUpsets upsets={descriptive.upsets} />
 
-          {/* Opponent strength */}
+          {/* 14. Opponent strength */}
           <OpponentStrength oppStrength={descriptive.opp_strength} />
 
-          {/* Jersey colors */}
-          <JerseyColors colorWins={funFacts.color_wins} />
-
-          {/* Smallest nations */}
+          {/* 15. Smallest nations */}
           <SmallestNations nations={funFacts.quirky_angles.smallest_nations} />
 
-          {/* Fun facts strip */}
+          {/* 16. Fun facts */}
           <FunFact patterns={funFacts.historical_patterns} />
 
           <div className="pb-2" />
