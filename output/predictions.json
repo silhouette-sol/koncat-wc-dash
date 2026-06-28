@@ -1,0 +1,498 @@
+[
+  {
+    "match": "Mexico vs South Africa",
+    "date": "2026-06-11",
+    "predicted_winner": "Mexico",
+    "actual_winner": "Mexico",
+    "predicted_prob": 0.0133,
+    "correct": true
+  },
+  {
+    "match": "Mexico vs South Korea",
+    "date": "2026-06-18",
+    "predicted_winner": "Mexico",
+    "actual_winner": "Mexico",
+    "predicted_prob": 0.0133,
+    "correct": true
+  },
+  {
+    "match": "Czech Republic vs Mexico",
+    "date": "2026-06-24",
+    "predicted_winner": "Mexico",
+    "actual_winner": "Mexico",
+    "predicted_prob": 0.0133,
+    "correct": true
+  },
+  {
+    "match": "Canada vs Bosnia & Herzegovina",
+    "date": "2026-06-12",
+    "predicted_winner": "Bosnia & Herzegovina",
+    "actual_winner": "draw",
+    "predicted_prob": 0.0052,
+    "correct": false
+  },
+  {
+    "match": "Qatar vs Switzerland",
+    "date": "2026-06-13",
+    "predicted_winner": "Switzerland",
+    "actual_winner": "draw",
+    "predicted_prob": 0.0142,
+    "correct": false
+  },
+  {
+    "match": "Switzerland vs Bosnia & Herzegovina",
+    "date": "2026-06-18",
+    "predicted_winner": "Switzerland",
+    "actual_winner": "Switzerland",
+    "predicted_prob": 0.0142,
+    "correct": true
+  },
+  {
+    "match": "Canada vs Qatar",
+    "date": "2026-06-18",
+    "predicted_winner": "Canada",
+    "actual_winner": "Canada",
+    "predicted_prob": 0.002,
+    "correct": true
+  },
+  {
+    "match": "Switzerland vs Canada",
+    "date": "2026-06-24",
+    "predicted_winner": "Switzerland",
+    "actual_winner": "Switzerland",
+    "predicted_prob": 0.0142,
+    "correct": true
+  },
+  {
+    "match": "Bosnia & Herzegovina vs Qatar",
+    "date": "2026-06-24",
+    "predicted_winner": "Bosnia & Herzegovina",
+    "actual_winner": "Bosnia & Herzegovina",
+    "predicted_prob": 0.0052,
+    "correct": true
+  },
+  {
+    "match": "Brazil vs Morocco",
+    "date": "2026-06-13",
+    "predicted_winner": "Brazil",
+    "actual_winner": "draw",
+    "predicted_prob": 0.057,
+    "correct": false
+  },
+  {
+    "match": "Scotland vs Morocco",
+    "date": "2026-06-19",
+    "predicted_winner": "Morocco",
+    "actual_winner": "Morocco",
+    "predicted_prob": 0.0474,
+    "correct": true
+  },
+  {
+    "match": "Brazil vs Haiti",
+    "date": "2026-06-19",
+    "predicted_winner": "Brazil",
+    "actual_winner": "Brazil",
+    "predicted_prob": 0.057,
+    "correct": true
+  },
+  {
+    "match": "Scotland vs Brazil",
+    "date": "2026-06-24",
+    "predicted_winner": "Brazil",
+    "actual_winner": "Brazil",
+    "predicted_prob": 0.057,
+    "correct": true
+  },
+  {
+    "match": "Morocco vs Haiti",
+    "date": "2026-06-24",
+    "predicted_winner": "Morocco",
+    "actual_winner": "Morocco",
+    "predicted_prob": 0.0474,
+    "correct": true
+  },
+  {
+    "match": "USA vs Paraguay",
+    "date": "2026-06-12",
+    "predicted_winner": "USA",
+    "actual_winner": "USA",
+    "predicted_prob": 0.0028,
+    "correct": true
+  },
+  {
+    "match": "Australia vs Turkey",
+    "date": "2026-06-13",
+    "predicted_winner": "Australia",
+    "actual_winner": "Australia",
+    "predicted_prob": 0.0035,
+    "correct": true
+  },
+  {
+    "match": "USA vs Australia",
+    "date": "2026-06-19",
+    "predicted_winner": "Australia",
+    "actual_winner": "USA",
+    "predicted_prob": 0.0035,
+    "correct": false
+  },
+  {
+    "match": "Turkey vs USA",
+    "date": "2026-06-25",
+    "predicted_winner": "USA",
+    "actual_winner": "Turkey",
+    "predicted_prob": 0.0028,
+    "correct": false
+  },
+  {
+    "match": "Paraguay vs Australia",
+    "date": "2026-06-25",
+    "predicted_winner": "Australia",
+    "actual_winner": "draw",
+    "predicted_prob": 0.0035,
+    "correct": false
+  },
+  {
+    "match": "Germany vs Cura\u00e7ao",
+    "date": "2026-06-14",
+    "predicted_winner": "Germany",
+    "actual_winner": "Germany",
+    "predicted_prob": 0.0493,
+    "correct": true
+  },
+  {
+    "match": "Ivory Coast vs Ecuador",
+    "date": "2026-06-14",
+    "predicted_winner": "Ivory Coast",
+    "actual_winner": "Ivory Coast",
+    "predicted_prob": 0.0102,
+    "correct": true
+  },
+  {
+    "match": "Germany vs Ivory Coast",
+    "date": "2026-06-20",
+    "predicted_winner": "Germany",
+    "actual_winner": "Germany",
+    "predicted_prob": 0.0493,
+    "correct": true
+  },
+  {
+    "match": "Ecuador vs Cura\u00e7ao",
+    "date": "2026-06-20",
+    "predicted_winner": "Ecuador",
+    "actual_winner": "draw",
+    "predicted_prob": 0.006,
+    "correct": false
+  },
+  {
+    "match": "Cura\u00e7ao vs Ivory Coast",
+    "date": "2026-06-25",
+    "predicted_winner": "Ivory Coast",
+    "actual_winner": "Ivory Coast",
+    "predicted_prob": 0.0102,
+    "correct": true
+  },
+  {
+    "match": "Ecuador vs Germany",
+    "date": "2026-06-25",
+    "predicted_winner": "Germany",
+    "actual_winner": "Ecuador",
+    "predicted_prob": 0.0493,
+    "correct": false
+  },
+  {
+    "match": "Netherlands vs Japan",
+    "date": "2026-06-14",
+    "predicted_winner": "Netherlands",
+    "actual_winner": "draw",
+    "predicted_prob": 0.0417,
+    "correct": false
+  },
+  {
+    "match": "Sweden vs Tunisia",
+    "date": "2026-06-14",
+    "predicted_winner": "Sweden",
+    "actual_winner": "Sweden",
+    "predicted_prob": 0.003,
+    "correct": true
+  },
+  {
+    "match": "Netherlands vs Sweden",
+    "date": "2026-06-20",
+    "predicted_winner": "Netherlands",
+    "actual_winner": "Netherlands",
+    "predicted_prob": 0.0417,
+    "correct": true
+  },
+  {
+    "match": "Tunisia vs Japan",
+    "date": "2026-06-20",
+    "predicted_winner": "Japan",
+    "actual_winner": "Japan",
+    "predicted_prob": 0.012,
+    "correct": true
+  },
+  {
+    "match": "Japan vs Sweden",
+    "date": "2026-06-25",
+    "predicted_winner": "Japan",
+    "actual_winner": "draw",
+    "predicted_prob": 0.012,
+    "correct": false
+  },
+  {
+    "match": "Tunisia vs Netherlands",
+    "date": "2026-06-25",
+    "predicted_winner": "Netherlands",
+    "actual_winner": "Netherlands",
+    "predicted_prob": 0.0417,
+    "correct": true
+  },
+  {
+    "match": "Belgium vs Egypt",
+    "date": "2026-06-15",
+    "predicted_winner": "Belgium",
+    "actual_winner": "draw",
+    "predicted_prob": 0.0181,
+    "correct": false
+  },
+  {
+    "match": "Iran vs New Zealand",
+    "date": "2026-06-15",
+    "predicted_winner": "Iran",
+    "actual_winner": "draw",
+    "predicted_prob": 0.0021,
+    "correct": false
+  },
+  {
+    "match": "Belgium vs Iran",
+    "date": "2026-06-21",
+    "predicted_winner": "Belgium",
+    "actual_winner": "draw",
+    "predicted_prob": 0.0181,
+    "correct": false
+  },
+  {
+    "match": "New Zealand vs Egypt",
+    "date": "2026-06-21",
+    "predicted_winner": "Egypt",
+    "actual_winner": "Egypt",
+    "predicted_prob": 0.0052,
+    "correct": true
+  },
+  {
+    "match": "Egypt vs Iran",
+    "date": "2026-06-26",
+    "predicted_winner": "Egypt",
+    "actual_winner": "draw",
+    "predicted_prob": 0.0052,
+    "correct": false
+  },
+  {
+    "match": "New Zealand vs Belgium",
+    "date": "2026-06-26",
+    "predicted_winner": "Belgium",
+    "actual_winner": "Belgium",
+    "predicted_prob": 0.0181,
+    "correct": true
+  },
+  {
+    "match": "Spain vs Cape Verde",
+    "date": "2026-06-15",
+    "predicted_winner": "Spain",
+    "actual_winner": "draw",
+    "predicted_prob": 0.1367,
+    "correct": false
+  },
+  {
+    "match": "Spain vs Saudi Arabia",
+    "date": "2026-06-21",
+    "predicted_winner": "Spain",
+    "actual_winner": "Spain",
+    "predicted_prob": 0.1367,
+    "correct": true
+  },
+  {
+    "match": "Uruguay vs Spain",
+    "date": "2026-06-26",
+    "predicted_winner": "Spain",
+    "actual_winner": "Spain",
+    "predicted_prob": 0.1367,
+    "correct": true
+  },
+  {
+    "match": "France vs Senegal",
+    "date": "2026-06-16",
+    "predicted_winner": "France",
+    "actual_winner": "France",
+    "predicted_prob": 0.2044,
+    "correct": true
+  },
+  {
+    "match": "Iraq vs Norway",
+    "date": "2026-06-16",
+    "predicted_winner": "Norway",
+    "actual_winner": "Norway",
+    "predicted_prob": 0.0328,
+    "correct": true
+  },
+  {
+    "match": "France vs Iraq",
+    "date": "2026-06-22",
+    "predicted_winner": "France",
+    "actual_winner": "France",
+    "predicted_prob": 0.2044,
+    "correct": true
+  },
+  {
+    "match": "Norway vs Senegal",
+    "date": "2026-06-22",
+    "predicted_winner": "Norway",
+    "actual_winner": "Norway",
+    "predicted_prob": 0.0328,
+    "correct": true
+  },
+  {
+    "match": "Norway vs France",
+    "date": "2026-06-26",
+    "predicted_winner": "France",
+    "actual_winner": "France",
+    "predicted_prob": 0.2044,
+    "correct": true
+  },
+  {
+    "match": "Senegal vs Iraq",
+    "date": "2026-06-26",
+    "predicted_winner": "Senegal",
+    "actual_winner": "Senegal",
+    "predicted_prob": 0.0142,
+    "correct": true
+  },
+  {
+    "match": "Argentina vs Algeria",
+    "date": "2026-06-16",
+    "predicted_winner": "Argentina",
+    "actual_winner": "Argentina",
+    "predicted_prob": 0.0612,
+    "correct": true
+  },
+  {
+    "match": "Austria vs Jordan",
+    "date": "2026-06-16",
+    "predicted_winner": "Austria",
+    "actual_winner": "Austria",
+    "predicted_prob": 0.0043,
+    "correct": true
+  },
+  {
+    "match": "Argentina vs Austria",
+    "date": "2026-06-22",
+    "predicted_winner": "Argentina",
+    "actual_winner": "Argentina",
+    "predicted_prob": 0.0612,
+    "correct": true
+  },
+  {
+    "match": "Jordan vs Algeria",
+    "date": "2026-06-22",
+    "predicted_winner": "Algeria",
+    "actual_winner": "Algeria",
+    "predicted_prob": 0.0072,
+    "correct": true
+  },
+  {
+    "match": "Portugal vs DR Congo",
+    "date": "2026-06-17",
+    "predicted_winner": "Portugal",
+    "actual_winner": "draw",
+    "predicted_prob": 0.0391,
+    "correct": false
+  },
+  {
+    "match": "Uzbekistan vs Colombia",
+    "date": "2026-06-17",
+    "predicted_winner": "Colombia",
+    "actual_winner": "Colombia",
+    "predicted_prob": 0.0101,
+    "correct": true
+  },
+  {
+    "match": "Portugal vs Uzbekistan",
+    "date": "2026-06-23",
+    "predicted_winner": "Portugal",
+    "actual_winner": "Portugal",
+    "predicted_prob": 0.0391,
+    "correct": true
+  },
+  {
+    "match": "Colombia vs DR Congo",
+    "date": "2026-06-23",
+    "predicted_winner": "Colombia",
+    "actual_winner": "Colombia",
+    "predicted_prob": 0.0101,
+    "correct": true
+  },
+  {
+    "match": "Colombia vs Portugal",
+    "date": "2026-06-27",
+    "predicted_winner": "Portugal",
+    "actual_winner": "draw",
+    "predicted_prob": 0.0391,
+    "correct": false
+  },
+  {
+    "match": "DR Congo vs Uzbekistan",
+    "date": "2026-06-27",
+    "predicted_winner": "DR Congo",
+    "actual_winner": "DR Congo",
+    "predicted_prob": 0.0066,
+    "correct": true
+  },
+  {
+    "match": "England vs Croatia",
+    "date": "2026-06-17",
+    "predicted_winner": "England",
+    "actual_winner": "England",
+    "predicted_prob": 0.1742,
+    "correct": true
+  },
+  {
+    "match": "Ghana vs Panama",
+    "date": "2026-06-17",
+    "predicted_winner": "Ghana",
+    "actual_winner": "Ghana",
+    "predicted_prob": 0.0022,
+    "correct": true
+  },
+  {
+    "match": "England vs Ghana",
+    "date": "2026-06-23",
+    "predicted_winner": "England",
+    "actual_winner": "draw",
+    "predicted_prob": 0.1742,
+    "correct": false
+  },
+  {
+    "match": "Panama vs Croatia",
+    "date": "2026-06-23",
+    "predicted_winner": "Croatia",
+    "actual_winner": "Croatia",
+    "predicted_prob": 0.0109,
+    "correct": true
+  },
+  {
+    "match": "Panama vs England",
+    "date": "2026-06-27",
+    "predicted_winner": "England",
+    "actual_winner": "England",
+    "predicted_prob": 0.1742,
+    "correct": true
+  },
+  {
+    "match": "Croatia vs Ghana",
+    "date": "2026-06-27",
+    "predicted_winner": "Croatia",
+    "actual_winner": "Croatia",
+    "predicted_prob": 0.0109,
+    "correct": true
+  }
+]

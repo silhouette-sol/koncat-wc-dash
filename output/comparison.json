@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-06-27T14:48:51.294041",
+  "generated_at": "2026-06-28T02:46:12.196276",
   "market_source": "kalshi_fanduel_june24_2026",
   "simulation_runs": 10000,
   "teams": [
     {
       "name": "France",
       "elo_rating": 1776,
-      "elo_win_prob": 0.2075,
+      "elo_win_prob": 0.2044,
       "market_win_prob": 0.217,
-      "delta": -0.0095,
+      "delta": -0.0126,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -16,10 +16,10 @@
     },
     {
       "name": "England",
-      "elo_rating": 1755,
-      "elo_win_prob": 0.1648,
+      "elo_rating": 1762,
+      "elo_win_prob": 0.1742,
       "market_win_prob": 0.143,
-      "delta": 0.0218,
+      "delta": 0.0312,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -28,9 +28,9 @@
     {
       "name": "Spain",
       "elo_rating": 1733,
-      "elo_win_prob": 0.1372,
+      "elo_win_prob": 0.1367,
       "market_win_prob": 0.154,
-      "delta": -0.0168,
+      "delta": -0.0173,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -39,9 +39,9 @@
     {
       "name": "Argentina",
       "elo_rating": 1657,
-      "elo_win_prob": 0.0634,
+      "elo_win_prob": 0.0612,
       "market_win_prob": 0.133,
-      "delta": -0.0696,
+      "delta": -0.0718,
       "signal": "\ud83d\udd34 MARKET FAVORS",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -50,13 +50,13 @@
     {
       "name": "Brazil",
       "elo_rating": 1654,
-      "elo_win_prob": 0.0569,
+      "elo_win_prob": 0.057,
       "market_win_prob": 0.071,
-      "delta": -0.0141,
+      "delta": -0.014,
       "signal": "\u26aa neutral",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1555,
-      "path_note": "Avoids Germany and South Africa until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1435,
+      "path_note": "Avoids Germany and Morocco until the Final \u2014 favorable bracket draw"
     },
     {
       "name": "Germany",
@@ -65,49 +65,49 @@
       "market_win_prob": 0.071,
       "delta": -0.0217,
       "signal": "\u26aa neutral",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1568,
-      "path_note": "Could face South Africa and Morocco before the Final"
+      "path_difficulty": "easy",
+      "avg_potential_opp_elo": 1432,
+      "path_note": "Avoids Brazil and Switzerland until the Final \u2014 favorable bracket draw"
     },
     {
       "name": "Morocco",
       "elo_rating": 1636,
-      "elo_win_prob": 0.0457,
+      "elo_win_prob": 0.0474,
       "market_win_prob": 0.028,
-      "delta": 0.0177,
+      "delta": 0.0194,
       "signal": "\u26aa neutral",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1569,
-      "path_note": "Could face Germany and USA before the Final"
+      "path_difficulty": "easy",
+      "avg_potential_opp_elo": 1433,
+      "path_note": "Avoids Brazil and Switzerland until the Final \u2014 favorable bracket draw"
+    },
+    {
+      "name": "Netherlands",
+      "elo_rating": 1633,
+      "elo_win_prob": 0.0417,
+      "market_win_prob": 0.056,
+      "delta": -0.0143,
+      "signal": "\u26aa neutral",
+      "path_difficulty": "easy",
+      "avg_potential_opp_elo": 1433,
+      "path_note": "Avoids Brazil and Switzerland until the Final \u2014 favorable bracket draw"
     },
     {
       "name": "Portugal",
-      "elo_rating": 1627,
-      "elo_win_prob": 0.041,
+      "elo_rating": 1623,
+      "elo_win_prob": 0.0391,
       "market_win_prob": 0.091,
-      "delta": -0.05,
+      "delta": -0.0519,
       "signal": "\ud83d\udd34 MARKET FAVORS",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
       "path_note": null
     },
     {
-      "name": "Netherlands",
-      "elo_rating": 1633,
-      "elo_win_prob": 0.0398,
-      "market_win_prob": 0.056,
-      "delta": -0.0162,
-      "signal": "\u26aa neutral",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1569,
-      "path_note": "Could face Germany and USA before the Final"
-    },
-    {
       "name": "Norway",
       "elo_rating": 1617,
-      "elo_win_prob": 0.0351,
+      "elo_win_prob": 0.0328,
       "market_win_prob": 0.032,
-      "delta": 0.0031,
+      "delta": 0.0008,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -116,7 +116,18 @@
     {
       "name": "Belgium",
       "elo_rating": 1576,
-      "elo_win_prob": 0.0191,
+      "elo_win_prob": 0.0181,
+      "market_win_prob": null,
+      "delta": null,
+      "signal": "no market data",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
+    },
+    {
+      "name": "Senegal",
+      "elo_rating": 1559,
+      "elo_win_prob": 0.0142,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -127,73 +138,84 @@
     {
       "name": "Switzerland",
       "elo_rating": 1560,
-      "elo_win_prob": 0.017,
+      "elo_win_prob": 0.0142,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1561,
-      "path_note": "Avoids Germany and South Africa until the Final \u2014 favorable bracket draw"
-    },
-    {
-      "name": "Senegal",
-      "elo_rating": 1559,
-      "elo_win_prob": 0.0151,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
-    },
-    {
-      "name": "Colombia",
-      "elo_rating": 1539,
-      "elo_win_prob": 0.0117,
-      "market_win_prob": 0.022,
-      "delta": -0.0103,
-      "signal": "\u26aa neutral",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
+      "avg_potential_opp_elo": 1441,
+      "path_note": "Avoids Germany and Morocco until the Final \u2014 favorable bracket draw"
     },
     {
       "name": "Mexico",
       "elo_rating": 1542,
-      "elo_win_prob": 0.011,
+      "elo_win_prob": 0.0133,
       "market_win_prob": 0.022,
-      "delta": -0.011,
+      "delta": -0.0087,
       "signal": "\u26aa neutral",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1563,
-      "path_note": "Avoids Germany and South Africa until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1442,
+      "path_note": "Avoids Germany and Morocco until the Final \u2014 favorable bracket draw"
     },
     {
       "name": "Japan",
       "elo_rating": 1542,
-      "elo_win_prob": 0.0109,
+      "elo_win_prob": 0.012,
       "market_win_prob": 0.022,
-      "delta": -0.0111,
+      "delta": -0.01,
       "signal": "\u26aa neutral",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1563,
-      "path_note": "Avoids Germany and South Africa until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1442,
+      "path_note": "Avoids Germany and Morocco until the Final \u2014 favorable bracket draw"
+    },
+    {
+      "name": "Croatia",
+      "elo_rating": 1543,
+      "elo_win_prob": 0.0109,
+      "market_win_prob": null,
+      "delta": null,
+      "signal": "no market data",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
     },
     {
       "name": "Ivory Coast",
       "elo_rating": 1537,
-      "elo_win_prob": 0.0105,
+      "elo_win_prob": 0.0102,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1563,
-      "path_note": "Avoids Germany and South Africa until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1442,
+      "path_note": "Avoids Germany and Morocco until the Final \u2014 favorable bracket draw"
+    },
+    {
+      "name": "Colombia",
+      "elo_rating": 1543,
+      "elo_win_prob": 0.0101,
+      "market_win_prob": 0.022,
+      "delta": -0.0119,
+      "signal": "\u26aa neutral",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
     },
     {
       "name": "Algeria",
       "elo_rating": 1539,
-      "elo_win_prob": 0.0077,
+      "elo_win_prob": 0.0072,
+      "market_win_prob": null,
+      "delta": null,
+      "signal": "no market data",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
+    },
+    {
+      "name": "DR Congo",
+      "elo_rating": 1509,
+      "elo_win_prob": 0.0066,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -204,29 +226,7 @@
     {
       "name": "Ecuador",
       "elo_rating": 1509,
-      "elo_win_prob": 0.0074,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
-    },
-    {
-      "name": "Croatia",
-      "elo_rating": 1530,
-      "elo_win_prob": 0.0074,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
-    },
-    {
-      "name": "Bosnia & Herzegovina",
-      "elo_rating": 1485,
-      "elo_win_prob": 0.0051,
+      "elo_win_prob": 0.006,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -237,7 +237,18 @@
     {
       "name": "Egypt",
       "elo_rating": 1491,
-      "elo_win_prob": 0.0051,
+      "elo_win_prob": 0.0052,
+      "market_win_prob": null,
+      "delta": null,
+      "signal": "no market data",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
+    },
+    {
+      "name": "Bosnia & Herzegovina",
+      "elo_rating": 1485,
+      "elo_win_prob": 0.0052,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -248,7 +259,29 @@
     {
       "name": "Austria",
       "elo_rating": 1516,
-      "elo_win_prob": 0.0046,
+      "elo_win_prob": 0.0043,
+      "market_win_prob": null,
+      "delta": null,
+      "signal": "no market data",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
+    },
+    {
+      "name": "Australia",
+      "elo_rating": 1470,
+      "elo_win_prob": 0.0035,
+      "market_win_prob": null,
+      "delta": null,
+      "signal": "no market data",
+      "path_difficulty": "easy",
+      "avg_potential_opp_elo": 1447,
+      "path_note": "Avoids Germany and Morocco until the Final \u2014 favorable bracket draw"
+    },
+    {
+      "name": "Sweden",
+      "elo_rating": 1471,
+      "elo_win_prob": 0.003,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -259,51 +292,29 @@
     {
       "name": "USA",
       "elo_rating": 1475,
-      "elo_win_prob": 0.0041,
+      "elo_win_prob": 0.0028,
       "market_win_prob": 0.032,
-      "delta": -0.0279,
+      "delta": -0.0292,
       "signal": "\u26aa neutral",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1579,
-      "path_note": "Could face Germany and South Africa before the Final"
+      "path_difficulty": "easy",
+      "avg_potential_opp_elo": 1444,
+      "path_note": "Avoids Brazil and Switzerland until the Final \u2014 favorable bracket draw"
     },
     {
-      "name": "Australia",
-      "elo_rating": 1470,
-      "elo_win_prob": 0.0041,
+      "name": "Ghana",
+      "elo_rating": 1457,
+      "elo_win_prob": 0.0022,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1567,
-      "path_note": "Could face Brazil and Switzerland before the Final"
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
     },
     {
       "name": "Iran",
       "elo_rating": 1460,
-      "elo_win_prob": 0.0032,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
-    },
-    {
-      "name": "Sweden",
-      "elo_rating": 1471,
-      "elo_win_prob": 0.0031,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
-    },
-    {
-      "name": "Ghana",
-      "elo_rating": 1471,
-      "elo_win_prob": 0.0031,
+      "elo_win_prob": 0.0021,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -314,24 +325,13 @@
     {
       "name": "Canada",
       "elo_rating": 1458,
-      "elo_win_prob": 0.0024,
+      "elo_win_prob": 0.002,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1580,
-      "path_note": "Could face Germany and USA before the Final"
-    },
-    {
-      "name": "DR Congo",
-      "elo_rating": 1491,
-      "elo_win_prob": 0.0021,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
+      "path_difficulty": "easy",
+      "avg_potential_opp_elo": 1445,
+      "path_note": "Avoids Brazil and Switzerland until the Final \u2014 favorable bracket draw"
     }
   ]
 }
