@@ -16,6 +16,7 @@ import GroupStandings from './GroupStandings'
 import KnockoutBracket from './KnockoutBracket'
 import AccuracyTracker from './AccuracyTracker'
 import HeadToHead from './HeadToHead'
+import BuildingTab from './BuildingTab'
 
 // ── Types ─────────────────────────────────────────────────────
 
@@ -29,7 +30,7 @@ interface DashboardTabsProps {
   generatedAt: string
 }
 
-const TABS = ['OVERVIEW', 'PREDICTIONS', 'GROUPS', 'BRACKET'] as const
+const TABS = ['OVERVIEW', 'PREDICTIONS', 'BUILDING', 'GROUPS', 'BRACKET'] as const
 type Tab = typeof TABS[number]
 
 // ── Daily summary ─────────────────────────────────────────────
@@ -530,6 +531,11 @@ export default function DashboardTabs({
 
           <div className="pb-2" />
         </div>
+      )}
+
+      {/* BUILDING */}
+      {activeTab === 'BUILDING' && (
+        <BuildingTab descriptive={descriptive} worldcupMatches={worldcupMatches} />
       )}
 
       {/* GROUPS */}
