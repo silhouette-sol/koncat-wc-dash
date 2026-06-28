@@ -11,7 +11,7 @@ import GoldenBoot from './GoldenBoot'
 import EloMovers from './EloMovers'
 import GoalTiming from './GoalTiming'
 import BiggestUpsets from './BiggestUpsets'
-import OpponentStrength from './OpponentStrength'
+
 import GroupStandings from './GroupStandings'
 import KnockoutBracket from './KnockoutBracket'
 import AccuracyTracker from './AccuracyTracker'
@@ -509,8 +509,6 @@ export default function DashboardTabs({
           />
 
           <BiggestUpsets upsets={descriptive.upsets} />
-
-          <OpponentStrength oppStrength={descriptive.opp_strength} />
 
           <div className="pb-2" />
         </div>

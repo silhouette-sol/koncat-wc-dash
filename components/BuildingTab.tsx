@@ -13,17 +13,10 @@ interface PlayerStory {
   country: string
   club: string
   wcTeam: string | null
-  badge: 'ACL' | 'SEVERE' | 'CARDIAC'
   injury: string
   recovery: string
   comebackText: string
   playerSearchTerms: string[]
-}
-
-const BADGE_STYLES: Record<string, { color: string; border: string }> = {
-  ACL:     { color: '#D4622A', border: '1px solid #D4622A' },
-  SEVERE:  { color: '#D85A30', border: '1px solid #D85A30' },
-  CARDIAC: { color: '#C9A027', border: '1px solid #C9A027' },
 }
 
 const KO_ROUNDS = new Set([
@@ -38,7 +31,6 @@ const PLAYERS: PlayerStory[] = [
     country: 'Brazil',
     club: 'Al-Hilal',
     wcTeam: 'Brazil',
-    badge: 'SEVERE',
     injury: 'ACL and meniscus rupture, left knee, October 2023',
     recovery: '11 months out · 34 years old at this tournament',
     comebackText:
@@ -51,7 +43,6 @@ const PLAYERS: PlayerStory[] = [
     country: 'South Korea',
     club: 'Tottenham Hotspur',
     wcTeam: 'South Korea',
-    badge: 'SEVERE',
     injury: 'Multiple orbital bone fractures, November 2022',
     recovery: 'Played 2022 World Cup in a carbon-fiber protective mask',
     comebackText:
@@ -64,7 +55,6 @@ const PLAYERS: PlayerStory[] = [
     country: 'Canada',
     club: 'Bayern Munich',
     wcTeam: 'Canada',
-    badge: 'SEVERE',
     injury: 'Myocarditis, heart muscle inflammation, January 2022',
     recovery: '4 months of complete rest on medical orders',
     comebackText:
@@ -77,7 +67,6 @@ const PLAYERS: PlayerStory[] = [
     country: 'Italy',
     club: 'Liverpool',
     wcTeam: null,
-    badge: 'ACL',
     injury: 'ACL tear, left knee, January 2022',
     recovery: '10 months out · missed 2022 World Cup entirely',
     comebackText:
@@ -90,7 +79,6 @@ const PLAYERS: PlayerStory[] = [
     country: 'Spain',
     club: 'FC Barcelona',
     wcTeam: 'Spain',
-    badge: 'ACL',
     injury: 'ACL and lateral meniscus tear, right knee, November 2023',
     recovery: '11 months out · returned to play October 2024',
     comebackText:
@@ -103,7 +91,6 @@ const PLAYERS: PlayerStory[] = [
     country: 'Netherlands',
     club: 'Liverpool',
     wcTeam: 'Netherlands',
-    badge: 'ACL',
     injury: 'ACL tear, right knee, October 2020',
     recovery: '9 months out · returned July 2021',
     comebackText:
@@ -116,7 +103,6 @@ const PLAYERS: PlayerStory[] = [
     country: 'Denmark',
     club: 'Manchester United',
     wcTeam: null,
-    badge: 'CARDIAC',
     injury: 'Sudden cardiac arrest on the pitch, June 2021',
     recovery: 'Clinically dead for several minutes · fitted with heart device · returned February 2022',
     comebackText:
@@ -157,25 +143,16 @@ function PlayerCard({
   goldenBoot: GoldenBootEntry[]
   worldcupMatches: WCMatch[]
 }) {
-  const badge = BADGE_STYLES[player.badge]
   const goals = getPlayerGoals(player.playerSearchTerms, goldenBoot)
   const teamStats = player.wcTeam ? getTeamStats(player.wcTeam, worldcupMatches) : null
 
   return (
     <div
-      className="rounded-sm p-5 relative"
+      className="rounded-sm p-5"
       style={{ background: '#5C3D2E', border: '1px solid rgba(201,160,39,0.3)' }}
     >
-      {/* Badge */}
-      <span
-        className="absolute top-4 right-4 font-mono-data text-[10px] font-medium px-2 py-0.5 rounded-full"
-        style={{ color: badge.color, border: badge.border, background: 'rgba(0,0,0,0.15)' }}
-      >
-        {player.badge}
-      </span>
-
       {/* Two-column layout */}
-      <div className="flex flex-col sm:flex-row gap-5 pr-16 sm:pr-0">
+      <div className="flex flex-col sm:flex-row gap-5">
 
         {/* LEFT: identity + injury */}
         <div className="sm:w-2/5 space-y-3">

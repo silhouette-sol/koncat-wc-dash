@@ -36,13 +36,10 @@ export default function Home() {
             backgroundColor: '#C9A027',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyContent: 'flex-end',
             padding: '16px 24px',
           }}
         >
-          <span style={{ fontSize: 12, fontFamily: 'monospace', color: '#0B1D3A', fontWeight: 600 }}>
-            Elo · Monte Carlo · Market
-          </span>
           <span style={{ fontSize: 12, fontFamily: 'monospace', color: '#0B1D3A', fontWeight: 600 }}>
             Built by kenni_bo · KONCAT Always Building
           </span>
