@@ -29,60 +29,6 @@ function lookupSquadValue(squadValues: Record<string, number>, name: string): nu
   return null
 }
 
-const PATH_CONFIG = {
-  easy:   { emoji: '🟢', label: 'Easy',   color: '#1D9E75' },
-  medium: { emoji: '🟡', label: 'Medium', color: '#C4A882' },
-  hard:   { emoji: '🔴', label: 'Hard',   color: '#D85A30' },
-} as const
-
-function PathBadge({ team }: { team: TeamComparison }) {
-  const d = team.path_difficulty
-  if (!d) return <span className="font-mono-data text-xs text-text-muted">—</span>
-
-  const cfg = PATH_CONFIG[d]
-  const tooltipLines = [
-    `Avg potential opponent Elo: ${team.avg_potential_opp_elo ?? '—'}`,
-    team.path_note ?? '',
-  ].filter(Boolean)
-
-  return (
-    <div className="relative group inline-flex">
-      <span
-        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm font-mono-data text-[10px] font-medium cursor-default"
-        style={{ backgroundColor: `${cfg.color}22`, color: cfg.color, border: `1px solid ${cfg.color}44` }}
-      >
-        {cfg.emoji} {cfg.label}
-      </span>
-      <div
-        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-20 pointer-events-none
-                   opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-        style={{ minWidth: 220 }}
-      >
-        <div
-          className="rounded-sm px-3 py-2 text-left shadow-lg"
-          style={{ background: '#0B1D3A', border: '1px solid rgba(201,160,39,0.4)' }}
-        >
-          {tooltipLines.map((line, i) => (
-            <p key={i} className="font-mono-data text-[10px] text-text-muted leading-snug whitespace-nowrap">
-              {line}
-            </p>
-          ))}
-        </div>
-        <div className="flex justify-center">
-          <div
-            className="w-0 h-0"
-            style={{
-              borderLeft: '5px solid transparent',
-              borderRight: '5px solid transparent',
-              borderTop: '5px solid rgba(201,160,39,0.4)',
-            }}
-          />
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function ProbabilityTable({ teams, squadValues }: ProbabilityTableProps) {
   const [explainerOpen, setExplainerOpen] = useState(false)
 
@@ -90,20 +36,11 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
     .filter(t => t.elo_win_prob >= 0.005)
     .sort((a, b) => b.elo_win_prob - a.elo_win_prob)
 
-  const hasPathData = filtered.some(t => t.path_difficulty !== null && t.path_difficulty !== undefined)
-
   return (
     <section className="bg-card border border-border/30 rounded-sm overflow-hidden">
       <div className="px-5 py-3 border-b border-border/30">
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="font-display text-xl tracking-widest text-text-primary">WIN PROBABILITY</h2>
-            {hasPathData && (
-              <p className="font-mono-data text-[10px] text-text-muted mt-0.5">
-                Path difficulty = avg Elo of potential opponents in team&apos;s bracket half
-              </p>
-            )}
-          </div>
+          <h2 className="font-display text-xl tracking-widest text-text-primary">WIN PROBABILITY</h2>
           <span className="font-mono-data text-xs text-text-muted">
             <a
               href="https://en.wikipedia.org/wiki/Monte_Carlo_method"
@@ -130,10 +67,10 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
                 <a href="https://en.wikipedia.org/wiki/Elo_rating_system" target="_blank" rel="noopener noreferrer" className="underline hover:text-text-primary">Elo ratings</a>.
               </p>
               <p className="font-body text-xs text-text-muted leading-relaxed">
-                <strong className="text-text-primary">Market %</strong> = what prediction markets imply based on real money being bet.
+                <strong className="text-text-primary">Market %</strong> = implied probability from prediction market odds.
               </p>
               <p className="font-body text-xs text-text-muted leading-relaxed">
-                When they disagree significantly, that&apos;s the interesting story. A high Signal means the model sees more value than the market does.
+                When they disagree significantly, that&apos;s the interesting story. Signal Favors shows which source is more bullish on that team.
               </p>
             </div>
           )}
@@ -158,11 +95,8 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
               </th>
               <th className="text-center py-2 px-6 font-mono-data text-[10px] text-text-muted uppercase tracking-widest w-48">Divergence</th>
               <th className="text-right py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Market%</th>
-              {hasPathData && (
-                <th className="text-center py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Path</th>
-              )}
               <th className="text-right py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Squad €</th>
-              <th className="text-center py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Signal</th>
+              <th className="text-center py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Signal Favors</th>
             </tr>
           </thead>
           <tbody>
@@ -188,11 +122,6 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
                     <td className="py-2.5 px-4 text-right font-mono-data text-sm font-medium text-coral">
                       {team.market_win_prob !== null ? `${(team.market_win_prob * 100).toFixed(1)}%` : '—'}
                     </td>
-                    {hasPathData && (
-                      <td className="py-2.5 px-4 text-center">
-                        <PathBadge team={team} />
-                      </td>
-                    )}
                     <td className="py-2.5 px-4 text-right font-mono-data text-xs text-text-muted">
                       {formatSquadValue(sqVal)}
                     </td>

@@ -322,7 +322,7 @@ def run_comparison(win_probs, current_elo, wc_matches=None):
     # Save JSON
     output = {
         "generated_at":     datetime.utcnow().isoformat(),
-        "market_source":    "kalshi_fanduel_june24_2026",
+        "market_source":    "prediction_market_odds",
         "simulation_runs":  10000,
         "teams":            rows
     }

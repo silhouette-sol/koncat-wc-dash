@@ -34,9 +34,18 @@ type Tab = typeof TABS[number]
 
 // ── Daily summary ─────────────────────────────────────────────
 
+function parseBullets(text: string): string[] {
+  const byNewline = text.split('\n').map(s => s.trim()).filter(Boolean)
+  const bulletLines = byNewline.filter(s => s.startsWith('•') || s.startsWith('·') || s.startsWith('-'))
+  if (bulletLines.length >= 2) {
+    return bulletLines.slice(0, 3).map(s => s.replace(/^[•·\-]\s*/, '').trim())
+  }
+  return text.split(/\.\s+/).map(s => s.trim()).filter(s => s.length > 15).slice(0, 3)
+}
+
 function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
   const today = new Date().toISOString().slice(0, 10)
-  const [summary, setSummary] = useState<string | null>(null)
+  const [bullets, setBullets] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [displayDate, setDisplayDate] = useState('')
   const [displayMatches, setDisplayMatches] = useState<WCMatch[]>([])
@@ -56,31 +65,31 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
 
     if (dayMatches.length === 0) return
 
-    const cacheKey = `daily_summary_${date}`
+    const cacheKey = `daily_bullets_${date}`
     try {
       const cached = sessionStorage.getItem(cacheKey)
-      if (cached) { setSummary(cached); return }
+      if (cached) { setBullets(JSON.parse(cached)); return }
     } catch {/* sessionStorage may be blocked */}
 
     setLoading(true)
     const matchContext = dayMatches.map(m => {
       const s1 = (m.goals1 || []).map(g => `${g.name} ${g.minute}'`).join(', ')
       const s2 = (m.goals2 || []).map(g => `${g.name} ${g.minute}'`).join(', ')
-      return `${m.team1} ${m.score!.ft[0]}-${m.score!.ft[1]} ${m.team2}${s1 ? ` (${m.team1} scorers: ${s1})` : ''}${s2 ? ` (${m.team2} scorers: ${s2})` : ''}`
+      return `${m.team1} ${m.score!.ft[0]}-${m.score!.ft[1]} ${m.team2}${s1 ? ` (${m.team1}: ${s1})` : ''}${s2 ? ` (${m.team2}: ${s2})` : ''}`
     }).join('. ')
 
     fetch('/api/explain', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ term: "today's matches summary", context: matchContext }),
+      body: JSON.stringify({ term: 'matchday_bullets', context: matchContext }),
     })
       .then(r => r.json())
       .then(d => {
-        const text = d.explanation || ''
-        setSummary(text)
-        try { sessionStorage.setItem(cacheKey, text) } catch {/* ignore */}
+        const parsed = parseBullets(d.explanation || '')
+        setBullets(parsed)
+        try { sessionStorage.setItem(cacheKey, JSON.stringify(parsed)) } catch {/* ignore */}
       })
-      .catch(() => setSummary(null))
+      .catch(() => setBullets([]))
       .finally(() => setLoading(false))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -109,8 +118,15 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
       {loading && (
         <p className="font-body text-sm text-text-muted italic">Generating summary...</p>
       )}
-      {summary && (
-        <p className="font-body text-sm text-text-primary leading-relaxed">{summary}</p>
+      {bullets.length > 0 && (
+        <div className="space-y-1.5 max-h-28 overflow-hidden">
+          {bullets.map((bullet, i) => (
+            <p key={i} className="font-body text-sm text-text-primary leading-snug flex gap-2">
+              <span style={{ color: '#C9A027', flexShrink: 0 }}>•</span>
+              <span>{bullet}</span>
+            </p>
+          ))}
+        </div>
       )}
     </section>
   )
@@ -212,18 +228,23 @@ function CrazyStatOfDay({
   worldcupMatches: WCMatch[]
   teams: TeamComparison[]
 }) {
+  const today = new Date().toISOString().split('T')[0]
+
+  // Only check today's completed matches
+  const todayCompleted = worldcupMatches.filter(
+    m => m.date === today && m.score && (m.goals1?.length || m.goals2?.length)
+  )
+
+  if (todayCompleted.length === 0) return null
+
   let line1: React.ReactNode = null
   let line2 = ''
 
-  const completed = worldcupMatches.filter(
-    m => m.score && (m.goals1?.length || m.goals2?.length)
-  )
-
   type GoalSide = [WCMatch['goals1'], string, string]
 
-  // P1: first-half hat trick
+  // P1: first-half hat trick today
   outer1:
-  for (const m of completed) {
+  for (const m of todayCompleted) {
     const sides: GoalSide[] = [[m.goals1, m.team1, m.team2], [m.goals2, m.team2, m.team1]]
     for (const [goals, team, opp] of sides) {
       if (!goals?.length) continue
@@ -240,10 +261,10 @@ function CrazyStatOfDay({
     }
   }
 
-  // P2: any hat trick
+  // P2: any hat trick today
   if (!line1) {
     outer2:
-    for (const m of completed) {
+    for (const m of todayCompleted) {
       const sides: GoalSide[] = [[m.goals1, m.team1, m.team2], [m.goals2, m.team2, m.team1]]
       for (const [goals, team, opp] of sides) {
         if (!goals?.length) continue
@@ -260,35 +281,10 @@ function CrazyStatOfDay({
     }
   }
 
-  // P3: path difficulty
-  if (!line1) {
-    const TOUR_AVG_ELO = 1700
-    const hardFav = teams
-      .filter(t => t.path_difficulty === 'hard')
-      .sort((a, b) => b.elo_win_prob - a.elo_win_prob)[0]
-    if (hardFav) {
-      line1 = (
-        <><strong style={{ color: '#C9A027' }}>{hardFav.name}</strong> are among the favorites but face the hardest bracket path. Potential opponents average Elo <strong style={{ color: '#C9A027' }}>{hardFav.avg_potential_opp_elo}</strong>. They earn it if they win.</>
-      )
-      line2 = hardFav.path_note ?? `Avg potential opp Elo: ${hardFav.avg_potential_opp_elo}.`
-    } else {
-      const easyUnder = teams
-        .filter(t => t.path_difficulty === 'easy' && t.market_win_prob !== null && t.delta !== null && t.delta > 0.04)
-        .sort((a, b) => (b.delta ?? 0) - (a.delta ?? 0))[0]
-      if (easyUnder) {
-        const below = easyUnder.avg_potential_opp_elo ? TOUR_AVG_ELO - easyUnder.avg_potential_opp_elo : null
-        line1 = (
-          <><strong style={{ color: '#C9A027' }}>{easyUnder.name}</strong> have the easiest remaining bracket path. Avg potential opponent Elo <strong style={{ color: '#C9A027' }}>{easyUnder.avg_potential_opp_elo}</strong>{below && below > 0 ? `, ${below} points below tournament average` : ''}. The market may be underpricing them.</>
-        )
-        line2 = easyUnder.path_note ?? `Model: ${(easyUnder.elo_win_prob * 100).toFixed(1)}% vs Market: ${((easyUnder.market_win_prob ?? 0) * 100).toFixed(1)}%.`
-      }
-    }
-  }
-
-  // P4: 3+ goals in one half
+  // P3: 3+ goals in one half today
   if (!line1) {
     outer3:
-    for (const m of completed) {
+    for (const m of todayCompleted) {
       if (!m.score?.ht) continue
       const [ft1, ft2] = m.score.ft
       const [ht1, ht2] = m.score.ht
@@ -308,10 +304,10 @@ function CrazyStatOfDay({
     }
   }
 
-  // P5: stoppage-time goal
+  // P4: stoppage-time goal today
   if (!line1) {
     outer4:
-    for (const m of [...completed].reverse()) {
+    for (const m of todayCompleted) {
       const sides: GoalSide[] = [[m.goals1, m.team1, m.team2], [m.goals2, m.team2, m.team1]]
       for (const [goals, team, opp] of sides) {
         const stGoal = goals?.find(g => g.minute.includes('+'))
@@ -328,20 +324,45 @@ function CrazyStatOfDay({
     }
   }
 
-  // P6: biggest upset fallback
+  // P5: today's biggest upset (lower-Elo team won)
   if (!line1) {
-    const topUpset = descriptive.upsets[0]
-    const realMovers = descriptive.elo_movers.filter(
-      mv => mv.direction !== 'flat' && /^[A-Za-zÀ-ÿ\s&'()\-.]+$/.test(mv.team) && mv.team.length < 30
+    let bestUpset: { team: string; opp: string; score: string; prob: number } | null = null
+    for (const m of todayCompleted) {
+      const t1 = teams.find(t => t.name === m.team1)
+      const t2 = teams.find(t => t.name === m.team2)
+      if (!t1 || !t2) continue
+      const [g1, g2] = m.score!.ft
+      if (g1 === g2) continue
+      const winnerIsT1 = g1 > g2
+      const winner = winnerIsT1 ? t1 : t2
+      const loser = winnerIsT1 ? t2 : t1
+      const eloDiff = loser.elo_rating - winner.elo_rating
+      if (eloDiff > 0) {
+        const prob = 1 / (1 + Math.pow(10, eloDiff / 400))
+        if (!bestUpset || prob < bestUpset.prob) {
+          bestUpset = { team: winner.name, opp: loser.name, score: `${g1}–${g2}`, prob }
+        }
+      }
+    }
+    if (bestUpset && bestUpset.prob < 0.45) {
+      line1 = <>Today&apos;s upset: <strong style={{ color: '#C9A027' }}>{bestUpset.team}</strong> beat {bestUpset.opp}. The model gave them only{' '}<strong style={{ color: '#C9A027' }}>{(bestUpset.prob * 100).toFixed(0)}%</strong> chance to win.</>
+      line2 = `Final score: ${bestUpset.score}. Results on the pitch don't always follow the numbers.`
+    }
+  }
+
+  // P6: today's biggest Elo mover
+  if (!line1) {
+    const todayTeams = new Set(todayCompleted.flatMap(m => [m.team1, m.team2]))
+    const todayMovers = descriptive.elo_movers.filter(
+      mv => mv.direction !== 'flat' &&
+        /^[A-Za-zÀ-ÿ\s&'()\-.]+$/.test(mv.team) &&
+        mv.team.length < 30 &&
+        todayTeams.has(mv.team)
     )
-    const topMover = realMovers.find(mv => mv.direction === 'up')
-    if (topUpset && topUpset.surprise_score > 0.65) {
-      const parts = topUpset.match.split(' vs ')
-      line1 = <>Biggest shock so far: {parts[0]} beat {parts[1]}. The model gave them only{' '}<strong style={{ color: '#C9A027' }}>{((1 - topUpset.t1_win_prob) * 100).toFixed(0)}%</strong> chance to win.</>
-      line2 = `Final score: ${topUpset.score}. Surprise score: ${(topUpset.surprise_score * 100).toFixed(0)}/100.`
-    } else if (topMover) {
-      line1 = <>{topMover.team} has climbed <strong style={{ color: '#C9A027' }}>{topMover.change} rating points</strong>, the biggest jump of the tournament.</>
-      line2 = `Elo went from ${topMover.pre_wc} to ${topMover.current}. Results are exceeding expectations.`
+    const topMover = todayMovers.find(mv => mv.direction === 'up')
+    if (topMover) {
+      line1 = <>{topMover.team} gained <strong style={{ color: '#C9A027' }}>{topMover.change} Elo points</strong> from today&apos;s result, one of the biggest jumps of the tournament.</>
+      line2 = `Rating went from ${topMover.pre_wc} to ${topMover.current}. Results are exceeding expectations.`
     }
   }
 
@@ -429,7 +450,7 @@ function CompactUpcoming({ matches, teams }: { matches: WCMatch[]; teams: TeamCo
 // ── Main component ────────────────────────────────────────────
 
 export default function DashboardTabs({
-  teams, descriptive, worldcupMatches, squadValues, marketSource,
+  teams, descriptive, worldcupMatches, squadValues,
 }: DashboardTabsProps) {
   const [activeTab, setActiveTab] = useState<Tab>('OVERVIEW')
 
@@ -460,10 +481,10 @@ export default function DashboardTabs({
       {activeTab === 'OVERVIEW' && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatCard label="Matches Played" value={matchesPlayed} sub="Group stage" />
-            <StatCard label="Teams Remaining" value={32} sub="at least 0.5% chance" />
-            <StatCard label="Final Date" value="Jul 19" sub="MetLife Stadium, NJ" />
-            <StatCard label="Simulations" value="10k" sub={`via ${marketSource.replace(/_/g, ' ')}`} />
+            <StatCard label="Matches Played" value={matchesPlayed} />
+            <StatCard label="Teams Remaining" value={32} />
+            <StatCard label="Final Date" value="Jul 19" />
+            <StatCard label="Simulations" value="10k" />
           </div>
 
           <DailySummaryCard matches={worldcupMatches} />
