@@ -9,17 +9,26 @@ export default function GoldenBoot({ entries }: GoldenBootProps) {
   const maxGoals = top5[0]?.goals ?? 1
 
   return (
-    <section className="bg-card border border-border rounded-sm overflow-hidden">
-      <div className="px-5 py-3 border-b border-border">
+    <section className="bg-card border border-border/30 rounded-sm overflow-hidden">
+      <div className="px-5 py-3 border-b border-border/30">
         <h2 className="font-display text-xl tracking-widest text-text-primary">
-          GOLDEN BOOT
+          GOLDEN BOOT{' '}
+          <a
+            href="https://en.wikipedia.org/wiki/FIFA_World_Cup_Golden_Boot"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block align-middle font-mono-data text-[10px] text-text-muted hover:text-text-primary border border-border/40 px-1.5 py-0.5 rounded-sm transition-colors"
+            title="What is the Golden Boot?"
+          >
+            ?
+          </a>
         </h2>
         <p className="font-mono-data text-xs text-text-muted mt-0.5">
           Top scorers · Group stage
         </p>
       </div>
 
-      <div className="divide-y divide-border/40">
+      <div className="divide-y divide-border/20">
         {top5.map((entry, i) => {
           const barWidth = (entry.goals / maxGoals) * 100
           return (
@@ -47,10 +56,10 @@ export default function GoldenBoot({ entries }: GoldenBootProps) {
                   </p>
                 </div>
               </div>
-              <div className="w-full h-1 bg-border/30 rounded-full overflow-hidden">
+              <div className="w-full h-1 bg-border/20 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-accent rounded-full transition-all"
-                  style={{ width: `${barWidth}%` }}
+                  className="h-full rounded-full transition-all"
+                  style={{ width: `${barWidth}%`, backgroundColor: '#C9A027' }}
                 />
               </div>
             </div>

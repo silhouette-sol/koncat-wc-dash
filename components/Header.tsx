@@ -9,22 +9,25 @@ export default function Header({ generatedAt }: HeaderProps) {
 
   return (
     <header className="flex items-start justify-between mb-6">
-      <div className="border-l-4 border-accent pl-4">
-        <h1 className="font-display text-5xl tracking-wider text-ink leading-none">
+      <div className="border-l-4 pl-4" style={{ borderColor: '#C9A027' }}>
+        <h1 className="font-display text-5xl tracking-wider leading-none" style={{ color: '#C9A027' }}>
           WORLD CUP 2026
         </h1>
-        <p className="font-display text-2xl tracking-widest text-ink-muted mt-1">
+        <p className="font-display text-2xl tracking-widest text-text-muted mt-1">
           KONCAT DASHBOARD
         </p>
-        <p className="font-mono-data text-xs text-ink-muted mt-2">
-          Updated {formatted}
+        <p className="font-mono-data text-xs text-text-muted mt-2">
+          Updated {formatted} <span style={{ color: '#C9A027' }}>· Check back daily for updated probabilities</span>
         </p>
       </div>
       <div className="text-right">
-        <span className="inline-block bg-accent text-[#F0E8D8] font-display text-sm tracking-widest px-3 py-1">
+        <span
+          className="inline-block font-display text-sm tracking-widest px-3 py-1"
+          style={{ background: '#C9A027', color: '#0B1D3A' }}
+        >
           KONCAT
         </span>
-        <p className="font-mono-data text-xs text-ink-muted mt-1">
+        <p className="font-mono-data text-xs text-text-muted mt-1">
           Built by kenni_bo
         </p>
       </div>

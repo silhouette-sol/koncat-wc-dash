@@ -7,15 +7,15 @@ interface EloMoversProps {
 
 export default function EloMovers({ movers }: EloMoversProps) {
   const realMovers = filterRealTeams(movers)
-  const risers = realMovers.filter((m) => m.direction === 'up').slice(0, 6)
+  const risers = realMovers.filter(m => m.direction === 'up').slice(0, 6)
   const fallers = realMovers
-    .filter((m) => m.direction === 'down')
+    .filter(m => m.direction === 'down')
     .sort((a, b) => a.change - b.change)
     .slice(0, 6)
 
   return (
-    <section className="bg-card border border-border rounded-sm overflow-hidden">
-      <div className="px-5 py-3 border-b border-border">
+    <section className="bg-card border border-border/30 rounded-sm overflow-hidden">
+      <div className="px-5 py-3 border-b border-border/30">
         <h2 className="font-display text-xl tracking-widest text-text-primary">
           HOT &amp; COLD
         </h2>
@@ -23,24 +23,32 @@ export default function EloMovers({ movers }: EloMoversProps) {
           Which teams are exceeding expectations and which are struggling
         </p>
         <p className="font-mono-data text-[10px] text-text-muted mt-1 leading-snug">
-          Based on results vs pre-tournament expectations — a team climbing means they&apos;re outperforming what the model predicted
+          Based on results vs pre-tournament expectations. A team climbing means they&apos;re outperforming
+          what the{' '}
+          <a
+            href="https://en.wikipedia.org/wiki/Elo_rating_system"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-text-primary transition-colors"
+          >
+            Elo model
+          </a>{' '}
+          predicted.
         </p>
       </div>
 
-      <div className="grid grid-cols-2 divide-x divide-border/40">
+      <div className="grid grid-cols-2 divide-x divide-border/20">
         <div className="px-4 py-3">
           <p className="font-mono-data text-[10px] text-teal uppercase tracking-widest mb-2">
             Heating Up 🔥
           </p>
           <div className="space-y-2">
-            {risers.map((m) => (
+            {risers.map(m => (
               <div key={m.team} className="flex items-center justify-between">
-                <span className="font-body text-xs text-text-primary">
-                  {m.team}
-                </span>
+                <span className="font-body text-xs text-text-primary">{m.team}</span>
                 <div className="flex items-center gap-2">
                   <span className="font-mono-data text-[10px] text-text-muted">
-                    {m.pre_wc} → {m.current}
+                    {m.pre_wc} to {m.current}
                   </span>
                   <span className="font-mono-data text-xs font-medium text-teal">
                     +{m.change}
@@ -56,14 +64,12 @@ export default function EloMovers({ movers }: EloMoversProps) {
             Cooling Down 🧊
           </p>
           <div className="space-y-2">
-            {fallers.map((m) => (
+            {fallers.map(m => (
               <div key={m.team} className="flex items-center justify-between">
-                <span className="font-body text-xs text-text-primary">
-                  {m.team}
-                </span>
+                <span className="font-body text-xs text-text-primary">{m.team}</span>
                 <div className="flex items-center gap-2">
                   <span className="font-mono-data text-[10px] text-text-muted">
-                    {m.pre_wc} → {m.current}
+                    {m.pre_wc} to {m.current}
                   </span>
                   <span className="font-mono-data text-xs font-medium text-coral">
                     {m.change}

@@ -30,20 +30,20 @@ export default function Home() {
         />
       </main>
       <footer>
-        <div style={{ height: 1, backgroundColor: '#D4B896' }} />
+        <div style={{ height: 1, backgroundColor: '#C9A027' }} />
         <div
           style={{
-            backgroundColor: '#5C3D2E',
+            backgroundColor: '#C9A027',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '16px 24px',
           }}
         >
-          <span style={{ fontSize: 12, fontFamily: 'monospace', color: '#C4A882' }}>
+          <span style={{ fontSize: 12, fontFamily: 'monospace', color: '#0B1D3A', fontWeight: 600 }}>
             Elo · Monte Carlo · Market
           </span>
-          <span style={{ fontSize: 12, fontFamily: 'monospace', color: '#C4A882' }}>
+          <span style={{ fontSize: 12, fontFamily: 'monospace', color: '#0B1D3A', fontWeight: 600 }}>
             Built by kenni_bo · KONCAT Always Building
           </span>
         </div>

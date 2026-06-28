@@ -51,7 +51,7 @@ export default function Poll() {
     <section className="bg-card border border-border rounded-sm overflow-hidden">
       <div className="px-5 py-3 border-b border-border">
         <h2 className="font-display text-xl tracking-widest text-text-primary">COMMUNITY POLL</h2>
-        <p className="font-mono-data text-xs text-text-muted mt-0.5">{total} votes cast — who wins?</p>
+        <p className="font-mono-data text-xs text-text-muted mt-0.5">{total} votes cast · who wins?</p>
       </div>
       <div className="px-5 py-4 space-y-4">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">

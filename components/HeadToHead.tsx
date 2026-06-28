@@ -101,10 +101,10 @@ export default function HeadToHead({ teams }: HeadToHeadProps) {
           <div className="space-y-3">
             <div className="flex justify-between font-body text-sm text-text-primary">
               <span>
-                {FLAGS[team1] ?? ''} {team1} — {(result.p1 * 100).toFixed(1)}% to win
+                {FLAGS[team1] ?? ''} {team1} · {(result.p1 * 100).toFixed(1)}% to win
               </span>
               <span>
-                {(result.p2 * 100).toFixed(1)}% to win — {FLAGS[team2] ?? ''} {team2}
+                {(result.p2 * 100).toFixed(1)}% to win · {FLAGS[team2] ?? ''} {team2}
               </span>
             </div>
             <div className="h-3 rounded-sm overflow-hidden flex">

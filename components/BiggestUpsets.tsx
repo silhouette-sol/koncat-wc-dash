@@ -6,11 +6,11 @@ interface BiggestUpsetsProps {
 
 export default function BiggestUpsets({ upsets }: BiggestUpsetsProps) {
   const top8 = upsets.slice(0, 8)
-  const maxSurprise = Math.max(...top8.map((u) => u.surprise_score))
+  const maxSurprise = Math.max(...top8.map(u => u.surprise_score))
 
   return (
-    <section className="bg-card border border-border rounded-sm overflow-hidden">
-      <div className="px-5 py-3 border-b border-border flex items-center justify-between">
+    <section className="bg-card border border-border/30 rounded-sm overflow-hidden">
+      <div className="px-5 py-3 border-b border-border/30 flex items-center justify-between">
         <div>
           <h2 className="font-display text-xl tracking-widest text-text-primary">
             BIGGEST UPSETS SO FAR
@@ -22,7 +22,7 @@ export default function BiggestUpsets({ upsets }: BiggestUpsetsProps) {
         <span className="font-mono-data text-xs text-text-muted">Top 8</span>
       </div>
 
-      <div className="divide-y divide-border/40">
+      <div className="divide-y divide-border/20">
         {top8.map((upset, i) => {
           const barPct = maxSurprise > 0 ? (upset.surprise_score / maxSurprise) * 100 : 0
           return (
@@ -61,9 +61,9 @@ export default function BiggestUpsets({ upsets }: BiggestUpsetsProps) {
         })}
       </div>
 
-      <div className="px-5 py-2.5 border-t border-border/40">
+      <div className="px-5 py-2.5 border-t border-border/20">
         <p className="font-mono-data text-[10px] text-text-muted">
-          Surprise score = probability the upset winner was expected to lose
+          Surprise score measures how unlikely a result was based on pre-match ratings. 1.0 = completely unexpected.
         </p>
       </div>
     </section>

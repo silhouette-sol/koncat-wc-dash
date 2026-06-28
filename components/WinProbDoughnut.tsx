@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { TeamComparison } from '@/lib/types'
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   interface Window { Chart: any }
 }
 
@@ -39,10 +40,11 @@ interface WinProbDoughnutProps {
 
 export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const chartRef = useRef<any>(null)
 
   const top10 = teams
-    .filter((t) => t.elo_win_prob >= 0.005)
+    .filter(t => t.elo_win_prob >= 0.005)
     .sort((a, b) => b.elo_win_prob - a.elo_win_prob)
     .slice(0, 10)
 
@@ -57,13 +59,13 @@ export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
       chartRef.current = new window.Chart(canvasRef.current, {
         type: 'doughnut',
         data: {
-          labels: top10.map((t) => t.name),
+          labels: top10.map(t => t.name),
           datasets: [{
-            data: top10.map((t) => parseFloat((t.elo_win_prob * 100).toFixed(2))),
-            backgroundColor: top10.map((t) => NATIONAL_COLORS[t.name] ?? '#C4A882'),
+            data: top10.map(t => parseFloat((t.elo_win_prob * 100).toFixed(2))),
+            backgroundColor: top10.map(t => NATIONAL_COLORS[t.name] ?? '#C4A882'),
             borderWidth: 2,
             borderColor: '#5C3D2E',
-            hoverBorderColor: '#D4B896',
+            hoverBorderColor: '#C9A027',
           }],
         },
         options: {
@@ -73,15 +75,19 @@ export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
           plugins: {
             legend: { display: false },
             tooltip: {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               callbacks: {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 label: (ctx: any) => {
                   const t = top10[ctx.dataIndex]
-                  return ` ${FLAGS[t.name] ?? ''} ${t.name} — ${(t.elo_win_prob * 100).toFixed(1)}% chance to win`
+                  return ` ${FLAGS[t.name] ?? ''} ${t.name}, ${(t.elo_win_prob * 100).toFixed(1)}% chance to win`
                 },
               },
-              backgroundColor: '#1A1512',
+              backgroundColor: '#0B1D3A',
               titleColor: '#F0E8D8',
               bodyColor: '#C4A882',
+              borderColor: 'rgba(201,160,39,0.4)',
+              borderWidth: 1,
               padding: 10,
             },
           },
@@ -107,13 +113,21 @@ export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <section className="bg-card border border-border rounded-sm overflow-hidden">
-      <div className="px-5 py-3 border-b border-border">
+    <section className="bg-card border border-border/30 rounded-sm overflow-hidden">
+      <div className="px-5 py-3 border-b border-border/30">
         <h2 className="font-display text-xl tracking-widest text-text-primary">
           MODEL WIN PROBABILITY
         </h2>
         <p className="font-mono-data text-xs text-text-muted mt-0.5">
-          Top 10 teams · 10,000 Monte Carlo simulations
+          How likely is each team to win the tournament based on 10,000 simulated tournaments using{' '}
+          <a
+            href="https://en.wikipedia.org/wiki/Elo_rating_system"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-text-primary transition-colors"
+          >
+            Elo ratings
+          </a>
         </p>
       </div>
 
@@ -123,7 +137,7 @@ export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-x-8 gap-y-2 w-full">
-          {top10.map((team) => (
+          {top10.map(team => (
             <div key={team.name} className="flex items-center gap-2.5">
               <div
                 className="w-3 h-3 rounded-full shrink-0"

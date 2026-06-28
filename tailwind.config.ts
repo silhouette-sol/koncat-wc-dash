@@ -9,15 +9,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: '#F0E8D8',
+        bg: '#0B1D3A',
         card: '#5C3D2E',
-        border: '#D4B896',
+        border: '#C9A027',
         accent: '#D4622A',
+        gold: '#C9A027',
         teal: '#1D9E75',
         coral: '#D85A30',
         'text-primary': '#F0E8D8',
         'text-muted': '#C4A882',
-        ink: '#1A1512',
+        ink: '#0B1D3A',
         'ink-muted': '#5C3D2E',
       },
       fontFamily: {

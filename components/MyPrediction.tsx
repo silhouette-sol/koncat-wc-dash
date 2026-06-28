@@ -15,7 +15,7 @@ type Phase = 'choosing' | 'animating' | 'locked'
 
 export default function MyPrediction() {
   const [phase, setPhase] = useState<Phase>('choosing')
-  const [selectedTeam, setSelectedTeam] = useState<string | null>(null)
+  const [selectedTeam, setSelectedTeam] = useState<string>('')
   const [lockedTeam, setLockedTeam] = useState<string | null>(null)
   const [lockedFlag, setLockedFlag] = useState<string>('')
   const [counts, setCounts] = useState<PickCount[]>([])
@@ -32,6 +32,7 @@ export default function MyPrediction() {
     fetch('/api/firstpick')
       .then(r => r.json())
       .then(d => { setCounts(d.counts || []); setTotal(d.total || 0) })
+      .catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -41,7 +42,7 @@ export default function MyPrediction() {
         particleCount: 120,
         spread: 80,
         origin: { y: 0.6 },
-        colors: ['#D4622A', '#F0E8D8', '#1D9E75', '#C4A882'],
+        colors: ['#C9A027', '#F0E8D8', '#1D9E75', '#D4622A'],
       })
     })
     animTimerRef.current = setTimeout(() => setPhase('locked'), 2500)
@@ -60,6 +61,7 @@ export default function MyPrediction() {
     if (data.locked) {
       setLockedTeam(data.team)
       setLockedFlag(TEAMS.find(([t]) => t === data.team)?.[1] ?? '🏳')
+      localStorage.setItem('wc_first_pick', data.team)
       setPhase('locked')
     } else {
       localStorage.setItem('wc_first_pick', selectedTeam)
@@ -73,22 +75,22 @@ export default function MyPrediction() {
 
   if (phase === 'animating' && lockedTeam) {
     return (
-      <section className="bg-card border border-border rounded-sm overflow-hidden">
+      <section className="bg-card border border-border/30 rounded-sm overflow-hidden">
         <style>{`
           @keyframes wc-scaleIn { from { transform: scale(0.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
           @keyframes wc-pulseRing { from { transform: scale(0.8); opacity: 1; } to { transform: scale(2.5); opacity: 0; } }
           .wc-flag-anim { animation: wc-scaleIn 0.4s ease-out; }
           .wc-ring-anim { animation: wc-pulseRing 1s ease-out 2; }
         `}</style>
-        <div className="px-5 py-8 flex flex-col items-center gap-4 relative">
+        <div className="px-5 py-8 flex flex-col items-center gap-4">
           <div className="relative inline-block">
             <div
               className="wc-ring-anim absolute inset-[-20px] rounded-full"
-              style={{ border: '3px solid #D4622A' }}
+              style={{ border: '3px solid #C9A027' }}
             />
             <div className="wc-flag-anim" style={{ fontSize: 80 }}>{lockedFlag}</div>
           </div>
-          <p className="font-display text-2xl text-accent tracking-widest">{lockedTeam}</p>
+          <p className="font-display text-2xl tracking-widest" style={{ color: '#C9A027' }}>{lockedTeam}</p>
           <p className="font-body text-base text-text-primary mt-2">Official prediction locked 🔒</p>
         </div>
       </section>
@@ -97,8 +99,8 @@ export default function MyPrediction() {
 
   if (phase === 'locked' && lockedTeam) {
     return (
-      <section className="bg-card border border-border rounded-sm overflow-hidden">
-        <div className="px-5 py-3 border-b border-border">
+      <section className="bg-card border border-border/30 rounded-sm overflow-hidden">
+        <div className="px-5 py-3 border-b border-border/30">
           <h2 className="font-display text-xl tracking-widest text-text-primary">
             YOUR OFFICIAL PREDICTION
           </h2>
@@ -106,14 +108,13 @@ export default function MyPrediction() {
         <div className="px-5 py-4 space-y-4">
           <div className="flex flex-col items-center py-4 gap-2">
             <span style={{ fontSize: 48 }}>{lockedFlag}</span>
-            <p className="font-display text-2xl text-accent tracking-widest">{lockedTeam}</p>
-            <p className="font-mono-data text-xs text-text-muted">🔒 locked in</p>
-            <p className="font-mono-data text-[10px] text-text-muted italic">First pick is permanent</p>
+            <p className="font-display text-2xl tracking-widest" style={{ color: '#C9A027' }}>{lockedTeam}</p>
+            <p className="font-mono-data text-xs text-text-muted">🔒 locked in · first pick is permanent</p>
           </div>
           {counts.length > 0 && (
             <div className="space-y-2">
               <p className="font-mono-data text-xs text-text-muted">
-                Community first picks — {total} total
+                Community first picks · {total} total
               </p>
               {counts.slice(0, 8).map(c => {
                 const pct = total > 0 ? (c.count / total) * 100 : 0
@@ -121,15 +122,15 @@ export default function MyPrediction() {
                 return (
                   <div key={c.team} className="space-y-0.5">
                     <div className="flex justify-between font-mono-data text-[10px] text-text-muted">
-                      <span>{c.team}{isUser ? ' ← your pick' : ''}</span>
+                      <span>{c.team}{isUser ? ' · your pick' : ''}</span>
                       <span>{Math.round(pct)}% ({c.count})</span>
                     </div>
-                    <div className="h-1.5 bg-border/20 rounded-sm overflow-hidden">
+                    <div className="h-1.5 bg-border/10 rounded-sm overflow-hidden">
                       <div
                         className="h-full rounded-sm"
                         style={{
                           width: `${(c.count / maxCount) * 100}%`,
-                          backgroundColor: isUser ? '#D4622A' : '#5C3D2E',
+                          backgroundColor: isUser ? '#C9A027' : '#5C3D2E',
                         }}
                       />
                     </div>
@@ -144,46 +145,54 @@ export default function MyPrediction() {
   }
 
   return (
-    <section className="bg-card border border-border rounded-sm overflow-hidden">
-      <div className="px-5 py-3 border-b border-border">
+    <section className="bg-card border border-border/30 rounded-sm overflow-hidden">
+      <div className="px-5 py-3 border-b border-border/30">
         <h2 className="font-display text-xl tracking-widest text-text-primary">
           YOUR OFFICIAL PREDICTION
         </h2>
         <p className="font-mono-data text-xs text-text-muted mt-0.5">
-          Your first pick is permanent — choose wisely
+          First pick is permanent · choose wisely
         </p>
       </div>
-      <div className="px-5 py-4 space-y-4">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {TEAMS.map(([team, flag]) => {
-            const isSelected = selectedTeam === team
-            return (
-              <button
-                key={team}
-                onClick={() => setSelectedTeam(team)}
-                className="px-3 py-2 rounded-sm text-left transition-all"
-                style={{
-                  background: '#3D2A1E',
-                  border: isSelected ? '2px solid #D4622A' : '1px solid #7A5C45',
-                  color: isSelected ? '#D4622A' : '#F0E8D8',
-                  opacity: selectedTeam && !isSelected ? 0.6 : 1,
-                  transform: isSelected ? 'scale(1.03)' : 'scale(1)',
-                }}
-              >
-                <div className="font-body text-sm">{flag} {team}</div>
-              </button>
-            )
-          })}
-        </div>
-        {selectedTeam && (
-          <button
-            onClick={handleLock}
-            className="w-full py-2 font-display text-sm tracking-widest"
-            style={{ background: '#D4622A', color: '#F0E8D8' }}
-          >
-            Lock in {TEAMS.find(([t]) => t === selectedTeam)?.[1]} {selectedTeam} as my official pick
-          </button>
-        )}
+      <div className="px-5 py-4 space-y-3">
+        <select
+          value={selectedTeam}
+          onChange={e => setSelectedTeam(e.target.value)}
+          style={{
+            width: '100%',
+            background: '#3D2A1E',
+            color: selectedTeam ? '#C9A027' : '#C4A882',
+            border: '2px solid rgba(201,160,39,0.6)',
+            borderRadius: 4,
+            fontSize: 16,
+            padding: '10px 14px',
+            outline: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          <option value="" disabled style={{ color: '#C4A882', background: '#3D2A1E' }}>
+            -- Select a team --
+          </option>
+          {TEAMS.map(([team, flag]) => (
+            <option key={team} value={team} style={{ color: '#F0E8D8', background: '#3D2A1E' }}>
+              {flag} {team}
+            </option>
+          ))}
+        </select>
+
+        <button
+          onClick={handleLock}
+          disabled={!selectedTeam}
+          className="w-full py-2.5 font-display text-sm tracking-widest transition-colors"
+          style={{
+            background: selectedTeam ? '#C9A027' : '#3D2A1E',
+            color: selectedTeam ? '#0B1D3A' : '#C4A882',
+            opacity: !selectedTeam ? 0.5 : 1,
+            borderRadius: 4,
+          }}
+        >
+          Lock in my pick ↗
+        </button>
       </div>
     </section>
   )

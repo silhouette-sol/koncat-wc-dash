@@ -6,24 +6,33 @@ interface OpponentStrengthProps {
 
 export default function OpponentStrength({ oppStrength }: OpponentStrengthProps) {
   const top15 = oppStrength.slice(0, 15)
-  const minElo = Math.min(...top15.map((t) => t.avg_opp_elo))
-  const maxElo = Math.max(...top15.map((t) => t.avg_opp_elo))
+  const minElo = Math.min(...top15.map(t => t.avg_opp_elo))
+  const maxElo = Math.max(...top15.map(t => t.avg_opp_elo))
 
   return (
-    <section className="bg-card border border-border rounded-sm overflow-hidden">
-      <div className="px-5 py-3 border-b border-border flex items-center justify-between">
+    <section className="bg-card border border-border/30 rounded-sm overflow-hidden">
+      <div className="px-5 py-3 border-b border-border/30 flex items-center justify-between">
         <div>
           <h2 className="font-display text-xl tracking-widest text-text-primary">
             WHO HAS HAD THE TOUGHEST PATH
           </h2>
           <p className="font-mono-data text-xs text-text-muted mt-0.5">
-            Average opponent Elo rating faced so far
+            Average opponent{' '}
+            <a
+              href="https://en.wikipedia.org/wiki/Elo_rating_system"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-text-primary transition-colors"
+            >
+              Elo rating
+            </a>{' '}
+            faced so far
           </p>
         </div>
         <span className="font-mono-data text-xs text-text-muted">Top 15</span>
       </div>
 
-      <div className="divide-y divide-border/40">
+      <div className="divide-y divide-border/20">
         {top15.map((entry, i) => {
           const range = maxElo - minElo || 1
           const barPct = ((entry.avg_opp_elo - minElo) / range) * 70 + 30
@@ -45,7 +54,7 @@ export default function OpponentStrength({ oppStrength }: OpponentStrengthProps)
                     </span>
                   )}
                 </div>
-                <div className="flex-1 h-4 bg-border/20 rounded-sm overflow-hidden">
+                <div className="flex-1 h-4 bg-border/10 rounded-sm overflow-hidden">
                   <div
                     className="h-full rounded-sm transition-all"
                     style={{
@@ -68,7 +77,7 @@ export default function OpponentStrength({ oppStrength }: OpponentStrengthProps)
         })}
       </div>
 
-      <div className="px-5 py-2.5 border-t border-border/40">
+      <div className="px-5 py-2.5 border-t border-border/20">
         <p className="font-mono-data text-[10px] text-text-muted">
           Higher Elo = stronger opponents faced · bars scaled relative to this group
         </p>

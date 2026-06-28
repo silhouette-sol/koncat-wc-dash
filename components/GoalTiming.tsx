@@ -54,14 +54,14 @@ export default function GoalTiming({ bins, totalGoals, mostProductivePeriod, gol
 
   const activeBins = useMemo(() => {
     if (!selectedTeam) return bins
-    const teamEntries = goldenBoot.filter((e) => e.team === selectedTeam)
-    const minutes = teamEntries.flatMap((e) => e.minutes.map(parseMinute))
+    const teamEntries = goldenBoot.filter(e => e.team === selectedTeam)
+    const minutes = teamEntries.flatMap(e => e.minutes.map(parseMinute))
     return binGoals(minutes)
   }, [selectedTeam, bins, goldenBoot])
 
   const activeTotal = useMemo(() => {
     if (!selectedTeam) return totalGoals
-    return goldenBoot.filter((e) => e.team === selectedTeam).reduce((s, e) => s + e.goals, 0)
+    return goldenBoot.filter(e => e.team === selectedTeam).reduce((s, e) => s + e.goals, 0)
   }, [selectedTeam, totalGoals, goldenBoot])
 
   const activePeak = useMemo(() => {
@@ -76,8 +76,8 @@ export default function GoalTiming({ bins, totalGoals, mostProductivePeriod, gol
   const maxCount = Math.max(...Object.values(activeBins))
 
   return (
-    <section className="bg-card border border-border rounded-sm overflow-hidden">
-      <div className="px-5 py-3 border-b border-border flex items-center justify-between">
+    <section className="bg-card border border-border/30 rounded-sm overflow-hidden">
+      <div className="px-5 py-3 border-b border-border/30 flex items-center justify-between">
         <div>
           <h2 className="font-display text-xl tracking-widest text-text-primary">
             GOAL TIMING
@@ -85,21 +85,25 @@ export default function GoalTiming({ bins, totalGoals, mostProductivePeriod, gol
           <p className="font-mono-data text-xs text-text-muted mt-0.5">
             When goals are scored · {activeTotal} total
           </p>
+          <p className="font-mono-data text-[10px] text-text-muted mt-0.5">
+            When goals are scored matters. Teams that score late tend to win more matches.
+          </p>
         </div>
         <div className="flex items-center gap-4">
           <div className="text-right">
             <p className="font-mono-data text-[10px] text-text-muted">Peak period</p>
-            <p className="font-display text-lg text-accent tracking-wider">
+            <p className="font-display text-lg tracking-wider" style={{ color: '#C9A027' }}>
               {activePeak}&apos;
             </p>
           </div>
           <select
             value={selectedTeam}
-            onChange={(e) => setSelectedTeam(e.target.value)}
-            className="font-mono-data text-xs text-text-primary bg-card border border-border rounded-sm px-2 py-1.5 cursor-pointer focus:outline-none focus:border-accent"
+            onChange={e => setSelectedTeam(e.target.value)}
+            className="font-mono-data text-xs text-text-primary bg-card border border-border/40 rounded-sm px-2 py-1.5 cursor-pointer focus:outline-none"
+            style={{ borderColor: 'rgba(201,160,39,0.4)' }}
           >
             <option value="">All teams</option>
-            {teams.map((t) => (
+            {teams.map(t => (
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
@@ -117,7 +121,7 @@ export default function GoalTiming({ bins, totalGoals, mostProductivePeriod, gol
               <span className="font-mono-data text-xs text-text-muted w-14 shrink-0">
                 {label}
               </span>
-              <div className="flex-1 h-5 bg-border/20 rounded-sm overflow-hidden">
+              <div className="flex-1 h-5 bg-border/10 rounded-sm overflow-hidden">
                 <div
                   className="h-full rounded-sm transition-all duration-300"
                   style={{

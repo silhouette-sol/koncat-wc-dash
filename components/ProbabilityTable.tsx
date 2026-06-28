@@ -11,9 +11,9 @@ interface ProbabilityTableProps {
 }
 
 function parseSignal(signal: string): { label: string; color: string } {
-  if (signal.includes('MODEL')) return { label: 'MODEL ↑', color: '#1D9E75' }
-  if (signal.includes('MARKET')) return { label: 'MARKET ↓', color: '#D85A30' }
-  return { label: '—', color: '#C4A882' }
+  if (signal.includes('MODEL')) return { label: 'MODEL UP', color: '#1D9E75' }
+  if (signal.includes('MARKET')) return { label: 'MARKET', color: '#D85A30' }
+  return { label: 'NEUTRAL', color: '#C4A882' }
 }
 
 function formatSquadValue(val: number | null): string {
@@ -61,7 +61,7 @@ function PathBadge({ team }: { team: TeamComparison }) {
       >
         <div
           className="rounded-sm px-3 py-2 text-left shadow-lg"
-          style={{ background: '#1A1512', border: '1px solid #5C3D2E' }}
+          style={{ background: '#0B1D3A', border: '1px solid rgba(201,160,39,0.4)' }}
         >
           {tooltipLines.map((line, i) => (
             <p key={i} className="font-mono-data text-[10px] text-text-muted leading-snug whitespace-nowrap">
@@ -75,7 +75,7 @@ function PathBadge({ team }: { team: TeamComparison }) {
             style={{
               borderLeft: '5px solid transparent',
               borderRight: '5px solid transparent',
-              borderTop: '5px solid #5C3D2E',
+              borderTop: '5px solid rgba(201,160,39,0.4)',
             }}
           />
         </div>
@@ -89,6 +89,7 @@ interface Mover { team: string; change: number; direction: string }
 export default function ProbabilityTable({ teams, squadValues }: ProbabilityTableProps) {
   const [expandedTeam, setExpandedTeam] = useState<string | null>(null)
   const [movers, setMovers] = useState<Mover[]>([])
+  const [explainerOpen, setExplainerOpen] = useState(false)
 
   useEffect(() => {
     fetch('/api/history/movers')
@@ -102,33 +103,73 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
     .sort((a, b) => b.elo_win_prob - a.elo_win_prob)
 
   const hasPathData = filtered.some(t => t.path_difficulty !== null && t.path_difficulty !== undefined)
-
   const getMoverChange = (name: string) => movers.find(m => m.team === name)
-
   const colSpan = hasPathData ? 10 : 9
 
   return (
-    <section className="bg-card border border-border rounded-sm overflow-hidden">
-      <div className="px-5 py-3 border-b border-border flex items-center justify-between">
-        <div>
-          <h2 className="font-display text-xl tracking-widest text-text-primary">WIN PROBABILITY</h2>
-          {hasPathData && (
-            <p className="font-mono-data text-[10px] text-text-muted mt-0.5">
-              Path difficulty = avg Elo of potential opponents in team&apos;s bracket half
-            </p>
+    <section className="bg-card border border-border/30 rounded-sm overflow-hidden">
+      <div className="px-5 py-3 border-b border-border/30">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-display text-xl tracking-widest text-text-primary">WIN PROBABILITY</h2>
+            {hasPathData && (
+              <p className="font-mono-data text-[10px] text-text-muted mt-0.5">
+                Path difficulty = avg Elo of potential opponents in team&apos;s bracket half
+              </p>
+            )}
+          </div>
+          <span className="font-mono-data text-xs text-text-muted">
+            <a
+              href="https://en.wikipedia.org/wiki/Monte_Carlo_method"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-text-primary transition-colors"
+            >
+              10k simulations
+            </a>
+          </span>
+        </div>
+
+        <div className="mt-2">
+          <button
+            onClick={() => setExplainerOpen(o => !o)}
+            className="font-mono-data text-[10px] text-text-muted hover:text-text-primary transition-colors"
+          >
+            {explainerOpen ? 'Hide explanation ↑' : 'What does this mean? ↓'}
+          </button>
+          {explainerOpen && (
+            <div className="mt-2 p-3 rounded-sm space-y-1.5" style={{ background: 'rgba(11,29,58,0.5)', border: '1px solid rgba(201,160,39,0.2)' }}>
+              <p className="font-body text-xs text-text-muted leading-relaxed">
+                <strong className="text-text-primary">Model %</strong> = how often this team wins across 10,000 simulated tournaments using{' '}
+                <a href="https://en.wikipedia.org/wiki/Elo_rating_system" target="_blank" rel="noopener noreferrer" className="underline hover:text-text-primary">Elo ratings</a>.
+              </p>
+              <p className="font-body text-xs text-text-muted leading-relaxed">
+                <strong className="text-text-primary">Market %</strong> = what prediction markets imply based on real money being bet.
+              </p>
+              <p className="font-body text-xs text-text-muted leading-relaxed">
+                When they disagree significantly, that&apos;s the interesting story. A high Signal means the model sees more value than the market does.
+              </p>
+            </div>
           )}
         </div>
-        <span className="font-mono-data text-xs text-text-muted">Model vs Market · 10k simulations</span>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-border">
+            <tr className="border-b border-border/30">
               <th className="text-left py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest w-8">#</th>
               <th className="text-left py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Team</th>
-              <th className="text-right py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Elo</th>
-              <th className="text-right py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Model%</th>
+              <th className="text-right py-2 px-4 font-mono-data text-[10px] uppercase tracking-widest">
+                <a href="https://en.wikipedia.org/wiki/Elo_rating_system" target="_blank" rel="noopener noreferrer" className="text-text-muted hover:text-text-primary transition-colors underline">
+                  Elo
+                </a>
+              </th>
+              <th className="text-right py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">
+                <span title="Win probability from 10,000 Monte Carlo simulations" className="cursor-help">
+                  Model%
+                </span>
+              </th>
               <th className="text-center py-2 px-6 font-mono-data text-[10px] text-text-muted uppercase tracking-widest w-48">Divergence</th>
               <th className="text-right py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Market%</th>
               {hasPathData && (
@@ -147,7 +188,7 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
               const isExpanded = expandedTeam === team.name
               return (
                 <React.Fragment key={team.name}>
-                  <tr className="border-b border-border/40 hover:bg-[#F0E8D8]/10 transition-colors">
+                  <tr className="border-b border-border/20 hover:bg-white/5 transition-colors">
                     <td className="py-2.5 px-4 font-mono-data text-xs text-text-muted">{i + 1}</td>
                     <td className="py-2.5 px-4">
                       <span className="font-body text-sm font-medium text-text-primary">{team.name}</span>
@@ -162,8 +203,7 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
                           className="ml-1.5 font-mono-data text-[11px]"
                           style={{ color: mover.direction === 'up' ? '#1D9E75' : '#D85A30' }}
                         >
-                          {mover.direction === 'up' ? '+' : ''}
-                          {(mover.change * 100).toFixed(1)}%
+                          {mover.direction === 'up' ? '+' : ''}{(mover.change * 100).toFixed(1)}%
                         </span>
                       )}
                     </td>
@@ -197,12 +237,12 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
                     </td>
                   </tr>
                   {isExpanded && (
-                    <tr className="border-b border-border/40 bg-[#1A1512]/30">
+                    <tr className="border-b border-border/20" style={{ background: 'rgba(11,29,58,0.4)' }}>
                       <td colSpan={colSpan} className="px-5 py-3">
                         <p className="font-mono-data text-[10px] text-text-muted mb-2">
-                          Win probability over time —{' '}
-                          <span style={{ color: '#D4622A' }}>— Model</span>{' '}
-                          <span style={{ color: '#C4A882' }}>- - Market</span>
+                          Win probability over time ·{' '}
+                          <span style={{ color: '#D4622A' }}>Model</span>{' '}
+                          <span style={{ color: '#C4A882' }}>Market</span>
                         </p>
                         <ProbabilityTrend team={team.name} />
                       </td>
