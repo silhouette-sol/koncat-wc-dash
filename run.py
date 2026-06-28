@@ -63,66 +63,6 @@ def main():
         players_df    = players_df,
     )
 
-    # ── STEP 7: Predictions tracking ──────────────────────────────────────
-    import json as _json, os as _os
-    from datetime import date as _date
-
-    print("\n[7/7] Updating predictions tracking...")
-    predictions_path = "output/predictions.json"
-    predictions = []
-    if _os.path.exists(predictions_path):
-        with open(predictions_path) as f:
-            predictions = _json.load(f)
-    existing_keys = {(p["match"], p["date"]) for p in predictions}
-
-    prior_comp_teams = {}
-    if _os.path.exists("output/comparison.json"):
-        with open("output/comparison.json") as f:
-            prior = _json.load(f)
-        prior_comp_teams = {t["name"]: t.get("elo_win_prob", 0) for t in prior.get("teams", [])}
-
-    wc_data_raw = _json.load(open("data/worldcup.json"))
-    wc_raw_matches = wc_data_raw.get("matches", [])
-    for m in wc_raw_matches:
-        if not m.get("score"):
-            continue
-        match_key = f"{m['team1']} vs {m['team2']}"
-        match_date = m.get("date", "")
-        if (match_key, match_date) in existing_keys:
-            continue
-        p1 = prior_comp_teams.get(m["team1"], 0)
-        p2 = prior_comp_teams.get(m["team2"], 0)
-        if p1 == 0 and p2 == 0:
-            continue
-        predicted = m["team1"] if p1 >= p2 else m["team2"]
-        ft = m["score"]["ft"]
-        if ft[0] > ft[1]:
-            actual = m["team1"]
-        elif ft[1] > ft[0]:
-            actual = m["team2"]
-        else:
-            actual = "draw"
-        predictions.append({
-            "match": match_key,
-            "date": match_date,
-            "predicted_winner": predicted,
-            "actual_winner": actual,
-            "predicted_prob": round(max(p1, p2), 4),
-            "correct": predicted == actual,
-        })
-    with open(predictions_path, "w") as f:
-        _json.dump(predictions, f, indent=2)
-    print(f"  ✓ Predictions tracking: {len(predictions)} total entries")
-
-    # ── STEP 8: Supabase snapshot ──────────────────────────────────────────
-    print("\n[8/7] Storing daily snapshot to Supabase...")
-    from data.store_snapshot import store_daily_snapshot
-    with open("output/comparison.json") as f:
-        comparison_data = _json.load(f)
-    with open("output/descriptive.json") as f:
-        descriptive_data = _json.load(f)
-    store_daily_snapshot(comparison_data, descriptive_data, current_elo)
-
     print("\n" + "=" * 60)
     print("  Pipeline complete. Check output/ for results.")
     print("=" * 60)

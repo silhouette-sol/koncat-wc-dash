@@ -15,7 +15,6 @@ import OpponentStrength from './OpponentStrength'
 import GroupStandings from './GroupStandings'
 import KnockoutBracket from './KnockoutBracket'
 import AccuracyTracker from './AccuracyTracker'
-import MyPrediction from './MyPrediction'
 import HeadToHead from './HeadToHead'
 
 // ── Types ─────────────────────────────────────────────────────
@@ -498,8 +497,6 @@ export default function DashboardTabs({
       {/* PREDICTIONS */}
       {activeTab === 'PREDICTIONS' && (
         <div className="space-y-6">
-          <MyPrediction />
-
           <HeadToHead teams={teams} />
 
           <WinProbDoughnut teams={teams} />

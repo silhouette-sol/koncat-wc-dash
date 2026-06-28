@@ -18,12 +18,9 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python dependencies
-        run: pip install pandas requests kagglehub supabase
+        run: pip install pandas requests kagglehub beautifulsoup4 lxml
 
       - name: Run pipeline
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: python3 run.py
 
       - name: Commit and push updated data

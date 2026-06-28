@@ -47,6 +47,17 @@ export default function Home() {
             Built by kenni_bo · KONCAT Always Building
           </span>
         </div>
+        <div
+          style={{
+            backgroundColor: '#C9A027',
+            textAlign: 'center',
+            padding: '6px 24px 10px',
+          }}
+        >
+          <span style={{ fontSize: 11, fontFamily: 'monospace', color: 'rgba(11,29,58,0.7)' }}>
+            This site uses Vercel Analytics for anonymous visitor counts · No personal data is collected
+          </span>
+        </div>
       </footer>
     </>
   )

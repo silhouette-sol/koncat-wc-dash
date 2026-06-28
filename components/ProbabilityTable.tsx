@@ -1,9 +1,8 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { TeamComparison } from '@/lib/types'
 import DivergenceBar from './DivergenceBar'
-import ProbabilityTrend from './ProbabilityTrend'
 
 interface ProbabilityTableProps {
   teams: TeamComparison[]
@@ -84,27 +83,14 @@ function PathBadge({ team }: { team: TeamComparison }) {
   )
 }
 
-interface Mover { team: string; change: number; direction: string }
-
 export default function ProbabilityTable({ teams, squadValues }: ProbabilityTableProps) {
-  const [expandedTeam, setExpandedTeam] = useState<string | null>(null)
-  const [movers, setMovers] = useState<Mover[]>([])
   const [explainerOpen, setExplainerOpen] = useState(false)
-
-  useEffect(() => {
-    fetch('/api/history/movers')
-      .then(r => r.json())
-      .then(d => setMovers(d.movers || []))
-      .catch(() => {})
-  }, [])
 
   const filtered = teams
     .filter(t => t.elo_win_prob >= 0.005)
     .sort((a, b) => b.elo_win_prob - a.elo_win_prob)
 
   const hasPathData = filtered.some(t => t.path_difficulty !== null && t.path_difficulty !== undefined)
-  const getMoverChange = (name: string) => movers.find(m => m.team === name)
-  const colSpan = hasPathData ? 10 : 9
 
   return (
     <section className="bg-card border border-border/30 rounded-sm overflow-hidden">
@@ -177,15 +163,12 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
               )}
               <th className="text-right py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Squad €</th>
               <th className="text-center py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Signal</th>
-              <th className="w-10" />
             </tr>
           </thead>
           <tbody>
             {filtered.map((team, i) => {
               const signal = parseSignal(team.signal)
               const sqVal = lookupSquadValue(squadValues, team.name)
-              const mover = getMoverChange(team.name)
-              const isExpanded = expandedTeam === team.name
               return (
                 <React.Fragment key={team.name}>
                   <tr className="border-b border-border/20 hover:bg-white/5 transition-colors">
@@ -198,14 +181,6 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
                       <span className="font-mono-data text-sm font-medium text-teal">
                         {(team.elo_win_prob * 100).toFixed(1)}%
                       </span>
-                      {mover && (
-                        <span
-                          className="ml-1.5 font-mono-data text-[11px]"
-                          style={{ color: mover.direction === 'up' ? '#1D9E75' : '#D85A30' }}
-                        >
-                          {mover.direction === 'up' ? '+' : ''}{(mover.change * 100).toFixed(1)}%
-                        </span>
-                      )}
                     </td>
                     <td className="py-2.5 px-6">
                       <DivergenceBar delta={team.delta} />
@@ -226,28 +201,7 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
                         {signal.label}
                       </span>
                     </td>
-                    <td className="py-2.5 px-2 text-center">
-                      <button
-                        onClick={() => setExpandedTeam(isExpanded ? null : team.name)}
-                        className="font-mono-data text-[12px] text-text-muted hover:text-text-primary transition-colors"
-                        title="Show probability trend"
-                      >
-                        {isExpanded ? '▲' : '📈'}
-                      </button>
-                    </td>
                   </tr>
-                  {isExpanded && (
-                    <tr className="border-b border-border/20" style={{ background: 'rgba(11,29,58,0.4)' }}>
-                      <td colSpan={colSpan} className="px-5 py-3">
-                        <p className="font-mono-data text-[10px] text-text-muted mb-2">
-                          Win probability over time ·{' '}
-                          <span style={{ color: '#D4622A' }}>Model</span>{' '}
-                          <span style={{ color: '#C4A882' }}>Market</span>
-                        </p>
-                        <ProbabilityTrend team={team.name} />
-                      </td>
-                    </tr>
-                  )}
                 </React.Fragment>
               )
             })}

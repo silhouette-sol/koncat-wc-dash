@@ -494,5 +494,29 @@
     "actual_winner": "Croatia",
     "predicted_prob": 0.0109,
     "correct": true
+  },
+  {
+    "match": "Turkey vs Paraguay",
+    "date": "2026-06-19",
+    "predicted_winner": "Paraguay",
+    "actual_winner": "Paraguay",
+    "predicted_prob": 0.0023,
+    "correct": true
+  },
+  {
+    "match": "Algeria vs Austria",
+    "date": "2026-06-27",
+    "predicted_winner": "Austria",
+    "actual_winner": "draw",
+    "predicted_prob": 0.0098,
+    "correct": false
+  },
+  {
+    "match": "Jordan vs Argentina",
+    "date": "2026-06-27",
+    "predicted_winner": "Argentina",
+    "actual_winner": "Argentina",
+    "predicted_prob": 0.0607,
+    "correct": true
   }
 ]
