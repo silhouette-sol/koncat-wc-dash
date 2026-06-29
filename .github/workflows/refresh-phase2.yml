@@ -1,0 +1,55 @@
+name: Phase 2 — Refresh Twice Daily (July 12 to July 20)
+
+on:
+  schedule:
+    - cron: '0 21 * * *'   # 2pm PST — after afternoon matches
+    - cron: '0 4 * * *'    # 9pm PST — after evening matches
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check date — only run July 12 to July 20
+        id: date_check
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          START="2026-07-12"
+          END="2026-07-20"
+          if [[ "$TODAY" < "$START" ]]; then
+            echo "Before phase 2 window — skipping"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          elif [[ "$TODAY" > "$END" ]]; then
+            echo "Tournament over — skipping"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "Within phase 2 window — running refresh"
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: actions/checkout@v3
+        if: steps.date_check.outputs.skip == 'false'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v4
+        if: steps.date_check.outputs.skip == 'false'
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        if: steps.date_check.outputs.skip == 'false'
+        run: pip install pandas requests kagglehub
+
+      - name: Run pipeline
+        if: steps.date_check.outputs.skip == 'false'
+        run: python3 run.py
+
+      - name: Commit and push
+        if: steps.date_check.outputs.skip == 'false'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add output/
+          git diff --staged --quiet || git commit -m "Phase 2 refresh: $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push

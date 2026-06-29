@@ -1,0 +1,54 @@
+name: Phase 1 — Refresh Every 3 Hours (until July 12)
+
+on:
+  schedule:
+    - cron: '0 16 * * *'   # 9am PST
+    - cron: '0 19 * * *'   # 12pm PST
+    - cron: '0 22 * * *'   # 3pm PST
+    - cron: '0 1 * * *'    # 6pm PST
+    - cron: '0 4 * * *'    # 9pm PST
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check date — skip after July 12
+        id: date_check
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          CUTOFF="2026-07-12"
+          if [[ "$TODAY" > "$CUTOFF" || "$TODAY" == "$CUTOFF" ]]; then
+            echo "Past cutoff date — skipping phase 1 refresh"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "Within phase 1 window — running refresh"
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: actions/checkout@v3
+        if: steps.date_check.outputs.skip == 'false'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v4
+        if: steps.date_check.outputs.skip == 'false'
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        if: steps.date_check.outputs.skip == 'false'
+        run: pip install pandas requests kagglehub
+
+      - name: Run pipeline
+        if: steps.date_check.outputs.skip == 'false'
+        run: python3 run.py
+
+      - name: Commit and push
+        if: steps.date_check.outputs.skip == 'false'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add output/
+          git diff --staged --quiet || git commit -m "Phase 1 refresh: $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push
