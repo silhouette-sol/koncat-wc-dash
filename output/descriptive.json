@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-29T15:32:46.277572",
+  "generated_at": "2026-06-29T20:41:31.616371",
   "golden_boot": [
     {
       "player": "Lionel Messi",
@@ -226,12 +226,6 @@
       "cs_rate": 1.0
     },
     {
-      "team": "Brazil",
-      "clean_sheets": 2,
-      "games": 3,
-      "cs_rate": 0.67
-    },
-    {
       "team": "Paraguay",
       "clean_sheets": 2,
       "games": 3,
@@ -292,6 +286,12 @@
       "cs_rate": 0.5
     },
     {
+      "team": "Brazil",
+      "clean_sheets": 2,
+      "games": 4,
+      "cs_rate": 0.5
+    },
+    {
       "team": "Morocco",
       "clean_sheets": 1,
       "games": 3,
@@ -317,12 +317,6 @@
     },
     {
       "team": "Ecuador",
-      "clean_sheets": 1,
-      "games": 3,
-      "cs_rate": 0.33
-    },
-    {
-      "team": "Japan",
       "clean_sheets": 1,
       "games": 3,
       "cs_rate": 0.33
@@ -365,6 +359,12 @@
     },
     {
       "team": "South Africa",
+      "clean_sheets": 1,
+      "games": 4,
+      "cs_rate": 0.25
+    },
+    {
+      "team": "Japan",
       "clean_sheets": 1,
       "games": 4,
       "cs_rate": 0.25
@@ -505,14 +505,14 @@
   "goal_timing": {
     "bins": {
       "0-15": 27,
-      "16-30": 26,
+      "16-30": 27,
       "31-45": 28,
-      "46-60": 33,
+      "46-60": 34,
       "61-75": 28,
-      "76-90": 62,
+      "76-90": 63,
       "90+": 0
     },
-    "total_goals": 204,
+    "total_goals": 207,
     "most_productive_period": "76-90"
   },
   "upsets": [
@@ -633,16 +633,23 @@
       "direction": "up"
     },
     {
-      "team": "USA",
-      "pre_wc": 1437,
-      "current": 1475,
-      "change": 39,
+      "team": "Brazil",
+      "pre_wc": 1626,
+      "current": 1665,
+      "change": 40,
       "direction": "up"
     },
     {
       "team": "France",
       "pre_wc": 1737,
       "current": 1776,
+      "change": 39,
+      "direction": "up"
+    },
+    {
+      "team": "USA",
+      "pre_wc": 1437,
+      "current": 1475,
       "change": 39,
       "direction": "up"
     },
@@ -661,10 +668,10 @@
       "direction": "up"
     },
     {
-      "team": "Brazil",
-      "pre_wc": 1626,
-      "current": 1654,
-      "change": 29,
+      "team": "Netherlands",
+      "pre_wc": 1606,
+      "current": 1633,
+      "change": 27,
       "direction": "up"
     },
     {
@@ -675,30 +682,16 @@
       "direction": "up"
     },
     {
-      "team": "Netherlands",
-      "pre_wc": 1606,
-      "current": 1633,
-      "change": 27,
+      "team": "Ivory Coast",
+      "pre_wc": 1515,
+      "current": 1537,
+      "change": 22,
       "direction": "up"
     },
     {
       "team": "Morocco",
       "pre_wc": 1614,
       "current": 1635,
-      "change": 22,
-      "direction": "up"
-    },
-    {
-      "team": "Japan",
-      "pre_wc": 1521,
-      "current": 1542,
-      "change": 22,
-      "direction": "up"
-    },
-    {
-      "team": "Ivory Coast",
-      "pre_wc": 1515,
-      "current": 1537,
       "change": 22,
       "direction": "up"
     },
@@ -738,6 +731,13 @@
       "direction": "up"
     },
     {
+      "team": "Japan",
+      "pre_wc": 1521,
+      "current": 1531,
+      "change": 11,
+      "direction": "up"
+    },
+    {
       "team": "Norway",
       "pre_wc": 1607,
       "current": 1617,
@@ -766,16 +766,16 @@
       "direction": "up"
     },
     {
-      "team": "Belgium",
-      "pre_wc": 1571,
-      "current": 1576,
+      "team": "Ecuador",
+      "pre_wc": 1504,
+      "current": 1509,
       "change": 5,
       "direction": "up"
     },
     {
-      "team": "Ecuador",
-      "pre_wc": 1504,
-      "current": 1509,
+      "team": "Belgium",
+      "pre_wc": 1571,
+      "current": 1576,
       "change": 5,
       "direction": "up"
     },
@@ -801,13 +801,6 @@
       "direction": "up"
     },
     {
-      "team": "Germany",
-      "pre_wc": 1645,
-      "current": 1646,
-      "change": 1,
-      "direction": "up"
-    },
-    {
       "team": "Australia",
       "pre_wc": 1469,
       "current": 1470,
@@ -815,175 +808,14 @@
       "direction": "up"
     },
     {
-      "team": "W82",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W74",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W80",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W97",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
+      "team": "Germany",
+      "pre_wc": 1645,
+      "current": 1646,
+      "change": 1,
+      "direction": "up"
     },
     {
       "team": "W100",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W78",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W95",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W98",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W87",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W88",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "L102",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W83",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W76",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W81",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W91",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W86",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W99",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W92",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W84",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W93",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W90",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "L101",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W94",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W79",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W75",
       "pre_wc": 1500,
       "current": 1500,
       "change": 0,
@@ -997,6 +829,69 @@
       "direction": "flat"
     },
     {
+      "team": "W98",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W92",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W93",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "L102",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W78",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W76",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W99",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W94",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W80",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
       "team": "W102",
       "pre_wc": 1500,
       "current": 1500,
@@ -1004,14 +899,7 @@
       "direction": "flat"
     },
     {
-      "team": "W77",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W89",
+      "team": "W81",
       "pre_wc": 1500,
       "current": 1500,
       "change": 0,
@@ -1025,6 +913,41 @@
       "direction": "flat"
     },
     {
+      "team": "W95",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W97",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W82",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W89",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W90",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
       "team": "W85",
       "pre_wc": 1500,
       "current": 1500,
@@ -1032,7 +955,84 @@
       "direction": "flat"
     },
     {
+      "team": "W77",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W86",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W83",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W84",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W79",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W74",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W87",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
       "team": "Cura\u00e7ao",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W75",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W91",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W88",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "L101",
       "pre_wc": 1500,
       "current": 1500,
       "change": 0,
@@ -1190,7 +1190,7 @@
     },
     {
       "team": "Haiti",
-      "avg_opp_elo": 1582,
+      "avg_opp_elo": 1585,
       "games": 3
     },
     {
@@ -1210,7 +1210,7 @@
     },
     {
       "team": "Scotland",
-      "avg_opp_elo": 1565,
+      "avg_opp_elo": 1569,
       "games": 3
     },
     {
@@ -1224,14 +1224,19 @@
       "games": 3
     },
     {
-      "team": "Tunisia",
-      "avg_opp_elo": 1549,
-      "games": 3
-    },
-    {
       "team": "Croatia",
       "avg_opp_elo": 1548,
       "games": 3
+    },
+    {
+      "team": "Tunisia",
+      "avg_opp_elo": 1545,
+      "games": 3
+    },
+    {
+      "team": "Japan",
+      "avg_opp_elo": 1541,
+      "games": 4
     },
     {
       "team": "Saudi Arabia",
@@ -1259,13 +1264,13 @@
       "games": 3
     },
     {
-      "team": "Sweden",
-      "avg_opp_elo": 1523,
+      "team": "France",
+      "avg_opp_elo": 1522,
       "games": 3
     },
     {
-      "team": "France",
-      "avg_opp_elo": 1522,
+      "team": "Sweden",
+      "avg_opp_elo": 1520,
       "games": 3
     },
     {
@@ -1284,9 +1289,19 @@
       "games": 3
     },
     {
+      "team": "Morocco",
+      "avg_opp_elo": 1509,
+      "games": 3
+    },
+    {
       "team": "New Zealand",
       "avg_opp_elo": 1509,
       "games": 3
+    },
+    {
+      "team": "Brazil",
+      "avg_opp_elo": 1507,
+      "games": 4
     },
     {
       "team": "Qatar",
@@ -1294,23 +1309,8 @@
       "games": 3
     },
     {
-      "team": "Morocco",
-      "avg_opp_elo": 1505,
-      "games": 3
-    },
-    {
       "team": "Colombia",
       "avg_opp_elo": 1503,
-      "games": 3
-    },
-    {
-      "team": "Japan",
-      "avg_opp_elo": 1500,
-      "games": 3
-    },
-    {
-      "team": "Brazil",
-      "avg_opp_elo": 1499,
       "games": 3
     },
     {
@@ -1354,14 +1354,14 @@
       "games": 3
     },
     {
-      "team": "Netherlands",
-      "avg_opp_elo": 1469,
-      "games": 3
-    },
-    {
       "team": "South Africa",
       "avg_opp_elo": 1468,
       "games": 4
+    },
+    {
+      "team": "Netherlands",
+      "avg_opp_elo": 1466,
+      "games": 3
     },
     {
       "team": "Czech Republic",
@@ -1547,6 +1547,13 @@
       "score": "3-1",
       "date": "2026-06-27",
       "result": "comeback win"
+    },
+    {
+      "team": "Brazil",
+      "match": "Brazil vs Japan",
+      "score": "2-1",
+      "date": "2026-06-29",
+      "result": "comeback win"
     }
   ],
   "xg_totals": [],
@@ -1570,25 +1577,25 @@
       "peak_window": "prime"
     },
     {
-      "team": "Morocco",
-      "avg_age": 24.2,
-      "players": 26,
-      "peak_window": "prime"
-    },
-    {
       "team": "Ecuador",
       "avg_age": 24.2,
       "players": 26,
       "peak_window": "prime"
     },
     {
-      "team": "Spain",
-      "avg_age": 24.3,
+      "team": "Morocco",
+      "avg_age": 24.2,
       "players": 26,
       "peak_window": "prime"
     },
     {
       "team": "Sweden",
+      "avg_age": 24.3,
+      "players": 26,
+      "peak_window": "prime"
+    },
+    {
+      "team": "Spain",
       "avg_age": 24.3,
       "players": 26,
       "peak_window": "prime"
@@ -1600,13 +1607,13 @@
       "peak_window": "prime"
     },
     {
-      "team": "England",
+      "team": "Ghana",
       "avg_age": 24.6,
       "players": 26,
       "peak_window": "prime"
     },
     {
-      "team": "Ghana",
+      "team": "England",
       "avg_age": 24.6,
       "players": 26,
       "peak_window": "prime"
@@ -1618,13 +1625,13 @@
       "peak_window": "prime"
     },
     {
-      "team": "Norway",
+      "team": "Netherlands",
       "avg_age": 25.1,
       "players": 26,
       "peak_window": "prime"
     },
     {
-      "team": "Netherlands",
+      "team": "Norway",
       "avg_age": 25.1,
       "players": 26,
       "peak_window": "prime"
@@ -1666,13 +1673,13 @@
       "peak_window": "prime"
     },
     {
-      "team": "Austria",
+      "team": "Croatia",
       "avg_age": 25.7,
       "players": 26,
       "peak_window": "prime"
     },
     {
-      "team": "Croatia",
+      "team": "Austria",
       "avg_age": 25.7,
       "players": 26,
       "peak_window": "prime"
@@ -1720,7 +1727,7 @@
       "peak_window": "prime"
     },
     {
-      "team": "Scotland",
+      "team": "South Africa",
       "avg_age": 26.9,
       "players": 26,
       "peak_window": "prime"
@@ -1732,7 +1739,7 @@
       "peak_window": "prime"
     },
     {
-      "team": "South Africa",
+      "team": "Scotland",
       "avg_age": 26.9,
       "players": 26,
       "peak_window": "prime"
@@ -1750,13 +1757,13 @@
       "peak_window": "prime"
     },
     {
-      "team": "Jordan",
+      "team": "Paraguay",
       "avg_age": 27.3,
       "players": 26,
       "peak_window": "prime"
     },
     {
-      "team": "Paraguay",
+      "team": "Jordan",
       "avg_age": 27.3,
       "players": 26,
       "peak_window": "prime"
@@ -1792,13 +1799,13 @@
       "peak_window": "prime"
     },
     {
-      "team": "Iran",
+      "team": "Egypt",
       "avg_age": 29.3,
       "players": 26,
       "peak_window": "veteran"
     },
     {
-      "team": "Egypt",
+      "team": "Iran",
       "avg_age": 29.3,
       "players": 26,
       "peak_window": "veteran"
