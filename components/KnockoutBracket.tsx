@@ -312,6 +312,21 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
     return getMatchWinner(m) === name ? 'winner' : 'loser'
   }
 
+  // ── W-number resolution ───────────────────────────────────────
+  // R32 match i has W-number W(r32BaseIdx + i).  R16 fixtures may reference
+  // either the raw W-number or the resolved team name (e.g. "Canada" vs "W72").
+  const r32BaseIdx = matches.findIndex(m => m.round.includes('Round of 32'))
+
+  function findR16ForR32(i: number): WCMatch | undefined {
+    const r32Match = r32m[i]
+    const wNum = `W${r32BaseIdx + i}`
+    const winner = getMatchWinner(r32Match)
+    return r16m.find(m =>
+      m.team1 === wNum || m.team2 === wNum ||
+      (winner !== null && (m.team1 === winner || m.team2 === winner))
+    )
+  }
+
   // ── Slots ─────────────────────────────────────────────────────
   interface Slot { team: string; opponent: string; score?: string; date?: string }
 
@@ -327,7 +342,27 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
     return slots.slice(0, count)
   }
 
-  const r16Slots  = buildSlots(r16m, 16)
+  // ── R16 visual slots (one per R32 match, at the correct geometric midpoint)
+  interface R16VisualSlot { team: string; opponent: string; score?: string; date?: string; r16Match?: WCMatch }
+
+  const r16VisualSlots: R16VisualSlot[] = r32m.map((r32Match, i) => {
+    const winner = getMatchWinner(r32Match)
+    const team = winner ?? 'TBD'
+    const r16Match = findR16ForR32(i)
+    if (!r16Match) return { team, opponent: 'TBD' }
+    const wNum = `W${r32BaseIdx + i}`
+    const isTeam1 = r16Match.team1 === wNum || (winner !== null && r16Match.team1 === winner)
+    const rawOpp = isTeam1 ? r16Match.team2 : r16Match.team1
+    const score = r16Match.score ? `${r16Match.score.ft[0]}–${r16Match.score.ft[1]}` : undefined
+    return { team, opponent: resolveTeam(rawOpp), score, date: r16Match.date, r16Match }
+  })
+
+  function r16VisualState(slot: R16VisualSlot): SlotStatus {
+    if (slot.team === 'TBD') return 'tbd'
+    if (!slot.r16Match?.score) return 'upcoming'
+    return getMatchWinner(slot.r16Match) === slot.team ? 'winner' : 'loser'
+  }
+
   const qfSlots   = buildSlots(qfm,  8)
   const sfSlots   = buildSlots(sfm,  4)
   const finalSlots: Slot[] = finm
@@ -456,14 +491,14 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
           })}
 
           {/* R16 — global indices 32-47 */}
-          {r16Slots.map((slot, j) => {
+          {r16VisualSlots.map((slot, j) => {
             const ck = `r16-${j}`
             const [cx, cy] = svgPos(bracketAngle(j, 1), RADIUS.r16)
             const [ps, po] = matchOdds(slot.team, slot.opponent)
             return (
               <TeamCircle key={ck} circleKey={ck} index={32 + j}
                 teamName={slot.team} cx={cx} cy={cy}
-                state={slotState(slot, r16m)}
+                state={r16VisualState(slot)}
                 isActive={hoveredKey === ck}
                 opponent={slot.opponent} score={slot.score} date={slot.date}
                 matchProbSelf={ps} matchProbOpp={po}

@@ -31,7 +31,7 @@ interface DashboardTabsProps {
   generatedAt: string
 }
 
-const TABS = ['BRACKET', 'OVERVIEW', 'MY MODEL', 'BUILDING', 'GROUPS'] as const
+const TABS = ['BRACKET', 'OVERVIEW', 'MY MODEL', 'GROUPS', 'BUILDING'] as const
 type Tab = typeof TABS[number]
 
 // ── Daily summary ─────────────────────────────────────────────
