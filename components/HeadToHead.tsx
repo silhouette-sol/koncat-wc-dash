@@ -14,7 +14,7 @@ export default function HeadToHead({ teams }: HeadToHeadProps) {
   const [hasError, setHasError] = useState(false)
 
   const sortedTeams = [...teams]
-    .filter(t => t.elo_win_prob >= 0.005)
+    .filter(t => t.elo_win_prob > 0)
     .sort((a, b) => a.name.localeCompare(b.name))
 
   async function simulate() {
