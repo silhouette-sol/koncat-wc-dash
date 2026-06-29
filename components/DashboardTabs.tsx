@@ -141,13 +141,26 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
         <p className="font-body text-sm text-text-muted italic">Generating summary...</p>
       )}
       {bullets.length > 0 && (
-        <div className="space-y-1.5 max-h-28 overflow-hidden">
-          {bullets.map((bullet, i) => (
-            <p key={i} className="font-body text-sm text-text-primary leading-snug flex gap-2">
-              <span style={{ color: '#C9A027', flexShrink: 0 }}>•</span>
-              <span>{bullet}</span>
-            </p>
-          ))}
+        <div className="relative">
+          <div
+            className="space-y-1.5 overflow-y-auto"
+            style={{
+              maxHeight: 180,
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#C9A027 transparent',
+            } as React.CSSProperties}
+          >
+            {bullets.map((bullet, i) => (
+              <p key={i} className="font-body text-sm text-text-primary leading-snug flex gap-2">
+                <span style={{ color: '#C9A027', flexShrink: 0 }}>•</span>
+                <span>{bullet}</span>
+              </p>
+            ))}
+          </div>
+          <div
+            className="pointer-events-none absolute bottom-0 left-0 right-0"
+            style={{ height: 32, background: 'linear-gradient(to bottom, transparent, rgba(11,29,58,0.85))' }}
+          />
         </div>
       )}
       {top3.length > 0 && (
@@ -155,9 +168,12 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
           <p className="font-mono-data text-[10px] uppercase tracking-widest mb-2" style={{ color: '#C9A027' }}>
             Leading the tournament
           </p>
-          <div className="flex items-center gap-5 flex-wrap">
+          <div
+            className="scrollbar-hide flex gap-4 pb-1"
+            style={{ overflowX: 'auto' }}
+          >
             {top3.map(([team, { pts }]) => (
-              <div key={team} className="flex items-center gap-1.5">
+              <div key={team} className="flex items-center gap-1.5 flex-shrink-0 whitespace-nowrap">
                 <span style={{ fontSize: 18 }}>{getFlag(team)}</span>
                 <span className="font-body text-[13px] font-semibold text-text-primary">{team}</span>
                 <span className="font-mono-data text-[13px]" style={{ color: '#C9A027' }}>{pts}pts</span>
@@ -227,13 +243,13 @@ function RecentMatches({ matches }: { matches: WCMatch[] }) {
                       href={ytUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-mono-data text-xs text-text-muted hover:text-text-primary underline transition-colors"
+                      className="font-mono-data text-xs text-text-muted hover:text-text-primary underline transition-colors inline-flex items-center min-h-[44px] px-1"
                     >
                       Watch highlights ↗
                     </a>
                     <button
                       onClick={() => getRecap(m)}
-                      className="font-mono-data text-xs px-2.5 py-1 rounded-sm transition-colors"
+                      className="font-mono-data text-xs px-3 rounded-sm transition-colors min-h-[44px]"
                       style={{ background: '#D4622A', color: '#F0E8D8' }}
                     >
                       {loadingKey === key ? 'Generating...' : 'Get recap ↗'}
@@ -449,7 +465,7 @@ function CompactUpcoming({ matches, teams }: { matches: WCMatch[]; teams: TeamCo
           const fav = n1 >= n2 ? m.team1 : m.team2
           const confidence = Math.max(n1, n2) >= 0.65 ? 'high confidence' : Math.max(n1, n2) >= 0.55 ? 'slight edge' : 'coin flip'
           return (
-            <div key={i} className="px-5 py-2.5 flex items-center gap-2 flex-wrap">
+            <div key={i} className="px-5 flex items-center gap-2 flex-wrap min-h-[44px]">
               <span className="font-body text-sm text-text-primary">
                 {getFlag(m.team1)}{' '}
                 {m.team1 === fav
@@ -574,7 +590,7 @@ export default function DashboardTabs({
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className="relative flex-shrink-0 px-5 py-3 font-display text-sm tracking-widest transition-colors"
+            className="relative flex-shrink-0 px-5 font-display text-sm tracking-widest transition-colors inline-flex items-center min-h-[44px]"
             style={{
               color: activeTab === tab ? '#F0E8D8' : '#C4A882',
               borderBottom: activeTab === tab ? '2px solid #C9A027' : '2px solid transparent',

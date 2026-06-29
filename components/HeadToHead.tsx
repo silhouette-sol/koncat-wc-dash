@@ -52,11 +52,11 @@ export default function HeadToHead({ teams }: HeadToHeadProps) {
         <p className="font-mono-data text-xs text-text-muted mt-0.5">Elo-based matchup simulator</p>
       </div>
       <div className="px-5 py-4 space-y-4">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
           <select
             value={team1}
             onChange={e => setTeam1(e.target.value)}
-            className="flex-1 bg-[#3D2A1E] border border-border text-text-primary font-body text-sm px-3 py-2 rounded-sm"
+            className="w-full sm:flex-1 bg-[#3D2A1E] border border-border text-text-primary font-body text-sm px-3 rounded-sm min-h-[44px]"
           >
             <option value="">Select team...</option>
             {sortedTeams.map(t => (
@@ -65,11 +65,11 @@ export default function HeadToHead({ teams }: HeadToHeadProps) {
               </option>
             ))}
           </select>
-          <span className="font-display text-2xl text-accent shrink-0">VS</span>
+          <span className="font-display text-xl text-accent shrink-0">VS</span>
           <select
             value={team2}
             onChange={e => setTeam2(e.target.value)}
-            className="flex-1 bg-[#3D2A1E] border border-border text-text-primary font-body text-sm px-3 py-2 rounded-sm"
+            className="w-full sm:flex-1 bg-[#3D2A1E] border border-border text-text-primary font-body text-sm px-3 rounded-sm min-h-[44px]"
           >
             <option value="">Select team...</option>
             {sortedTeams.map(t => (
@@ -82,7 +82,7 @@ export default function HeadToHead({ teams }: HeadToHeadProps) {
         <button
           onClick={simulate}
           disabled={!canSimulate || loading}
-          className="w-full py-2 font-display text-sm tracking-widest transition-colors"
+          className="w-full font-display text-sm tracking-widest transition-colors min-h-[44px]"
           style={{
             background: !canSimulate || loading ? '#3D2A1E' : '#D4622A',
             color: '#F0E8D8',

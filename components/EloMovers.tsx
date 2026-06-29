@@ -38,8 +38,8 @@ export default function EloMovers({ movers }: EloMoversProps) {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 divide-x divide-border/20">
-        <div className="px-4 py-3">
+      <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-border/20">
+        <div className="px-4 py-3 sm:flex-1">
           <p className="font-mono-data text-[10px] text-teal uppercase tracking-widest mb-2">
             Heating Up 🔥
           </p>
@@ -60,7 +60,7 @@ export default function EloMovers({ movers }: EloMoversProps) {
           </div>
         </div>
 
-        <div className="px-4 py-3">
+        <div className="px-4 py-3 sm:flex-1">
           <p className="font-mono-data text-[10px] text-coral uppercase tracking-widest mb-2">
             Cooling Down 🧊
           </p>
