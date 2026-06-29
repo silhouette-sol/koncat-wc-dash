@@ -2,13 +2,7 @@
 
 import { useState } from 'react'
 import { TeamComparison } from '@/lib/types'
-
-const FLAGS: Record<string, string> = {
-  France: '🇫🇷', Brazil: '🇧🇷', England: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', Spain: '🇪🇸', Argentina: '🇦🇷',
-  Germany: '🇩🇪', Morocco: '🇲🇦', USA: '🇺🇸', Norway: '🇳🇴', Japan: '🇯🇵',
-  Portugal: '🇵🇹', Netherlands: '🇳🇱', Mexico: '🇲🇽', Colombia: '🇨🇴', Uruguay: '🇺🇾',
-  Belgium: '🇧🇪', Croatia: '🇭🇷', Switzerland: '🇨🇭', Australia: '🇦🇺',
-}
+import { getFlag } from '@/lib/flags'
 
 interface HeadToHeadProps { teams: TeamComparison[] }
 
@@ -67,7 +61,7 @@ export default function HeadToHead({ teams }: HeadToHeadProps) {
             <option value="">Select team...</option>
             {sortedTeams.map(t => (
               <option key={t.name} value={t.name}>
-                {FLAGS[t.name] ?? ''} {t.name}
+                {getFlag(t.name)} {t.name}
               </option>
             ))}
           </select>
@@ -80,7 +74,7 @@ export default function HeadToHead({ teams }: HeadToHeadProps) {
             <option value="">Select team...</option>
             {sortedTeams.map(t => (
               <option key={t.name} value={t.name}>
-                {FLAGS[t.name] ?? ''} {t.name}
+                {getFlag(t.name)} {t.name}
               </option>
             ))}
           </select>
@@ -101,10 +95,10 @@ export default function HeadToHead({ teams }: HeadToHeadProps) {
           <div className="space-y-3">
             <div className="flex justify-between font-body text-sm text-text-primary">
               <span>
-                {FLAGS[team1] ?? ''} {team1} · {(result.p1 * 100).toFixed(1)}% to win
+                {getFlag(team1)} {team1} · {(result.p1 * 100).toFixed(1)}% to win
               </span>
               <span>
-                {(result.p2 * 100).toFixed(1)}% to win · {FLAGS[team2] ?? ''} {team2}
+                {(result.p2 * 100).toFixed(1)}% to win · {getFlag(team2)} {team2}
               </span>
             </div>
             <div className="h-3 rounded-sm overflow-hidden flex">

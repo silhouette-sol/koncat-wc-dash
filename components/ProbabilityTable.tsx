@@ -3,16 +3,11 @@
 import React, { useState } from 'react'
 import { TeamComparison } from '@/lib/types'
 import DivergenceBar from './DivergenceBar'
+import InfoTooltip from './InfoTooltip'
 
 interface ProbabilityTableProps {
   teams: TeamComparison[]
   squadValues: Record<string, number>
-}
-
-function parseSignal(signal: string): { label: string; color: string } {
-  if (signal.includes('MODEL')) return { label: 'MODEL UP', color: '#1D9E75' }
-  if (signal.includes('MARKET')) return { label: 'MARKET', color: '#D85A30' }
-  return { label: 'NEUTRAL', color: '#C4A882' }
 }
 
 function formatSquadValue(val: number | null): string {
@@ -67,10 +62,10 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
                 <a href="https://en.wikipedia.org/wiki/Elo_rating_system" target="_blank" rel="noopener noreferrer" className="underline hover:text-text-primary">Elo ratings</a>.
               </p>
               <p className="font-body text-xs text-text-muted leading-relaxed">
-                <strong className="text-text-primary">Market %</strong> = implied probability from prediction market odds.
+                <strong className="text-text-primary">Consensus %</strong> = aggregated probability estimate from external prediction sources — useful context for comparing against the model.
               </p>
               <p className="font-body text-xs text-text-muted leading-relaxed">
-                When they disagree significantly, that&apos;s the interesting story. Signal Favors shows which source is more bullish on that team.
+                The Divergence bar shows how far the model and consensus differ. A large gap means the model sees this team differently than the broader consensus does.
               </p>
             </div>
           )}
@@ -84,24 +79,42 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
               <th className="text-left py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest w-8">#</th>
               <th className="text-left py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Team</th>
               <th className="text-right py-2 px-4 font-mono-data text-[10px] uppercase tracking-widest">
-                <a href="https://en.wikipedia.org/wiki/Elo_rating_system" target="_blank" rel="noopener noreferrer" className="text-text-muted hover:text-text-primary transition-colors underline">
-                  Elo
-                </a>
+                <span className="inline-flex items-center gap-0.5">
+                  <a href="https://en.wikipedia.org/wiki/Elo_rating_system" target="_blank" rel="noopener noreferrer" className="text-text-muted hover:text-text-primary transition-colors underline">
+                    Elo
+                  </a>
+                  <InfoTooltip
+                    term="Elo Rating"
+                    definition="A numerical rating reflecting a team's historical strength and recent form. Higher = stronger. Used to calculate win probability for each match."
+                    link="https://en.wikipedia.org/wiki/Elo_rating_system"
+                  />
+                </span>
               </th>
               <th className="text-right py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">
-                <span title="Win probability from 10,000 Monte Carlo simulations" className="cursor-help">
+                <span className="inline-flex items-center gap-0.5">
                   Model%
+                  <InfoTooltip
+                    term="Model %"
+                    definition="How often this team wins the tournament across 10,000 Monte Carlo simulations. Each run uses Elo ratings to determine each match outcome."
+                    link="https://en.wikipedia.org/wiki/Monte_Carlo_method"
+                  />
                 </span>
               </th>
               <th className="text-center py-2 px-6 font-mono-data text-[10px] text-text-muted uppercase tracking-widest w-48">Divergence</th>
-              <th className="text-right py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Market%</th>
+              <th className="text-right py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">
+                <span className="inline-flex items-center gap-0.5">
+                  Consensus%
+                  <InfoTooltip
+                    term="Consensus %"
+                    definition="Aggregated probability estimate from external prediction sources. Useful for comparing against what the model sees — not the model's own output."
+                  />
+                </span>
+              </th>
               <th className="text-right py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Squad €</th>
-              <th className="text-center py-2 px-4 font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Signal Favors</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((team, i) => {
-              const signal = parseSignal(team.signal)
               const sqVal = lookupSquadValue(squadValues, team.name)
               return (
                 <React.Fragment key={team.name}>
@@ -124,11 +137,6 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
                     </td>
                     <td className="py-2.5 px-4 text-right font-mono-data text-xs text-text-muted">
                       {formatSquadValue(sqVal)}
-                    </td>
-                    <td className="py-2.5 px-4 text-center">
-                      <span className="font-mono-data text-xs font-medium" style={{ color: signal.color }}>
-                        {signal.label}
-                      </span>
                     </td>
                   </tr>
                 </React.Fragment>

@@ -1,4 +1,5 @@
 import { GoldenBootEntry } from '@/lib/types'
+import { getFlag } from '@/lib/flags'
 
 interface GoldenBootProps {
   entries: GoldenBootEntry[]
@@ -43,7 +44,7 @@ export default function GoldenBoot({ entries }: GoldenBootProps) {
                       {entry.player}
                     </p>
                     <p className="font-mono-data text-[10px] text-text-muted">
-                      {entry.team}
+                      {getFlag(entry.team)} {entry.team}
                     </p>
                   </div>
                 </div>

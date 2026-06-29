@@ -1,5 +1,6 @@
 import { EloMover } from '@/lib/types'
 import { filterRealTeams } from '@/lib/utils'
+import { getFlag } from '@/lib/flags'
 
 interface EloMoversProps {
   movers: EloMover[]
@@ -45,7 +46,7 @@ export default function EloMovers({ movers }: EloMoversProps) {
           <div className="space-y-2">
             {risers.map(m => (
               <div key={m.team} className="flex items-center justify-between">
-                <span className="font-body text-xs text-text-primary">{m.team}</span>
+                <span className="font-body text-xs text-text-primary">{getFlag(m.team)} {m.team}</span>
                 <div className="flex items-center gap-2">
                   <span className="font-mono-data text-[10px] text-text-muted">
                     {m.pre_wc} to {m.current}
@@ -66,7 +67,7 @@ export default function EloMovers({ movers }: EloMoversProps) {
           <div className="space-y-2">
             {fallers.map(m => (
               <div key={m.team} className="flex items-center justify-between">
-                <span className="font-body text-xs text-text-primary">{m.team}</span>
+                <span className="font-body text-xs text-text-primary">{getFlag(m.team)} {m.team}</span>
                 <div className="flex items-center gap-2">
                   <span className="font-mono-data text-[10px] text-text-muted">
                     {m.pre_wc} to {m.current}

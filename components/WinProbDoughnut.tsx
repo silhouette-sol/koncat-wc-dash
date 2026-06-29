@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { TeamComparison } from '@/lib/types'
+import { getFlag } from '@/lib/flags'
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,13 +26,6 @@ const NATIONAL_COLORS: Record<string, string> = {
   Colombia: '#FCD116',
   Uruguay: '#5EB6E4',
   Belgium: '#EF3340',
-}
-
-const FLAGS: Record<string, string> = {
-  France: '🇫🇷', England: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', Spain: '🇪🇸', Brazil: '🇧🇷', Argentina: '🇦🇷',
-  Germany: '🇩🇪', Netherlands: '🇳🇱', Portugal: '🇵🇹', Norway: '🇳🇴', Morocco: '🇲🇦',
-  USA: '🇺🇸', Japan: '🇯🇵', Mexico: '🇲🇽', Colombia: '🇨🇴', Uruguay: '🇺🇾',
-  Belgium: '🇧🇪', Switzerland: '🇨🇭', Croatia: '🇭🇷', Senegal: '🇸🇳',
 }
 
 interface WinProbDoughnutProps {
@@ -80,7 +74,7 @@ export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 label: (ctx: any) => {
                   const t = top10[ctx.dataIndex]
-                  return ` ${FLAGS[t.name] ?? ''} ${t.name}, ${(t.elo_win_prob * 100).toFixed(1)}% chance to win`
+                  return ` ${getFlag(t.name)} ${t.name}, ${(t.elo_win_prob * 100).toFixed(1)}% chance to win`
                 },
               },
               backgroundColor: '#0B1D3A',
@@ -144,7 +138,7 @@ export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
                 style={{ backgroundColor: NATIONAL_COLORS[team.name] ?? '#C4A882' }}
               />
               <span className="font-mono-data text-xs text-text-muted mr-1">
-                {FLAGS[team.name] ?? ''}
+                {getFlag(team.name)}
               </span>
               <span className="font-body text-sm text-text-primary flex-1">
                 {team.name}

@@ -14,9 +14,10 @@ import BiggestUpsets from './BiggestUpsets'
 
 import GroupStandings from './GroupStandings'
 import KnockoutBracket from './KnockoutBracket'
-import AccuracyTracker from './AccuracyTracker'
 import HeadToHead from './HeadToHead'
 import BuildingTab from './BuildingTab'
+import OnboardingOverlay from './OnboardingOverlay'
+import { getFlag } from '@/lib/flags'
 
 // ── Types ─────────────────────────────────────────────────────
 
@@ -30,7 +31,7 @@ interface DashboardTabsProps {
   generatedAt: string
 }
 
-const TABS = ['OVERVIEW', 'PREDICTIONS', 'BUILDING', 'GROUPS', 'BRACKET'] as const
+const TABS = ['BRACKET', 'OVERVIEW', 'MY MODEL', 'BUILDING', 'GROUPS'] as const
 type Tab = typeof TABS[number]
 
 // ── Daily summary ─────────────────────────────────────────────
@@ -116,17 +117,6 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
     .sort(([, a], [, b]) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf)
     .slice(0, 3)
 
-  const CARD_FLAGS: Record<string, string> = {
-    France: '🇫🇷', Brazil: '🇧🇷', England: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', Spain: '🇪🇸',
-    Argentina: '🇦🇷', Germany: '🇩🇪', Morocco: '🇲🇦', USA: '🇺🇸',
-    Norway: '🇳🇴', Japan: '🇯🇵', Portugal: '🇵🇹', Netherlands: '🇳🇱',
-    Mexico: '🇲🇽', Colombia: '🇨🇴', Uruguay: '🇺🇾', Belgium: '🇧🇪',
-    Croatia: '🇭🇷', Switzerland: '🇨🇭', Australia: '🇦🇺', Ecuador: '🇪🇨',
-    Senegal: '🇸🇳', Ghana: '🇬🇭', 'South Korea': '🇰🇷', Canada: '🇨🇦',
-    Algeria: '🇩🇿', Egypt: '🇪🇬', Paraguay: '🇵🇾', Austria: '🇦🇹',
-    Sweden: '🇸🇪', 'Cape Verde': '🇨🇻', 'Bosnia & Herzegovina': '🇧🇦',
-    'DR Congo': '🇨🇩', 'South Africa': '🇿🇦', 'Ivory Coast': '🇨🇮',
-  }
 
   return (
     <section
@@ -139,11 +129,11 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
       <div className="flex flex-wrap gap-x-6 gap-y-1 mb-3">
         {displayMatches.map((m, i) => (
           <p key={i} className="font-body text-sm text-text-primary">
-            {m.team1}{' '}
+            {getFlag(m.team1)} {m.team1}{' '}
             <span className="font-display text-base" style={{ color: '#C9A027' }}>
               {m.score!.ft[0]}–{m.score!.ft[1]}
             </span>{' '}
-            {m.team2}
+            {m.team2} {getFlag(m.team2)}
           </p>
         ))}
       </div>
@@ -168,7 +158,7 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
           <div className="flex items-center gap-5 flex-wrap">
             {top3.map(([team, { pts }]) => (
               <div key={team} className="flex items-center gap-1.5">
-                <span style={{ fontSize: 18 }}>{CARD_FLAGS[team] ?? ''}</span>
+                <span style={{ fontSize: 18 }}>{getFlag(team)}</span>
                 <span className="font-body text-[13px] font-semibold text-text-primary">{team}</span>
                 <span className="font-mono-data text-[13px]" style={{ color: '#C9A027' }}>{pts}pts</span>
               </div>
@@ -228,9 +218,9 @@ function RecentMatches({ matches }: { matches: WCMatch[] }) {
               <div key={i} className="px-5 py-3 space-y-2">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <span className="font-body text-sm text-text-primary">
-                    {m.team1}{' '}
+                    {getFlag(m.team1)} {m.team1}{' '}
                     <span className="font-display text-lg mx-1">{m.score!.ft[0]}–{m.score!.ft[1]}</span>{' '}
-                    {m.team2}
+                    {m.team2} {getFlag(m.team2)}
                   </span>
                   <div className="flex items-center gap-3 shrink-0">
                     <a
@@ -439,19 +429,12 @@ function CompactUpcoming({ matches, teams }: { matches: WCMatch[]; teams: TeamCo
 
   if (upcoming.length === 0) return null
 
-  const FLAGS: Record<string, string> = {
-    France: '🇫🇷', England: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', Spain: '🇪🇸', Argentina: '🇦🇷',
-    Brazil: '🇧🇷', Germany: '🇩🇪', Portugal: '🇵🇹', Netherlands: '🇳🇱',
-    USA: '🇺🇸', Norway: '🇳🇴', Morocco: '🇲🇦', Japan: '🇯🇵',
-    Mexico: '🇲🇽', Colombia: '🇨🇴', Uruguay: '🇺🇾', Belgium: '🇧🇪',
-  }
-
   return (
     <section className="bg-card border border-border/30 rounded-sm overflow-hidden">
       <div className="px-5 py-3 border-b border-border/30">
-        <h2 className="font-display text-xl tracking-widest text-text-primary">UPCOMING PREDICTIONS</h2>
+        <h2 className="font-display text-xl tracking-widest text-text-primary">UPCOMING MATCHES</h2>
         <p className="font-mono-data text-xs text-text-muted mt-0.5">
-          Next 3 days · predictions based on Elo model
+          Next 3 days · win chances based on Elo ratings
         </p>
       </div>
       <div className="divide-y divide-border/20">
@@ -468,7 +451,7 @@ function CompactUpcoming({ matches, teams }: { matches: WCMatch[]; teams: TeamCo
           return (
             <div key={i} className="px-5 py-2.5 flex items-center gap-2 flex-wrap">
               <span className="font-body text-sm text-text-primary">
-                {FLAGS[m.team1] ?? ''}{' '}
+                {getFlag(m.team1)}{' '}
                 {m.team1 === fav
                   ? <strong style={{ color: '#C9A027' }}>{m.team1} ({(n1 * 100).toFixed(0)}%)</strong>
                   : <>{m.team1} ({(n1 * 100).toFixed(0)}%)</>
@@ -478,7 +461,7 @@ function CompactUpcoming({ matches, teams }: { matches: WCMatch[]; teams: TeamCo
                   ? <strong style={{ color: '#C9A027' }}>{m.team2} ({(n2 * 100).toFixed(0)}%)</strong>
                   : <>{m.team2} ({(n2 * 100).toFixed(0)}%)</>
                 }
-                {' '}{FLAGS[m.team2] ?? ''}
+                {' '}{getFlag(m.team2)}
               </span>
               <span className="font-mono-data text-[10px] text-text-muted">· {m.date} · {confidence}</span>
             </div>
@@ -487,8 +470,82 @@ function CompactUpcoming({ matches, teams }: { matches: WCMatch[]; teams: TeamCo
       </div>
       <div className="px-5 py-2 border-t border-border/20">
         <p className="font-mono-data text-[10px] text-text-muted">
-          Predictions based on Elo model · Bold = model favorite
+          Win chances based on Elo ratings · Bold = model favorite
         </p>
+      </div>
+    </section>
+  )
+}
+
+// ── About This Model ──────────────────────────────────────────
+
+function AboutThisModel() {
+  return (
+    <section
+      className="rounded-sm px-5 py-5 space-y-4"
+      style={{ background: 'rgba(11,29,58,0.8)', border: '1px solid rgba(201,160,39,0.3)' }}
+    >
+      <div>
+        <h2 className="font-display text-2xl tracking-widest" style={{ color: '#C9A027' }}>
+          ABOUT THIS MODEL
+        </h2>
+        <p className="font-body text-sm text-text-muted mt-1 leading-relaxed">
+          A personal project tracking the 2026 World Cup through statistical simulation. Not affiliated with FIFA or any sportsbook.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div className="space-y-2">
+          <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#C9A027' }}>
+            Data Sources
+          </p>
+          <p className="font-body text-sm text-text-muted leading-relaxed">
+            Match results from official FIFA records. Squad valuations from Transfermarkt. Elo ratings follow the{' '}
+            <a
+              href="https://en.wikipedia.org/wiki/World_Football_Elo_Ratings"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-text-primary transition-colors"
+              style={{ color: '#C9A027' }}
+            >
+              World Football Elo
+            </a>{' '}
+            methodology, updated after each match.
+          </p>
+        </div>
+        <div className="space-y-2">
+          <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#C9A027' }}>
+            Elo Ratings
+          </p>
+          <p className="font-body text-sm text-text-muted leading-relaxed">
+            Each team has an Elo number reflecting historical strength and recent form. A 400-point gap means the stronger team wins roughly 91% of head-to-head matchups.{' '}
+            <a
+              href="https://en.wikipedia.org/wiki/Elo_rating_system"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-text-primary transition-colors"
+              style={{ color: '#C9A027' }}
+            >
+              Wikipedia ↗
+            </a>
+          </p>
+        </div>
+        <div className="space-y-2">
+          <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#C9A027' }}>
+            Monte Carlo Simulation
+          </p>
+          <p className="font-body text-sm text-text-muted leading-relaxed">
+            We simulate the entire tournament 10,000 times. Each match probability is derived from Elo ratings. The win % figures show how often each team wins the World Cup across all simulations.{' '}
+            <a
+              href="https://en.wikipedia.org/wiki/Monte_Carlo_method"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-text-primary transition-colors"
+              style={{ color: '#C9A027' }}
+            >
+              Wikipedia ↗
+            </a>
+          </p>
+        </div>
       </div>
     </section>
   )
@@ -499,21 +556,25 @@ function CompactUpcoming({ matches, teams }: { matches: WCMatch[]; teams: TeamCo
 export default function DashboardTabs({
   teams, descriptive, worldcupMatches, squadValues,
 }: DashboardTabsProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('OVERVIEW')
+  const [activeTab, setActiveTab] = useState<Tab>('BRACKET')
 
   const matchesPlayed = descriptive.goal_timing.total_goals > 0
     ? Math.round(descriptive.goal_timing.total_goals / 2.83)
     : 0
 
   return (
-    <div className="space-y-0">
+    <>
+      <div className="space-y-0">
       {/* Tab navigation */}
-      <div className="rounded-sm overflow-hidden flex mb-6" style={{ background: '#5C3D2E' }}>
+      <div
+        className="scrollbar-hide rounded-sm mb-6 flex"
+        style={{ background: '#5C3D2E', overflowX: 'auto' }}
+      >
         {TABS.map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className="relative px-5 py-3 font-display text-sm tracking-widest transition-colors"
+            className="relative flex-shrink-0 px-5 py-3 font-display text-sm tracking-widest transition-colors"
             style={{
               color: activeTab === tab ? '#F0E8D8' : '#C4A882',
               borderBottom: activeTab === tab ? '2px solid #C9A027' : '2px solid transparent',
@@ -540,7 +601,7 @@ export default function DashboardTabs({
 
           <RecentMatches matches={worldcupMatches} />
 
-          <AccuracyTracker />
+          <HeadToHead teams={teams} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <GoldenBoot entries={descriptive.golden_boot} />
@@ -560,14 +621,12 @@ export default function DashboardTabs({
         </div>
       )}
 
-      {/* PREDICTIONS */}
-      {activeTab === 'PREDICTIONS' && (
+      {/* MY MODEL */}
+      {activeTab === 'MY MODEL' && (
         <div className="space-y-6">
-          <HeadToHead teams={teams} />
+          <AboutThisModel />
 
           <WinProbDoughnut teams={teams} />
-
-          <AccuracyTracker showFullExplanation />
 
           <CompactUpcoming matches={worldcupMatches} teams={teams} />
 
@@ -592,5 +651,7 @@ export default function DashboardTabs({
         <KnockoutBracket matches={worldcupMatches} teams={teams} />
       )}
     </div>
+    <OnboardingOverlay />
+    </>
   )
 }
