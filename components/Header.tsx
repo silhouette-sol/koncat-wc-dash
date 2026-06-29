@@ -28,7 +28,7 @@ export default function Header({ generatedAt }: HeaderProps) {
           KONCAT
         </span>
         <p className="font-mono-data text-xs text-text-muted mt-1">
-          Built by kenni_bo
+          Built by ken b
         </p>
       </div>
     </header>
