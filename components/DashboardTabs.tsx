@@ -617,7 +617,7 @@ export default function DashboardTabs({
 
           <RecentMatches matches={worldcupMatches} />
 
-          <HeadToHead teams={teams} />
+          <HeadToHead teams={teams} wcMatches={worldcupMatches} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <GoldenBoot entries={descriptive.golden_boot} />

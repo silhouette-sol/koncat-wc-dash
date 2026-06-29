@@ -1,28 +1,37 @@
 'use client'
 
 import { useState } from 'react'
-import { TeamComparison } from '@/lib/types'
+import { TeamComparison, WCMatch } from '@/lib/types'
 import { getFlag } from '@/lib/flags'
 
-interface HeadToHeadProps { teams: TeamComparison[] }
+interface HeadToHeadProps {
+  teams: TeamComparison[]
+  wcMatches: WCMatch[]
+}
 
-export default function HeadToHead({ teams }: HeadToHeadProps) {
+export default function HeadToHead({ teams, wcMatches }: HeadToHeadProps) {
   const [team1, setTeam1] = useState('')
   const [team2, setTeam2] = useState('')
   const [result, setResult] = useState<{ p1: number; p2: number; analysis: string } | null>(null)
   const [loading, setLoading] = useState(false)
   const [hasError, setHasError] = useState(false)
 
-  const sortedTeams = [...teams]
-    .filter(t => t.elo_win_prob > 0)
-    .sort((a, b) => a.name.localeCompare(b.name))
+  const allTeamNames = Array.from(new Set([
+    ...wcMatches.map(m => m.team1),
+    ...wcMatches.map(m => m.team2),
+  ]))
+    .filter(name => !/^[WL]\d+$/.test(name))
+    .sort()
+
+  function getElo(name: string): number {
+    return teams.find(t => t.name === name)?.elo_rating ?? 1500
+  }
 
   async function simulate() {
     if (!team1 || !team2 || team1 === team2) return
-    const t1 = teams.find(t => t.name === team1)
-    const t2 = teams.find(t => t.name === team2)
-    if (!t1 || !t2) return
-    const p1 = 1 / (1 + Math.pow(10, (t2.elo_rating - t1.elo_rating) / 400))
+    const eloA = getElo(team1)
+    const eloB = getElo(team2)
+    const p1 = 1 / (1 + Math.pow(10, (eloB - eloA) / 400))
     const p2 = 1 - p1
     setLoading(true)
     setHasError(false)
@@ -59,9 +68,9 @@ export default function HeadToHead({ teams }: HeadToHeadProps) {
             className="w-full sm:flex-1 bg-[#3D2A1E] border border-border text-text-primary font-body text-sm px-3 rounded-sm min-h-[44px]"
           >
             <option value="">Select team...</option>
-            {sortedTeams.map(t => (
-              <option key={t.name} value={t.name}>
-                {getFlag(t.name)} {t.name}
+            {allTeamNames.map(name => (
+              <option key={name} value={name}>
+                {getFlag(name)} {name}
               </option>
             ))}
           </select>
@@ -72,9 +81,9 @@ export default function HeadToHead({ teams }: HeadToHeadProps) {
             className="w-full sm:flex-1 bg-[#3D2A1E] border border-border text-text-primary font-body text-sm px-3 rounded-sm min-h-[44px]"
           >
             <option value="">Select team...</option>
-            {sortedTeams.map(t => (
-              <option key={t.name} value={t.name}>
-                {getFlag(t.name)} {t.name}
+            {allTeamNames.map(name => (
+              <option key={name} value={name}>
+                {getFlag(name)} {name}
               </option>
             ))}
           </select>
