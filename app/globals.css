@@ -12,6 +12,27 @@
   box-sizing: border-box;
 }
 
+/* ── Bracket animations ─────────────────────────────────────── */
+
+@keyframes idleFloat {
+  0%, 100% { transform: scale(1.0) translateY(0px); }
+  25%       { transform: scale(1.04) translateY(-2px); }
+  50%       { transform: scale(1.06) translateY(-3px); }
+  75%       { transform: scale(1.03) translateY(1px); }
+}
+
+@keyframes idleFloatTbd {
+  0%, 100% { transform: scale(1.0) translateY(0px); }
+  25%       { transform: scale(1.02) translateY(-1px); }
+  50%       { transform: scale(1.03) translateY(-2px); }
+  75%       { transform: scale(1.01) translateY(1px); }
+}
+
+@keyframes trophyPulse {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(201,160,39,0.4)); }
+  50%       { filter: drop-shadow(0 0 12px rgba(201,160,39,0.9)); }
+}
+
 body {
   background-color: #FFFFFF;
   background-image:

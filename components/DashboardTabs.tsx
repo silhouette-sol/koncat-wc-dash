@@ -97,6 +97,37 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
   if (displayMatches.length === 0) return null
   const isToday = displayDate === today
 
+  // Compute top 3 teams by points across all completed matches
+  const standingsMap: Record<string, { pts: number; gd: number; gf: number }> = {}
+  for (const m of matches) {
+    if (!m.score) continue
+    const [g1, g2] = m.score.ft
+    if (!standingsMap[m.team1]) standingsMap[m.team1] = { pts: 0, gd: 0, gf: 0 }
+    if (!standingsMap[m.team2]) standingsMap[m.team2] = { pts: 0, gd: 0, gf: 0 }
+    standingsMap[m.team1].gf += g1
+    standingsMap[m.team1].gd += g1 - g2
+    standingsMap[m.team2].gf += g2
+    standingsMap[m.team2].gd += g2 - g1
+    if (g1 > g2) { standingsMap[m.team1].pts += 3 }
+    else if (g2 > g1) { standingsMap[m.team2].pts += 3 }
+    else { standingsMap[m.team1].pts += 1; standingsMap[m.team2].pts += 1 }
+  }
+  const top3 = Object.entries(standingsMap)
+    .sort(([, a], [, b]) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf)
+    .slice(0, 3)
+
+  const CARD_FLAGS: Record<string, string> = {
+    France: '🇫🇷', Brazil: '🇧🇷', England: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', Spain: '🇪🇸',
+    Argentina: '🇦🇷', Germany: '🇩🇪', Morocco: '🇲🇦', USA: '🇺🇸',
+    Norway: '🇳🇴', Japan: '🇯🇵', Portugal: '🇵🇹', Netherlands: '🇳🇱',
+    Mexico: '🇲🇽', Colombia: '🇨🇴', Uruguay: '🇺🇾', Belgium: '🇧🇪',
+    Croatia: '🇭🇷', Switzerland: '🇨🇭', Australia: '🇦🇺', Ecuador: '🇪🇨',
+    Senegal: '🇸🇳', Ghana: '🇬🇭', 'South Korea': '🇰🇷', Canada: '🇨🇦',
+    Algeria: '🇩🇿', Egypt: '🇪🇬', Paraguay: '🇵🇾', Austria: '🇦🇹',
+    Sweden: '🇸🇪', 'Cape Verde': '🇨🇻', 'Bosnia & Herzegovina': '🇧🇦',
+    'DR Congo': '🇨🇩', 'South Africa': '🇿🇦', 'Ivory Coast': '🇨🇮',
+  }
+
   return (
     <section
       className="rounded-sm px-5 py-4"
@@ -129,6 +160,22 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
           ))}
         </div>
       )}
+      {top3.length > 0 && (
+        <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(201,160,39,0.3)' }}>
+          <p className="font-mono-data text-[10px] uppercase tracking-widest mb-2" style={{ color: '#C9A027' }}>
+            Leading the tournament
+          </p>
+          <div className="flex items-center gap-5 flex-wrap">
+            {top3.map(([team, { pts }]) => (
+              <div key={team} className="flex items-center gap-1.5">
+                <span style={{ fontSize: 18 }}>{CARD_FLAGS[team] ?? ''}</span>
+                <span className="font-body text-[13px] font-semibold text-text-primary">{team}</span>
+                <span className="font-mono-data text-[13px]" style={{ color: '#C9A027' }}>{pts}pts</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   )
 }
@@ -136,17 +183,12 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
 // ── Recent matches with recap + YouTube ───────────────────────
 
 function RecentMatches({ matches }: { matches: WCMatch[] }) {
-  const today = new Date().toISOString().slice(0, 10)
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10)
-  const dayBefore = new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10)
-  const recent = matches.filter(
-    m => m.score && (m.date === yesterday || m.date === dayBefore || m.date === today)
-  ).slice(0, 8)
+  const today = new Date().toISOString().split('T')[0]
+  const formatted = new Date(today + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const todayMatches = matches.filter(m => m.score && m.date === today)
 
   const [recaps, setRecaps] = useState<Record<string, string>>({})
   const [loadingKey, setLoadingKey] = useState<string | null>(null)
-
-  if (recent.length === 0) return null
 
   async function getRecap(m: WCMatch) {
     const key = `${m.team1}-${m.team2}-${m.date}`
@@ -170,50 +212,54 @@ function RecentMatches({ matches }: { matches: WCMatch[] }) {
   return (
     <section className="bg-card border border-border/30 rounded-sm overflow-hidden">
       <div className="px-5 py-3 border-b border-border/30">
-        <h2 className="font-display text-xl tracking-widest text-text-primary">RECENT MATCHES</h2>
-        <p className="font-mono-data text-xs text-text-muted mt-0.5">
-          Results from the past 48 hours
-        </p>
+        <h2 className="font-display text-xl tracking-widest text-text-primary">TODAY&apos;S RESULTS</h2>
+        <p className="font-mono-data text-xs text-text-muted mt-0.5">{formatted}</p>
       </div>
-      <div className="divide-y divide-border/20">
-        {recent.map((m, i) => {
-          const key = `${m.team1}-${m.team2}-${m.date}`
-          const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${m.team1} vs ${m.team2} 2026 World Cup highlights`)}`
-          return (
-            <div key={i} className="px-5 py-3 space-y-2">
-              <div className="flex items-center justify-between gap-3 flex-wrap">
-                <span className="font-body text-sm text-text-primary">
-                  {m.team1}{' '}
-                  <span className="font-display text-lg mx-1">{m.score!.ft[0]}–{m.score!.ft[1]}</span>{' '}
-                  {m.team2}
-                </span>
-                <div className="flex items-center gap-3 shrink-0">
-                  <a
-                    href={ytUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-mono-data text-xs text-text-muted hover:text-text-primary underline transition-colors"
-                  >
-                    Watch highlights ↗
-                  </a>
-                  <button
-                    onClick={() => getRecap(m)}
-                    className="font-mono-data text-xs px-2.5 py-1 rounded-sm transition-colors"
-                    style={{ background: '#D4622A', color: '#F0E8D8' }}
-                  >
-                    {loadingKey === key ? 'Generating...' : 'Get recap ↗'}
-                  </button>
+      {todayMatches.length === 0 ? (
+        <div className="px-5 py-4">
+          <p className="font-mono-data text-sm text-text-muted">No completed matches today</p>
+        </div>
+      ) : (
+        <div className="divide-y divide-border/20">
+          {todayMatches.map((m, i) => {
+            const key = `${m.team1}-${m.team2}-${m.date}`
+            const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${m.team1} vs ${m.team2} 2026 World Cup highlights`)}`
+            return (
+              <div key={i} className="px-5 py-3 space-y-2">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <span className="font-body text-sm text-text-primary">
+                    {m.team1}{' '}
+                    <span className="font-display text-lg mx-1">{m.score!.ft[0]}–{m.score!.ft[1]}</span>{' '}
+                    {m.team2}
+                  </span>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <a
+                      href={ytUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono-data text-xs text-text-muted hover:text-text-primary underline transition-colors"
+                    >
+                      Watch highlights ↗
+                    </a>
+                    <button
+                      onClick={() => getRecap(m)}
+                      className="font-mono-data text-xs px-2.5 py-1 rounded-sm transition-colors"
+                      style={{ background: '#D4622A', color: '#F0E8D8' }}
+                    >
+                      {loadingKey === key ? 'Generating...' : 'Get recap ↗'}
+                    </button>
+                  </div>
                 </div>
+                {recaps[key] && (
+                  <p className="font-body text-sm text-text-muted italic leading-relaxed">
+                    {recaps[key]}
+                  </p>
+                )}
               </div>
-              {recaps[key] && (
-                <p className="font-body text-sm text-text-muted italic leading-relaxed">
-                  {recaps[key]}
-                </p>
-              )}
-            </div>
-          )
-        })}
-      </div>
+            )
+          })}
+        </div>
+      )}
     </section>
   )
 }
@@ -543,7 +589,7 @@ export default function DashboardTabs({
 
       {/* BRACKET */}
       {activeTab === 'BRACKET' && (
-        <KnockoutBracket matches={worldcupMatches} />
+        <KnockoutBracket matches={worldcupMatches} teams={teams} />
       )}
     </div>
   )

@@ -1,246 +1,594 @@
-import { WCMatch } from '@/lib/types'
+'use client'
+
+import { useState, useCallback } from 'react'
+import { TeamComparison, WCMatch } from '@/lib/types'
+
+// ── Constants ──────────────────────────────────────────────────
 
 const FLAGS: Record<string, string> = {
-  France: '🇫🇷', Brazil: '🇧🇷', England: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', Spain: '🇪🇸', Argentina: '🇦🇷',
-  Germany: '🇩🇪', Morocco: '🇲🇦', USA: '🇺🇸', Norway: '🇳🇴', Japan: '🇯🇵',
-  Portugal: '🇵🇹', Netherlands: '🇳🇱', Mexico: '🇲🇽', Colombia: '🇨🇴', Uruguay: '🇺🇾',
-  Belgium: '🇧🇪', Croatia: '🇭🇷', Switzerland: '🇨🇭', Australia: '🇦🇺', Ecuador: '🇪🇨',
-  Senegal: '🇸🇳', Ghana: '🇬🇭', 'South Korea': '🇰🇷', Canada: '🇨🇦', Turkey: '🇹🇷',
-  Algeria: '🇩🇿', Egypt: '🇪🇬', Iran: '🇮🇷', Scotland: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', Paraguay: '🇵🇾',
-  Austria: '🇦🇹', Sweden: '🇸🇪', 'Saudi Arabia': '🇸🇦', 'Cape Verde': '🇨🇻',
+  France: '🇫🇷', Brazil: '🇧🇷', England: '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+  Spain: '🇪🇸', Argentina: '🇦🇷', Germany: '🇩🇪',
+  Morocco: '🇲🇦', USA: '🇺🇸', Norway: '🇳🇴',
+  Japan: '🇯🇵', Portugal: '🇵🇹', Netherlands: '🇳🇱',
+  Mexico: '🇲🇽', Colombia: '🇨🇴', Uruguay: '🇺🇾',
+  Belgium: '🇧🇪', Croatia: '🇭🇷', Switzerland: '🇨🇭',
+  Australia: '🇦🇺', Ecuador: '🇪🇨', Senegal: '🇸🇳',
+  Ghana: '🇬🇭', 'South Korea': '🇰🇷', Canada: '🇨🇦',
+  Turkey: '🇹🇷', Algeria: '🇩🇿', Egypt: '🇪🇬',
+  Iran: '🇮🇷', Scotland: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', Paraguay: '🇵🇾',
+  Austria: '🇦🇹', Sweden: '🇸🇪', 'Saudi Arabia': '🇸🇦',
+  'Cape Verde': '🇨🇻', 'Cabo Verde': '🇨🇻',
   'Bosnia and Herzegovina': '🇧🇦', 'Bosnia & Herzegovina': '🇧🇦',
-  'New Zealand': '🇳🇿', 'DR Congo': '🇨🇩', Iraq: '🇮🇶', Jordan: '🇯🇴',
-  Haiti: '🇭🇹', Panama: '🇵🇦', 'South Africa': '🇿🇦', 'Czech Republic': '🇨🇿',
-  Qatar: '🇶🇦', Curacao: '🇨🇼', Uzbekistan: '🇺🇿', 'Ivory Coast': '🇨🇮',
+  'New Zealand': '🇳🇿', 'DR Congo': '🇨🇩', Iraq: '🇮🇶',
+  Jordan: '🇯🇴', Haiti: '🇭🇹', Panama: '🇵🇦',
+  'South Africa': '🇿🇦', 'Czech Republic': '🇨🇿', Qatar: '🇶🇦',
+  Curacao: '🇨🇼', 'Curaçao': '🇨🇼', Uzbekistan: '🇺🇿',
+  'Ivory Coast': '🇨🇮', Tunisia: '🇹🇳',
 }
 
-// Layout constants
-const SW = 160   // slot width
-const SH = 70    // slot height
-const CW = 28    // connector space between columns
-const UNIT = 80  // SH + 10px gap
-const HH = 36    // header height for round labels
-const TOTAL_W = 9 * SW + 8 * CW       // 1664
-const TOTAL_H = HH + 8 * UNIT - (UNIT - SH)  // 666
+const CX = 450
+const CY = 450
+const CR = 30
 
-const COL_LABELS = ['R32', 'R16', 'QF', 'SF', 'FINAL', 'SF', 'QF', 'R16', 'R32']
+const RADIUS = { r32: 400, r16: 300, qf: 220, sf: 150, final: 85 }
+const NODE_R = { r32r16: 350, r16qf: 260, qfsf: 185, sffinal: 118 }
+const TROPHY_R = 40
 
-// Left edge x of column c (0=R32_L … 4=FINAL … 8=R32_R)
-function cx(c: number) { return c * (SW + CW) }
+const EMOJI_FONT = "'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif"
+const MONO_FONT = "'DM Mono',monospace"
 
-// Top of match slot: roundIdx r (0=R32…3=SF), match index i within that side
-function st(r: number, i: number) {
-  const step = UNIT * (1 << r)
-  return HH + (step - UNIT) / 2 + i * step
+// ── Math helpers ───────────────────────────────────────────────
+
+function svgPos(angle: number, r: number): [number, number] {
+  return [CX + r * Math.cos(angle), CY + r * Math.sin(angle)]
 }
 
-// Center Y of slot
-function cy(r: number, i: number) { return st(r, i) + SH / 2 }
-
-function isTBD(name: string) {
-  return /^[0-9WL]/.test(name) || name.includes('/') || name === 'TBD'
+function r32Angle(i: number) {
+  return (i / 32) * 2 * Math.PI - Math.PI / 2
 }
 
-function getWinner(m: WCMatch): string | null {
+function bracketAngle(i: number, round: number) {
+  const step = Math.pow(2, round)
+  return ((i * step + step / 2 - 0.5) / 32) * 2 * Math.PI - Math.PI / 2
+}
+
+function edgePt(from: [number, number], to: [number, number], r: number): [number, number] {
+  const dx = to[0] - from[0], dy = to[1] - from[1]
+  const d = Math.sqrt(dx * dx + dy * dy)
+  if (d < 1) return from
+  return [from[0] + (dx / d) * r, from[1] + (dy / d) * r]
+}
+
+function isPlaceholder(name: string) { return /^W\d+$/.test(name) }
+function resolveTeam(name: string) { return isPlaceholder(name) ? 'TBD' : name }
+
+function getMatchWinner(m: WCMatch): string | null {
   if (!m.score) return null
   const [g1, g2] = m.score.ft
-  return g1 > g2 ? m.team1 : g2 > g1 ? m.team2 : null
+  if (g1 > g2) return m.team1
+  if (g2 > g1) return m.team2
+  return null
 }
 
-interface CardProps { match: WCMatch; x: number; y: number; relative?: boolean }
+function eloMatchProbs(eloA: number, eloB: number): [number, number] {
+  const pA = 1 / (1 + Math.pow(10, (eloB - eloA) / 400))
+  return [pA, 1 - pA]
+}
 
-function MatchCard({ match, x, y, relative }: CardProps) {
-  const winner = getWinner(match)
-  const allTbd = isTBD(match.team1) && isTBD(match.team2)
-  const played = !!match.score
-  const border = allTbd ? '1px dashed #D4B896' : played ? '1px solid #D4B896' : '1px solid #7A5C45'
+// ── Types ──────────────────────────────────────────────────────
 
-  const teamRow = (team: string, goals: number | null, isWin: boolean) => {
-    const tbd = isTBD(team)
-    return (
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        height: 26, padding: '0 6px',
-        borderLeft: isWin ? '3px solid #1D9E75' : '3px solid transparent',
-        opacity: played && !isWin && winner !== null ? 0.4 : 1,
-      }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 4, minWidth: 0, overflow: 'hidden' }}>
-          {!tbd && <span style={{ fontSize: 13, lineHeight: 1, flexShrink: 0 }}>{FLAGS[team] ?? ''}</span>}
-          <span style={{
-            fontSize: 11, color: tbd ? '#C4A882' : '#F0E8D8',
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          }}>
-            {tbd ? 'TBD' : team}
-          </span>
-        </span>
-        {goals !== null && (
-          <span style={{ fontSize: 11, fontFamily: 'monospace', fontWeight: 600, flexShrink: 0, marginLeft: 4,
-            color: isWin ? '#1D9E75' : '#C4A882' }}>
-            {goals}
-          </span>
-        )}
-      </div>
-    )
-  }
+type SlotStatus = 'upcoming' | 'winner' | 'loser' | 'tbd'
 
-  const g1 = match.score?.ft[0] ?? null
-  const g2 = match.score?.ft[1] ?? null
+interface HoverInfo {
+  team: string
+  svgX: number
+  svgY: number
+  opponent?: string
+  score?: string
+  matchProbSelf?: number
+  matchProbOpp?: number
+  status: SlotStatus
+}
+
+// ── TeamCircle ─────────────────────────────────────────────────
+
+interface TeamCircleProps {
+  circleKey: string
+  index: number           // global index for animation stagger
+  teamName: string
+  cx: number
+  cy: number
+  state: SlotStatus
+  isActive: boolean
+  opponent?: string
+  score?: string
+  date?: string
+  matchProbSelf?: number
+  matchProbOpp?: number
+  onHover: (key: string, info: HoverInfo) => void
+  onLeave: () => void
+}
+
+function TeamCircle({
+  circleKey, index, teamName, cx, cy, state, isActive,
+  opponent, score, matchProbSelf, matchProbOpp,
+  onHover, onLeave,
+}: TeamCircleProps) {
+  const isTbd = state === 'tbd'
+  const flag = isTbd ? '?' : (FLAGS[teamName] ?? teamName.slice(0, 2))
+
+  const stroke = isActive || state === 'winner' ? '#C9A027'
+    : state === 'loser' ? '#444'
+    : isTbd             ? '#C4A882'
+    : '#F0E8D8'
+  const strokeW = (isActive || state === 'winner') ? 2.5 : 1.5
+  const dash    = isTbd ? '4,3' : undefined
+  const opacity = state === 'loser' ? 0.25 : isTbd ? 0.6 : 1
+  const fill    = isActive ? '#6B4A38' : '#5C3D2E'
+
+  // Staggered idle animation
+  const animName     = isTbd ? 'idleFloatTbd' : 'idleFloat'
+  const animDuration = isTbd ? '6s' : '3.8s'
+  const animDelay    = `${((index * 0.37) % (isTbd ? 6 : 3.8)).toFixed(2)}s`
+
+  const handleEnter = useCallback(() => {
+    onHover(circleKey, {
+      team: teamName, svgX: cx, svgY: cy,
+      opponent, score, matchProbSelf, matchProbOpp, status: state,
+    })
+  }, [circleKey, teamName, cx, cy, opponent, score, matchProbSelf, matchProbOpp, state, onHover])
+
+  const tBox = 'fill-box' as React.CSSProperties['transformBox']
 
   return (
-    <div style={{
-      position: relative ? 'relative' : 'absolute',
-      left: relative ? undefined : x,
-      top: relative ? undefined : y,
-      width: SW, height: SH,
-      background: '#5C3D2E', border, borderRadius: 3, overflow: 'hidden',
-    }}>
-      <div style={{
-        height: 18, display: 'flex', alignItems: 'center',
-        padding: '0 6px', borderBottom: '1px solid rgba(212,184,150,0.25)',
-        fontSize: 8, fontFamily: 'monospace', color: '#C4A882',
-        overflow: 'hidden', whiteSpace: 'nowrap',
-      }}>
-        {match.date}{match.ground ? ` · ${match.ground.split(' (')[0].substring(0, 22)}` : ''}
-      </div>
-      {teamRow(match.team1, g1, winner === match.team1)}
-      <div style={{ height: 1, background: 'rgba(212,184,150,0.2)' }} />
-      {teamRow(match.team2, g2, winner === match.team2)}
-    </div>
+    // OUTER group: hover scale via CSS transition + opacity + mouse events
+    <g
+      onMouseEnter={handleEnter}
+      onMouseLeave={onLeave}
+      opacity={opacity}
+      style={{
+        cursor: isTbd ? 'default' : 'pointer',
+        transform: isActive ? 'scale(1.35)' : 'scale(1)',
+        transition: 'transform 0.15s ease-out',
+        transformOrigin: 'center',
+        transformBox: tBox,
+        willChange: 'transform',
+      }}
+    >
+      {/* INNER group: idle float animation, paused on hover */}
+      <g
+        style={{
+          animation: `${animName} ${animDuration} ease-in-out infinite`,
+          animationDelay: animDelay,
+          animationPlayState: isActive ? 'paused' : 'running',
+          transformOrigin: 'center',
+          transformBox: tBox,
+          willChange: 'transform',
+        }}
+      >
+        <circle cx={cx} cy={cy} r={CR}
+          fill={fill}
+          stroke={stroke}
+          strokeWidth={strokeW}
+          strokeDasharray={dash}
+        />
+        <text x={cx} y={cy}
+          textAnchor="middle" dominantBaseline="middle"
+          fontSize={isTbd ? 17 : 20}
+          fontFamily={EMOJI_FONT}
+          fill={state === 'loser' ? '#888' : '#F0E8D8'}
+          style={{ userSelect: 'none', pointerEvents: 'none' }}
+        >
+          {flag}
+        </text>
+      </g>
+    </g>
   )
 }
 
-interface Line { x1: number; y1: number; x2: number; y2: number }
+// ── Tooltip ────────────────────────────────────────────────────
 
-function buildLines(): Line[] {
+function Tooltip({ info }: { info: HoverInfo }) {
+  const { team, svgX, svgY, opponent, score, matchProbSelf, matchProbOpp, status } = info
+
+  // Each entry: text, fontSize, color, fontWeight
+  type Line = { text: string; size: number; color: string; weight: number }
   const lines: Line[] = []
-  const add = (x1: number, y1: number, x2: number, y2: number) => lines.push({ x1, y1, x2, y2 })
 
-  // Left side: cols 0→1→2→3→4
-  const leftPairs = [4, 2, 1]  // pairs per connection step
-  for (let step = 0; step < 3; step++) {
-    const c = step
-    const midX = cx(c) + SW + CW / 2
-    for (let i = 0; i < leftPairs[step]; i++) {
-      const yTop = cy(c, 2 * i)
-      const yBot = cy(c, 2 * i + 1)
-      const yMid = cy(c + 1, i)
-      add(cx(c) + SW, yTop, midX, yTop)
-      add(cx(c) + SW, yBot, midX, yBot)
-      add(midX, yTop, midX, yBot)
-      add(midX, yMid, cx(c + 1), yMid)
+  if (status === 'tbd' || team === 'TBD') {
+    lines.push({ text: 'TBD', size: 12, color: '#C4A882', weight: 400 })
+  } else if (status === 'upcoming') {
+    const flag = FLAGS[team] ?? ''
+    lines.push({ text: `${flag}  ${team}`, size: 13, color: '#F0E8D8', weight: 700 })
+    if (matchProbSelf !== undefined && matchProbOpp !== undefined && opponent && opponent !== 'TBD') {
+      lines.push({ text: `${team}: ${(matchProbSelf * 100).toFixed(0)}% of winning`, size: 12, color: '#C9A027', weight: 400 })
+      lines.push({ text: `${opponent}: ${(matchProbOpp * 100).toFixed(0)}% of winning`, size: 12, color: '#C9A027', weight: 400 })
+    }
+  } else {
+    // winner or loser — completed match
+    const flagA = FLAGS[team] ?? ''
+    const flagB = opponent ? (FLAGS[opponent] ?? '') : ''
+    const winner = status === 'winner' ? team : (opponent ?? '?')
+    const winnerFlag = FLAGS[winner] ?? ''
+    lines.push({ text: `${flagA} ${team} ${score ?? ''} ${opponent ?? ''} ${flagB}`, size: 13, color: '#F0E8D8', weight: 700 })
+    lines.push({
+      text: `${winnerFlag} ${winner}: won`,
+      size: 12,
+      color: status === 'winner' ? '#1D9E75' : '#D85A30',
+      weight: 400,
+    })
+    if (matchProbSelf !== undefined && opponent) {
+      lines.push({ text: `${team}: had ${(matchProbSelf * 100).toFixed(0)}% chance`, size: 12, color: '#C4A882', weight: 400 })
+    }
+    if (matchProbOpp !== undefined && opponent) {
+      lines.push({ text: `${opponent}: had ${(matchProbOpp * 100).toFixed(0)}% chance`, size: 12, color: '#C4A882', weight: 400 })
     }
   }
-  // SF_L → Final
-  add(cx(3) + SW, cy(3, 0), cx(4), cy(3, 0))
 
-  // Right side: cols 8→7→6→5→4
-  const rightPairs = [4, 2, 1]
-  for (let step = 0; step < 3; step++) {
-    const c = 8 - step
-    const rIdx = step       // round index on the right side
-    const midX = cx(c) - CW / 2
-    for (let i = 0; i < rightPairs[step]; i++) {
-      const yTop = cy(rIdx, 2 * i)
-      const yBot = cy(rIdx, 2 * i + 1)
-      const yMid = cy(rIdx + 1, i)
-      add(cx(c), yTop, midX, yTop)
-      add(cx(c), yBot, midX, yBot)
-      add(midX, yTop, midX, yBot)
-      add(midX, yMid, cx(c - 1) + SW, yMid)
-    }
-  }
-  // SF_R → Final
-  add(cx(5), cy(3, 0), cx(4) + SW, cy(3, 0))
+  const padX = 14, padY = 10
+  const lineH = 17
+  const w = 250
+  const h = lines.length * lineH + padY * 2
 
-  return lines
-}
+  const isRight = svgX > CX
+  const isBottom = svgY > CY
 
-const LINES = buildLines()
+  let tx = isRight ? svgX - w - CR - 6 : svgX + CR + 6
+  let ty = isBottom ? svgY - h - 6 : svgY + 6
 
-export default function KnockoutBracket({ matches }: { matches: WCMatch[] }) {
-  const byDate = (a: WCMatch, b: WCMatch) =>
-    a.date.localeCompare(b.date) || (a.num ?? 0) - (b.num ?? 0)
-
-  function split(round: string, nLeft: number) {
-    const ms = matches.filter((m) => m.round === round).sort(byDate)
-    return { left: ms.slice(0, nLeft), right: ms.slice(nLeft) }
-  }
-
-  const r32 = split('Round of 32', 8)
-  const r16 = split('Round of 16', 4)
-  const qf  = split('Quarter-final', 2)
-  const sf  = split('Semi-final', 1)
-  const fin = matches.find((m) => m.round === 'Final')
-  const bronze = matches.find((m) => m.round === 'Match for third place')
+  tx = Math.max(4, Math.min(900 - w - 4, tx))
+  ty = Math.max(4, Math.min(900 - h - 4, ty))
 
   return (
-    <div className="space-y-6">
+    <g style={{ pointerEvents: 'none' }}>
+      <rect x={tx} y={ty} width={w} height={h} rx={8}
+        fill="#0B1D3A" stroke="#C9A027" strokeWidth={1} opacity={0.97}
+      />
+      {lines.map((line, i) => (
+        <text key={i}
+          x={tx + padX}
+          y={ty + padY + i * lineH + line.size - 1}
+          fontSize={line.size}
+          fill={line.color}
+          fontWeight={line.weight}
+          fontFamily={MONO_FONT}
+        >
+          {line.text}
+        </text>
+      ))}
+    </g>
+  )
+}
+
+// ── Line style ─────────────────────────────────────────────────
+
+const UL = { stroke: '#C4A882', strokeWidth: 1, strokeDasharray: '4,3', opacity: 0.45 } as const
+
+// ── Main component ─────────────────────────────────────────────
+
+interface KnockoutBracketProps {
+  matches: WCMatch[]
+  teams: TeamComparison[]
+}
+
+export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps) {
+  const [hovered, setHovered]       = useState<HoverInfo | null>(null)
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null)
+  const [trophyHovered, setTrophyHovered] = useState(false)
+
+  const onHover = useCallback((key: string, info: HoverInfo) => {
+    setHovered(info)
+    setHoveredKey(key)
+  }, [])
+
+  const onLeave = useCallback(() => {
+    setHovered(null)
+    setHoveredKey(null)
+  }, [])
+
+  // ── Parse rounds ──────────────────────────────────────────────
+  const r32m = matches.filter(m => m.round.includes('Round of 32'))
+  const r16m = matches.filter(m => m.round.includes('Round of 16'))
+  const qfm  = matches.filter(m => m.round.includes('Quarter'))
+  const sfm  = matches.filter(m => m.round.includes('Semi'))
+  const finm = matches.find(m =>
+    m.round.includes('Final') && !m.round.includes('Semi') && !m.round.includes('Third')
+  )
+
+  const r32Teams = r32m.flatMap(m => [m.team1, m.team2])
+
+  function getElo(name: string): number {
+    return teams.find(t => t.name === name)?.elo_rating ?? 1500
+  }
+
+  function matchOdds(a: string, b: string): [number, number] | [undefined, undefined] {
+    if (a === 'TBD' || b === 'TBD' || !b) return [undefined, undefined]
+    return eloMatchProbs(getElo(a), getElo(b))
+  }
+
+  function r32State(name: string): SlotStatus {
+    const m = r32m.find(x => x.team1 === name || x.team2 === name)
+    if (!m?.score) return 'upcoming'
+    return getMatchWinner(m) === name ? 'winner' : 'loser'
+  }
+
+  // ── Slots ─────────────────────────────────────────────────────
+  interface Slot { team: string; opponent: string; score?: string; date?: string }
+
+  function buildSlots(roundMatches: WCMatch[], count: number): Slot[] {
+    const slots: Slot[] = []
+    for (const m of roundMatches) {
+      const t1 = resolveTeam(m.team1), t2 = resolveTeam(m.team2)
+      const s = m.score ? `${m.score.ft[0]}–${m.score.ft[1]}` : undefined
+      slots.push({ team: t1, opponent: t2, score: s, date: m.date })
+      slots.push({ team: t2, opponent: t1, score: s, date: m.date })
+    }
+    while (slots.length < count) slots.push({ team: 'TBD', opponent: 'TBD' })
+    return slots.slice(0, count)
+  }
+
+  const r16Slots  = buildSlots(r16m, 16)
+  const qfSlots   = buildSlots(qfm,  8)
+  const sfSlots   = buildSlots(sfm,  4)
+  const finalSlots: Slot[] = finm
+    ? [
+        { team: resolveTeam(finm.team1), opponent: resolveTeam(finm.team2), score: finm.score ? `${finm.score.ft[0]}–${finm.score.ft[1]}` : undefined },
+        { team: resolveTeam(finm.team2), opponent: resolveTeam(finm.team1), score: finm.score ? `${finm.score.ft[0]}–${finm.score.ft[1]}` : undefined },
+      ]
+    : [{ team: 'TBD', opponent: 'TBD' }, { team: 'TBD', opponent: 'TBD' }]
+
+  const champion = finm?.score ? getMatchWinner(finm) : null
+
+  function slotState(slot: Slot, roundMatches: WCMatch[]): SlotStatus {
+    if (slot.team === 'TBD') return 'tbd'
+    const m = roundMatches.find(x =>
+      resolveTeam(x.team1) === slot.team || resolveTeam(x.team2) === slot.team
+    )
+    if (!m?.score) return 'upcoming'
+    return getMatchWinner(m) === slot.team ? 'winner' : 'loser'
+  }
+
+  // ── Connecting lines ───────────────────────────────────────────
+
+  function pairLines(
+    count: number,
+    getFromAngle: (i: number) => number,
+    fromR: number,
+    nodeR: number,
+    toPair: (pair: number) => number,
+    toR: number,
+  ): JSX.Element[] {
+    return Array.from({ length: count / 2 }, (_, pair) => {
+      const i0 = 2 * pair, i1 = 2 * pair + 1
+      const a0 = getFromAngle(i0), a1 = getFromAngle(i1)
+      const na = toPair(pair)
+      const [x0, y0] = svgPos(a0, fromR)
+      const [x1, y1] = svgPos(a1, fromR)
+      const [nx, ny] = svgPos(na, nodeR)
+      const [tx, ty] = svgPos(na, toR)
+      const [e0x, e0y] = edgePt([x0, y0], [nx, ny], CR)
+      const [e1x, e1y] = edgePt([x1, y1], [nx, ny], CR)
+      const [tex, tey] = edgePt([tx, ty], [nx, ny], CR)
+      return (
+        <g key={pair} {...UL}>
+          <line x1={e0x} y1={e0y} x2={nx} y2={ny} />
+          <line x1={e1x} y1={e1y} x2={nx} y2={ny} />
+          <line x1={nx} y1={ny} x2={tex} y2={tey} />
+        </g>
+      )
+    })
+  }
+
+  const finalToTrophy = [0, 1].map(i => {
+    const a = bracketAngle(i, 4)
+    const [fx, fy] = svgPos(a, RADIUS.final)
+    const [ex, ey] = edgePt([fx, fy], [CX, CY], CR)
+    const [tx2, ty2] = edgePt([CX, CY], [fx, fy], TROPHY_R)
+    return <line key={i} x1={ex} y1={ey} x2={tx2} y2={ty2} {...UL} />
+  })
+
+  // ── Render ────────────────────────────────────────────────────
+  return (
+    <div className="space-y-4">
       <div>
-        <h2 className="font-display text-3xl tracking-widest text-ink">KNOCKOUT BRACKET</h2>
-        <p className="font-mono-data text-xs text-ink-muted mt-1">
-          Teams advance inward from R32 to the Final at center · teal border = winner · dashed = TBD
+        <h2 className="font-display text-4xl tracking-widest" style={{ color: '#C9A027' }}>
+          KNOCKOUT BRACKET
+        </h2>
+        <p className="font-mono-data text-sm text-text-muted">
+          Round of 32 through to the Final · Jul 19 MetLife Stadium
         </p>
       </div>
 
-      <div className="overflow-x-auto pb-4">
-        <div style={{ position: 'relative', width: TOTAL_W, height: TOTAL_H, minWidth: 900 }}>
+      <p className="font-mono-data text-xs text-text-muted text-center">
+        Hover over any team to see match odds
+      </p>
 
-          {/* SVG layer: round labels + connector lines */}
-          <svg
-            width={TOTAL_W}
-            height={TOTAL_H}
-            style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
+      <div style={{ overflowX: 'auto' }}>
+        <svg
+          viewBox="0 0 900 900"
+          width="100%"
+          height="auto"
+          style={{ display: 'block', maxWidth: 900, margin: '0 auto' }}
+        >
+          {/* Round labels */}
+          {[
+            { y: CY - 438, label: 'ROUND OF 32' },
+            { y: CY - 350, label: 'ROUND OF 16' },
+            { y: CY - 260, label: 'QUARTER' },
+            { y: CY - 185, label: 'SEMI' },
+            { y: CY - 118, label: 'FINAL' },
+          ].map(({ y, label }) => (
+            <text key={label} x={CX} y={y}
+              textAnchor="middle" fontSize={9}
+              fill="#C9A027" opacity={0.55}
+              fontFamily={MONO_FONT} letterSpacing={1}
+              style={{ pointerEvents: 'none', userSelect: 'none' }}
+            >
+              {label}
+            </text>
+          ))}
+
+          {/* Connecting lines */}
+          {pairLines(32, r32Angle,                RADIUS.r32,  NODE_R.r32r16,  p => bracketAngle(p, 1), RADIUS.r16)}
+          {pairLines(16, i => bracketAngle(i, 1), RADIUS.r16,  NODE_R.r16qf,   p => bracketAngle(p, 2), RADIUS.qf)}
+          {pairLines(8,  i => bracketAngle(i, 2), RADIUS.qf,   NODE_R.qfsf,    p => bracketAngle(p, 3), RADIUS.sf)}
+          {pairLines(4,  i => bracketAngle(i, 3), RADIUS.sf,   NODE_R.sffinal, p => bracketAngle(p, 4), RADIUS.final)}
+          {finalToTrophy}
+
+          {/* R32 — global indices 0-31 */}
+          {r32Teams.map((name, i) => {
+            const ck = `r32-${i}`
+            const a = r32Angle(i)
+            const [cx, cy] = svgPos(a, RADIUS.r32)
+            const m = r32m.find(x => x.team1 === name || x.team2 === name)
+            const opp = m ? (m.team1 === name ? m.team2 : m.team1) : undefined
+            const score = m?.score ? `${m.score.ft[0]}–${m.score.ft[1]}` : undefined
+            const [ps, po] = opp ? matchOdds(name, opp) : [undefined, undefined]
+            return (
+              <TeamCircle key={ck} circleKey={ck} index={i}
+                teamName={name} cx={cx} cy={cy} state={r32State(name)}
+                isActive={hoveredKey === ck}
+                opponent={opp} score={score} date={m?.date}
+                matchProbSelf={ps} matchProbOpp={po}
+                onHover={onHover} onLeave={onLeave}
+              />
+            )
+          })}
+
+          {/* R16 — global indices 32-47 */}
+          {r16Slots.map((slot, j) => {
+            const ck = `r16-${j}`
+            const [cx, cy] = svgPos(bracketAngle(j, 1), RADIUS.r16)
+            const [ps, po] = matchOdds(slot.team, slot.opponent)
+            return (
+              <TeamCircle key={ck} circleKey={ck} index={32 + j}
+                teamName={slot.team} cx={cx} cy={cy}
+                state={slotState(slot, r16m)}
+                isActive={hoveredKey === ck}
+                opponent={slot.opponent} score={slot.score} date={slot.date}
+                matchProbSelf={ps} matchProbOpp={po}
+                onHover={onHover} onLeave={onLeave}
+              />
+            )
+          })}
+
+          {/* QF — global indices 48-55 */}
+          {qfSlots.map((slot, k) => {
+            const ck = `qf-${k}`
+            const [cx, cy] = svgPos(bracketAngle(k, 2), RADIUS.qf)
+            const [ps, po] = matchOdds(slot.team, slot.opponent)
+            return (
+              <TeamCircle key={ck} circleKey={ck} index={48 + k}
+                teamName={slot.team} cx={cx} cy={cy}
+                state={slotState(slot, qfm)}
+                isActive={hoveredKey === ck}
+                opponent={slot.opponent} score={slot.score} date={slot.date}
+                matchProbSelf={ps} matchProbOpp={po}
+                onHover={onHover} onLeave={onLeave}
+              />
+            )
+          })}
+
+          {/* SF — global indices 56-59 */}
+          {sfSlots.map((slot, l) => {
+            const ck = `sf-${l}`
+            const [cx, cy] = svgPos(bracketAngle(l, 3), RADIUS.sf)
+            const [ps, po] = matchOdds(slot.team, slot.opponent)
+            return (
+              <TeamCircle key={ck} circleKey={ck} index={56 + l}
+                teamName={slot.team} cx={cx} cy={cy}
+                state={slotState(slot, sfm)}
+                isActive={hoveredKey === ck}
+                opponent={slot.opponent} score={slot.score} date={slot.date}
+                matchProbSelf={ps} matchProbOpp={po}
+                onHover={onHover} onLeave={onLeave}
+              />
+            )
+          })}
+
+          {/* Final — global indices 60-61 */}
+          {finalSlots.map((slot, n) => {
+            const ck = `final-${n}`
+            const [cx, cy] = svgPos(bracketAngle(n, 4), RADIUS.final)
+            const [ps, po] = matchOdds(slot.team, slot.opponent)
+            return (
+              <TeamCircle key={ck} circleKey={ck} index={60 + n}
+                teamName={slot.team} cx={cx} cy={cy}
+                state={slotState(slot, finm ? [finm] : [])}
+                isActive={hoveredKey === ck}
+                opponent={slot.opponent} score={slot.score}
+                matchProbSelf={ps} matchProbOpp={po}
+                onHover={onHover} onLeave={onLeave}
+              />
+            )
+          })}
+
+          {/* Trophy */}
+          <g
+            onMouseEnter={() => setTrophyHovered(true)}
+            onMouseLeave={() => setTrophyHovered(false)}
+            style={{
+              transform: trophyHovered ? 'scale(1.2)' : 'scale(1)',
+              transition: 'transform 0.15s ease-out',
+              transformOrigin: 'center',
+              transformBox: 'fill-box' as React.CSSProperties['transformBox'],
+            }}
           >
-            {/* Round labels */}
-            {COL_LABELS.map((label, c) => (
-              <text
-                key={c}
-                x={cx(c) + SW / 2}
-                y={HH / 2 + 5}
-                textAnchor="middle"
-                style={{ fill: '#C4A882', fontFamily: 'monospace', fontSize: 10, letterSpacing: 2 }}
-              >
-                {label}
-              </text>
-            ))}
-            {/* Divider under labels */}
-            <line x1={0} y1={HH - 1} x2={TOTAL_W} y2={HH - 1} stroke="#D4B896" strokeWidth={0.5} opacity={0.4} />
-            {/* Connector lines */}
-            {LINES.map((l, i) => (
-              <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="#C4A882" strokeWidth={1} />
-            ))}
-          </svg>
+            <circle cx={CX} cy={CY} r={TROPHY_R}
+              fill={champion ? '#C9A027' : '#5C3D2E'}
+              stroke="#C9A027" strokeWidth={2}
+              style={{ animation: 'trophyPulse 2.5s ease-in-out infinite' }}
+            />
+            <text x={CX} y={CY}
+              textAnchor="middle" dominantBaseline="middle"
+              fontSize={26} fontFamily={EMOJI_FONT}
+              style={{ userSelect: 'none', pointerEvents: 'none' }}
+            >
+              {champion ? (FLAGS[champion] ?? '🏆') : '🏆'}
+            </text>
+          </g>
 
-          {/* Left R32 */}
-          {r32.left.map((m, i) => <MatchCard key={`r32l${i}`} match={m} x={cx(0)} y={st(0, i)} />)}
-          {/* Left R16 */}
-          {r16.left.map((m, i) => <MatchCard key={`r16l${i}`} match={m} x={cx(1)} y={st(1, i)} />)}
-          {/* Left QF */}
-          {qf.left.map((m, i)  => <MatchCard key={`qfl${i}`}  match={m} x={cx(2)} y={st(2, i)} />)}
-          {/* Left SF */}
-          {sf.left.map((m, i)  => <MatchCard key={`sfl${i}`}  match={m} x={cx(3)} y={st(3, i)} />)}
-          {/* Final */}
-          {fin && <MatchCard match={fin} x={cx(4)} y={st(3, 0)} />}
-          {/* Right SF */}
-          {sf.right.map((m, i) => <MatchCard key={`sfr${i}`}  match={m} x={cx(5)} y={st(3, i)} />)}
-          {/* Right QF */}
-          {qf.right.map((m, i) => <MatchCard key={`qfr${i}`}  match={m} x={cx(6)} y={st(2, i)} />)}
-          {/* Right R16 */}
-          {r16.right.map((m, i) => <MatchCard key={`r16r${i}`} match={m} x={cx(7)} y={st(1, i)} />)}
-          {/* Right R32 */}
-          {r32.right.map((m, i) => <MatchCard key={`r32r${i}`} match={m} x={cx(8)} y={st(0, i)} />)}
-        </div>
+          {/* Trophy tooltip */}
+          {trophyHovered && !hovered && (
+            <g style={{ pointerEvents: 'none' }}>
+              <rect x={CX - 115} y={CY + TROPHY_R + 10} width={230} height={30} rx={8}
+                fill="#0B1D3A" stroke="#C9A027" strokeWidth={1} opacity={0.97}
+              />
+              <text x={CX} y={CY + TROPHY_R + 30}
+                textAnchor="middle" fontSize={12}
+                fill="#F0E8D8" fontFamily={MONO_FONT}
+              >
+                {champion ? `${champion} · 2026 Champions` : 'Final · Jul 19 · MetLife Stadium'}
+              </text>
+            </g>
+          )}
+
+          {/* Tooltip — rendered last */}
+          {hovered && <Tooltip info={hovered} />}
+        </svg>
       </div>
 
-      {/* Bronze match */}
-      {bronze && (
-        <div>
-          <div className="font-display text-sm tracking-widest text-ink mb-2 pb-1 border-b border-border">
-            3RD PLACE
+      {/* Legend */}
+      <div className="flex items-center gap-6 flex-wrap justify-center" style={{ opacity: 0.8 }}>
+        {[
+          { stroke: '#C9A027', strokeW: 2.5, opacity: 1,    dash: undefined, label: 'Winner / advancing' },
+          { stroke: '#F0E8D8', strokeW: 1.5,  opacity: 0.25, dash: undefined, label: 'Eliminated' },
+          { stroke: '#C4A882', strokeW: 1.5,  opacity: 0.6,  dash: '3,2',    label: 'Match not yet played' },
+        ].map(({ stroke, strokeW, opacity, dash, label }) => (
+          <div key={label} className="flex items-center gap-2">
+            <svg width={20} height={20}>
+              <circle cx={10} cy={10} r={8}
+                fill="#5C3D2E" stroke={stroke}
+                strokeWidth={strokeW} strokeDasharray={dash}
+                opacity={opacity}
+              />
+            </svg>
+            <span className="font-mono-data text-[11px] text-text-muted">{label}</span>
           </div>
-          <MatchCard match={bronze} x={0} y={0} relative />
-        </div>
-      )}
+        ))}
+      </div>
+
+      <div className="pb-2" />
     </div>
   )
 }
