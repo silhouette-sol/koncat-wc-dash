@@ -24,7 +24,11 @@
       "Bash(gh pr *)",
       "Bash(gh api *)",
       "Bash(npm uninstall *)",
-      "Bash(npx tsc *)"
+      "Bash(git merge *)",
+      "Bash(git stash *)",
+      "Bash(git -C /Users/kendalljackson/Documents/_ai_builds/wc-dashboard add components/WinProbDoughnut.tsx components/DashboardTabs.tsx components/KnockoutBracket.tsx app/page.tsx components/Header.tsx)",
+      "Bash(git -C /Users/kendalljackson/Documents/_ai_builds/wc-dashboard status)",
+      "Bash(git *)"
     ]
   }
 }

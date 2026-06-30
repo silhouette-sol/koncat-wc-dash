@@ -19,6 +19,7 @@ import BuildingTab from './BuildingTab'
 import OnboardingOverlay from './OnboardingOverlay'
 import { getFlag } from '@/lib/flags'
 import { getPacificDateString } from '@/lib/dateUtils'
+import { getMatchResult } from '@/lib/matchResult'
 
 // ── Types ─────────────────────────────────────────────────────
 
@@ -78,7 +79,8 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
     const matchContext = dayMatches.map(m => {
       const s1 = (m.goals1 || []).map(g => `${g.name} ${g.minute}'`).join(', ')
       const s2 = (m.goals2 || []).map(g => `${g.name} ${g.minute}'`).join(', ')
-      return `${m.team1} ${m.score!.ft[0]}-${m.score!.ft[1]} ${m.team2}${s1 ? ` (${m.team1}: ${s1})` : ''}${s2 ? ` (${m.team2}: ${s2})` : ''}`
+      const res = getMatchResult(m)
+      return `${m.team1} ${res.displayScore} ${m.team2}${res.decidedBy === 'penalties' ? ` — ${res.winner} won on penalties` : ''}${s1 ? ` (${m.team1}: ${s1})` : ''}${s2 ? ` (${m.team2}: ${s2})` : ''}`
     }).join('. ')
 
     fetch('/api/explain', {
@@ -115,7 +117,7 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
           <span key={i} className="inline-block font-body text-sm text-text-primary mr-6">
             {getFlag(m.team1)} {m.team1}{' '}
             <span className="font-display text-base" style={{ color: '#C9A027' }}>
-              {m.score!.ft[0]}–{m.score!.ft[1]}
+              {getMatchResult(m).displayScore}
             </span>{' '}
             {m.team2} {getFlag(m.team2)}
           </span>
@@ -194,7 +196,7 @@ function RecentMatches({ matches }: { matches: WCMatch[] }) {
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <span className="font-body text-sm text-text-primary">
                     {getFlag(m.team1)} {m.team1}{' '}
-                    <span className="font-display text-lg mx-1">{m.score!.ft[0]}–{m.score!.ft[1]}</span>{' '}
+                    <span className="font-display text-lg mx-1">{getMatchResult(m).displayScore}</span>{' '}
                     {m.team2} {getFlag(m.team2)}
                   </span>
                   <div className="flex items-center gap-3 shrink-0">
@@ -343,16 +345,15 @@ function CrazyStatOfDay({
       const t1 = teams.find(t => t.name === m.team1)
       const t2 = teams.find(t => t.name === m.team2)
       if (!t1 || !t2) continue
-      const [g1, g2] = m.score!.ft
-      if (g1 === g2) continue
-      const winnerIsT1 = g1 > g2
-      const winner = winnerIsT1 ? t1 : t2
-      const loser = winnerIsT1 ? t2 : t1
+      const res = getMatchResult(m)
+      if (!res.winner) continue
+      const winner = res.winner === m.team1 ? t1 : t2
+      const loser = res.winner === m.team1 ? t2 : t1
       const eloDiff = loser.elo_rating - winner.elo_rating
       if (eloDiff > 0) {
         const prob = 1 / (1 + Math.pow(10, eloDiff / 400))
         if (!bestUpset || prob < bestUpset.prob) {
-          bestUpset = { team: winner.name, opp: loser.name, score: `${g1}–${g2}`, prob }
+          bestUpset = { team: winner.name, opp: loser.name, score: res.displayScore, prob }
         }
       }
     }
@@ -537,9 +538,10 @@ function LeadingTile({ matches }: { matches: WCMatch[] }) {
     if (!map[m.team2]) map[m.team2] = { pts: 0, gd: 0, gf: 0 }
     map[m.team1].gf += g1; map[m.team1].gd += g1 - g2
     map[m.team2].gf += g2; map[m.team2].gd += g2 - g1
-    if (g1 > g2) { map[m.team1].pts += 3 }
-    else if (g2 > g1) { map[m.team2].pts += 3 }
-    else { map[m.team1].pts += 1; map[m.team2].pts += 1 }
+    const res = getMatchResult(m)
+    if (res.winner === m.team1) { map[m.team1].pts += 3 }
+    else if (res.winner === m.team2) { map[m.team2].pts += 3 }
+    else if (res.decidedBy === 'draw') { map[m.team1].pts += 1; map[m.team2].pts += 1 }
   }
   const top3 = Object.entries(map)
     .sort(([, a], [, b]) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf)
@@ -580,9 +582,8 @@ export default function DashboardTabs({
       if (!m.score || m.round.includes('Third')) continue
       const isKnockout = ['Round of 32', 'Round of 16', 'Quarter', 'Semi', 'Final'].some(r => m.round.includes(r))
       if (!isKnockout) continue
-      const [g1, g2] = m.score.ft
-      if (g1 > g2) eliminated.add(m.team2)
-      else if (g2 > g1) eliminated.add(m.team1)
+      const { winner } = getMatchResult(m)
+      if (winner) eliminated.add(winner === m.team1 ? m.team2 : m.team1)
     }
     return 32 - eliminated.size
   })()

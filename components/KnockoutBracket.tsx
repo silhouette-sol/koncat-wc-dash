@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { TeamComparison, WCMatch } from '@/lib/types'
+import { getMatchResult } from '@/lib/matchResult'
 
 // ── Constants ──────────────────────────────────────────────────
 
@@ -62,14 +63,6 @@ function edgePt(from: [number, number], to: [number, number], r: number): [numbe
 function isPlaceholder(name: string) { return /^W\d+$/.test(name) }
 function resolveTeam(name: string) { return isPlaceholder(name) ? 'TBD' : name }
 
-function getMatchWinner(m: WCMatch): string | null {
-  if (!m.score) return null
-  const [g1, g2] = m.score.ft
-  if (g1 > g2) return m.team1
-  if (g2 > g1) return m.team2
-  return null
-}
-
 function eloMatchProbs(eloA: number, eloB: number): [number, number] {
   const pA = 1 / (1 + Math.pow(10, (eloB - eloA) / 400))
   return [pA, 1 - pA]
@@ -111,12 +104,15 @@ interface TeamCircleProps {
   myStage: number
   staggerMs: number
   matchIdx: number
+  isPulsing?: boolean
+  arrivedByTravel?: boolean
 }
 
 function TeamCircle({
   circleKey, index, teamName, cx, cy, state, isActive,
   opponent, score, matchProbSelf, matchProbOpp,
   onHover, onLeave, revealStage, myStage, staggerMs, matchIdx,
+  isPulsing, arrivedByTravel,
 }: TeamCircleProps) {
   const isTbd = state === 'tbd'
   const flag = isTbd ? '?' : (FLAGS[teamName] ?? teamName.slice(0, 2))
@@ -146,25 +142,35 @@ function TeamCircle({
   }, [circleKey, teamName, cx, cy, opponent, score, matchProbSelf, matchProbOpp, state, onHover])
 
   const tBox = 'fill-box' as React.CSSProperties['transformBox']
-  // myStage=0 → always visible (TBD inner slots: bracket skeleton shown from the start)
-  const isRevealed = myStage === 0 || revealStage >= myStage
+  // myStage=0  → always visible (TBD inner slots — bracket skeleton visible from start)
+  // arrivedByTravel → revealed when travel animation delivers the winner
+  // otherwise → revealed when revealStage >= myStage
+  const isRevealed = myStage === 0 || arrivedByTravel || revealStage >= myStage
 
   const revealStyle: React.CSSProperties = myStage === 0
     ? {}
-    : !isRevealed
-      ? {}
-      : myStage === 1
-        ? { animation: 'bracketFadeIn 0.4s ease forwards' }
-        : {
-            animation: `bracketPopIn 0.3s ease ${staggerMs}ms both`,
-            transformOrigin: 'center',
-            transformBox: tBox,
-          }
+    : arrivedByTravel
+      ? { animation: 'bracketLanding 0.2s ease-out both', transformOrigin: 'center', transformBox: tBox }
+      : !isRevealed
+        ? {}
+        : myStage === 1
+          ? { animation: 'bracketFadeIn 0.4s ease forwards' }
+          : {
+              animation: `bracketPopIn 0.3s ease ${staggerMs}ms both`,
+              transformOrigin: 'center',
+              transformBox: tBox,
+            }
+
+  // Pulse animation on R32 winner circles just before they travel inward
+  const pulseStyle: React.CSSProperties = isPulsing
+    ? { animation: `bracketPulse 0.25s ease-in-out ${matchIdx * 150}ms 1`, transformOrigin: 'center', transformBox: tBox }
+    : {}
 
   return (
     <g style={{ pointerEvents: isRevealed ? undefined : 'none' }}>
       {isRevealed && (
         <g style={revealStyle}>
+          <g style={pulseStyle}>
           <g
             onMouseEnter={handleEnter}
             onMouseLeave={onLeave}
@@ -173,7 +179,7 @@ function TeamCircle({
               cursor: isTbd ? 'default' : 'pointer',
               transform: isActive ? 'scale(1.35)' : 'scale(1)',
               transition: isR32Loser
-                ? `transform 0.15s ease-out, opacity 0.4s ${matchIdx * 80}ms ease`
+                ? `transform 0.15s ease-out, opacity 0.5s ${matchIdx * 150}ms ease`
                 : 'transform 0.15s ease-out',
               transformOrigin: 'center',
               transformBox: tBox,
@@ -206,6 +212,7 @@ function TeamCircle({
                 {flag}
               </text>
             </g>
+          </g>
           </g>
         </g>
       )}
@@ -305,25 +312,18 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
   const [revealStage, setRevealStage] = useState(0)
   const [replayKey, setReplayKey]   = useState(0)
 
-  // Bracket reveal animation sequence
-  useEffect(() => {
-    setRevealStage(0)
-    // Stage 1: R32 fade in (t=100ms)
-    // Stage 2: R16 pop (t=800ms, after R32 400ms + 300ms wait)
-    // Stage 3: QF pop  (t=3580ms, after 31 R16 stagger slots * 80ms + 300ms)
-    // Stage 4: SF pop  (t=4440ms, after 7 QF slots * 80ms + 300ms)
-    // Stage 5: Final   (t=4980ms, after 3 SF slots * 80ms + 300ms)
-    // Stage 6: Trophy  (t=5360ms, after 1 Final slot * 80ms + 300ms)
-    const timers = [
-      setTimeout(() => setRevealStage(1), 100),
-      setTimeout(() => setRevealStage(2), 800),
-      setTimeout(() => setRevealStage(3), 3580),
-      setTimeout(() => setRevealStage(4), 4440),
-      setTimeout(() => setRevealStage(5), 4980),
-      setTimeout(() => setRevealStage(6), 5360),
-    ]
-    return () => timers.forEach(clearTimeout)
-  }, [replayKey])
+  // Travel animation state
+  const [arrivedSlots, setArrivedSlots]       = useState<Set<string>>(new Set())
+  const [travelPositions, setTravelPositions] = useState<{ id: string; flag: string; cx: number; cy: number }[]>([])
+  const [pulsingSlots, setPulsingSlots]       = useState<Set<string>>(new Set())
+  const travelRafRef = useRef<number | null>(null)
+
+  interface TravelRoute {
+    id: string; srcKey: string; flag: string
+    srcX: number; srcY: number; nX: number; nY: number; dstX: number; dstY: number
+    delay: number; startTime: number | null
+  }
+  const activeRoutesRef = useRef<TravelRoute[]>([])
 
   const onHover = useCallback((key: string, info: HoverInfo) => {
     setHovered(info)
@@ -357,19 +357,19 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
 
   function r32State(name: string): SlotStatus {
     const m = r32m.find(x => x.team1 === name || x.team2 === name)
-    if (!m?.score) return 'upcoming'
-    return getMatchWinner(m) === name ? 'winner' : 'loser'
+    if (!m) return 'upcoming'
+    const { winner } = getMatchResult(m)
+    if (!winner) return m.score ? 'upcoming' : 'upcoming'
+    return winner === name ? 'winner' : 'loser'
   }
 
   // ── W-number resolution ───────────────────────────────────────
-  // R32 match i has W-number W(r32BaseIdx + i).  R16 fixtures may reference
-  // either the raw W-number or the resolved team name (e.g. "Canada" vs "W72").
   const r32BaseIdx = matches.findIndex(m => m.round.includes('Round of 32'))
 
   function findR16ForR32(i: number): WCMatch | undefined {
     const r32Match = r32m[i]
     const wNum = `W${r32BaseIdx + i}`
-    const winner = getMatchWinner(r32Match)
+    const winner = getMatchResult(r32Match).winner
     return r16m.find(m =>
       m.team1 === wNum || m.team2 === wNum ||
       (winner !== null && (m.team1 === winner || m.team2 === winner))
@@ -383,7 +383,7 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
     const slots: Slot[] = []
     for (const m of roundMatches) {
       const t1 = resolveTeam(m.team1), t2 = resolveTeam(m.team2)
-      const s = m.score ? `${m.score.ft[0]}–${m.score.ft[1]}` : undefined
+      const s = m.score ? getMatchResult(m).displayScore : undefined
       slots.push({ team: t1, opponent: t2, score: s, date: m.date })
       slots.push({ team: t2, opponent: t1, score: s, date: m.date })
     }
@@ -395,33 +395,33 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
   interface R16VisualSlot { team: string; opponent: string; score?: string; date?: string; r16Match?: WCMatch }
 
   const r16VisualSlots: R16VisualSlot[] = r32m.map((r32Match, i) => {
-    const winner = getMatchWinner(r32Match)
+    const winner = getMatchResult(r32Match).winner
     const team = winner ?? 'TBD'
     const r16Match = findR16ForR32(i)
     if (!r16Match) return { team, opponent: 'TBD' }
     const wNum = `W${r32BaseIdx + i}`
     const isTeam1 = r16Match.team1 === wNum || (winner !== null && r16Match.team1 === winner)
     const rawOpp = isTeam1 ? r16Match.team2 : r16Match.team1
-    const score = r16Match.score ? `${r16Match.score.ft[0]}–${r16Match.score.ft[1]}` : undefined
+    const score = r16Match.score ? getMatchResult(r16Match).displayScore : undefined
     return { team, opponent: resolveTeam(rawOpp), score, date: r16Match.date, r16Match }
   })
 
   function r16VisualState(slot: R16VisualSlot): SlotStatus {
     if (slot.team === 'TBD') return 'tbd'
     if (!slot.r16Match?.score) return 'upcoming'
-    return getMatchWinner(slot.r16Match) === slot.team ? 'winner' : 'loser'
+    return getMatchResult(slot.r16Match).winner === slot.team ? 'winner' : 'loser'
   }
 
-  const qfSlots   = buildSlots(qfm,  8)
-  const sfSlots   = buildSlots(sfm,  4)
+  const qfSlots  = buildSlots(qfm, 8)
+  const sfSlots  = buildSlots(sfm, 4)
   const finalSlots: Slot[] = finm
     ? [
-        { team: resolveTeam(finm.team1), opponent: resolveTeam(finm.team2), score: finm.score ? `${finm.score.ft[0]}–${finm.score.ft[1]}` : undefined },
-        { team: resolveTeam(finm.team2), opponent: resolveTeam(finm.team1), score: finm.score ? `${finm.score.ft[0]}–${finm.score.ft[1]}` : undefined },
+        { team: resolveTeam(finm.team1), opponent: resolveTeam(finm.team2), score: finm.score ? getMatchResult(finm).displayScore : undefined },
+        { team: resolveTeam(finm.team2), opponent: resolveTeam(finm.team1), score: finm.score ? getMatchResult(finm).displayScore : undefined },
       ]
     : [{ team: 'TBD', opponent: 'TBD' }, { team: 'TBD', opponent: 'TBD' }]
 
-  const champion = finm?.score ? getMatchWinner(finm) : null
+  const champion = finm?.score ? getMatchResult(finm).winner : null
 
   function slotState(slot: Slot, roundMatches: WCMatch[]): SlotStatus {
     if (slot.team === 'TBD') return 'tbd'
@@ -429,8 +429,100 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
       resolveTeam(x.team1) === slot.team || resolveTeam(x.team2) === slot.team
     )
     if (!m?.score) return 'upcoming'
-    return getMatchWinner(m) === slot.team ? 'winner' : 'loser'
+    return getMatchResult(m).winner === slot.team ? 'winner' : 'loser'
   }
+
+  // ── Travel animation helpers ───────────────────────────────────
+
+  function computeR32Routes(): TravelRoute[] {
+    const routes: TravelRoute[] = []
+    for (let i = 0; i < r32m.length; i++) {
+      const result = getMatchResult(r32m[i])
+      if (!result.winner) continue
+      const winnerIsTeam1 = result.winner === r32m[i].team1
+      const winnerR32Idx = i * 2 + (winnerIsTeam1 ? 0 : 1)
+      const [srcX, srcY] = svgPos(r32Angle(winnerR32Idx), RADIUS.r32)
+      const dstAngle = bracketAngle(i, 1)
+      const [nX, nY]   = svgPos(dstAngle, NODE_R.r32r16)
+      const [dstX, dstY] = svgPos(dstAngle, RADIUS.r16)
+      const flag = FLAGS[result.winner] ?? result.winner.slice(0, 2)
+      routes.push({
+        id: `r16-${i}`, srcKey: `r32-${winnerR32Idx}`,
+        flag, srcX, srcY, nX, nY, dstX, dstY,
+        delay: i * 150, startTime: null,
+      })
+    }
+    return routes
+  }
+
+  function startR32Travel(routes: TravelRoute[]) {
+    if (!routes.length) return
+    activeRoutesRef.current = routes.map(r => ({ ...r, startTime: null }))
+    setPulsingSlots(new Set(routes.map(r => r.srcKey)))
+
+    const loop = (now: number) => {
+      const positions: { id: string; flag: string; cx: number; cy: number }[] = []
+      const arrived: string[] = []
+      let anyActive = false
+
+      for (const route of activeRoutesRef.current) {
+        if (route.startTime === null) route.startTime = now
+        const elapsed = now - route.startTime - route.delay
+        if (elapsed < 0) { anyActive = true; continue }
+        const progress = Math.min(elapsed / 500, 1)
+        let cx, cy
+        if (progress <= 0.5) {
+          const ep = 0.5 - Math.cos(progress * 2 * Math.PI) / 2
+          cx = route.srcX + (route.nX - route.srcX) * ep
+          cy = route.srcY + (route.nY - route.srcY) * ep
+        } else {
+          const ep = 0.5 - Math.cos((progress - 0.5) * 2 * Math.PI) / 2
+          cx = route.nX + (route.dstX - route.nX) * ep
+          cy = route.nY + (route.dstY - route.nY) * ep
+        }
+        if (progress < 1) { anyActive = true; positions.push({ id: route.id, flag: route.flag, cx, cy }) }
+        else arrived.push(route.id)
+      }
+
+      setTravelPositions(positions)
+      if (arrived.length > 0) {
+        setArrivedSlots(prev => { const n = new Set(prev); arrived.forEach(id => n.add(id)); return n })
+        activeRoutesRef.current = activeRoutesRef.current.filter(r => !arrived.includes(r.id))
+      }
+      if (anyActive) travelRafRef.current = requestAnimationFrame(loop)
+      else setPulsingSlots(new Set())
+    }
+    travelRafRef.current = requestAnimationFrame(loop)
+  }
+
+  // Bracket reveal + travel animation sequence
+  useEffect(() => {
+    setRevealStage(0)
+    setArrivedSlots(new Set())
+    setTravelPositions([])
+    setPulsingSlots(new Set())
+    activeRoutesRef.current = []
+    if (travelRafRef.current) cancelAnimationFrame(travelRafRef.current)
+
+    const r32Routes = computeR32Routes()
+    const travelDuration = r32Routes.length > 0 ? (r32Routes.length - 1) * 150 + 500 : 0
+    const travelStart = 800
+    const afterTravel = travelStart + travelDuration + 300
+
+    const timers = [
+      setTimeout(() => setRevealStage(1), 100),
+      setTimeout(() => startR32Travel(r32Routes), travelStart),
+      setTimeout(() => setRevealStage(3), afterTravel),
+      setTimeout(() => setRevealStage(4), afterTravel + 860),
+      setTimeout(() => setRevealStage(5), afterTravel + 1400),
+      setTimeout(() => setRevealStage(6), afterTravel + 1780),
+    ]
+    return () => {
+      timers.forEach(clearTimeout)
+      if (travelRafRef.current) cancelAnimationFrame(travelRafRef.current)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [replayKey])
 
   // ── Connecting lines ───────────────────────────────────────────
 
@@ -526,7 +618,7 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
             const [cx, cy] = svgPos(a, RADIUS.r32)
             const m = r32m.find(x => x.team1 === name || x.team2 === name)
             const opp = m ? (m.team1 === name ? m.team2 : m.team1) : undefined
-            const score = m?.score ? `${m.score.ft[0]}–${m.score.ft[1]}` : undefined
+            const score = m?.score ? getMatchResult(m).displayScore : undefined
             const [ps, po] = opp ? matchOdds(name, opp) : [undefined, undefined]
             return (
               <TeamCircle key={ck} circleKey={ck} index={i}
@@ -536,6 +628,7 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                 matchProbSelf={ps} matchProbOpp={po}
                 onHover={onHover} onLeave={onLeave}
                 revealStage={revealStage} myStage={1} staggerMs={0} matchIdx={Math.floor(i / 2)}
+                isPulsing={pulsingSlots.has(ck)}
               />
             )
           })}
@@ -555,8 +648,9 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                 onHover={onHover} onLeave={onLeave}
                 revealStage={revealStage}
                 myStage={slot.team === 'TBD' ? 0 : 2}
-                staggerMs={slot.team === 'TBD' ? 0 : j * 80}
+                staggerMs={0}
                 matchIdx={j}
+                arrivedByTravel={slot.team !== 'TBD' && arrivedSlots.has(ck)}
               />
             )
           })}
@@ -671,6 +765,20 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
               </text>
             </g>
           )}
+
+          {/* Traveling flag circles — rendered above all bracket circles */}
+          {travelPositions.map(t => (
+            <g key={t.id} style={{ pointerEvents: 'none' }}>
+              <circle cx={t.cx} cy={t.cy} r={CR} fill="#5C3D2E" stroke="#C9A027" strokeWidth={2.5} />
+              <text x={t.cx} y={t.cy}
+                textAnchor="middle" dominantBaseline="middle"
+                fontSize={20} fontFamily={EMOJI_FONT}
+                style={{ userSelect: 'none' }}
+              >
+                {t.flag}
+              </text>
+            </g>
+          ))}
 
           {/* Tooltip — rendered last */}
           {hovered && <Tooltip info={hovered} />}

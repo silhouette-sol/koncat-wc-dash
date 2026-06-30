@@ -115,7 +115,12 @@ export interface WCMatch {
   time?: string
   team1: string
   team2: string
-  score?: { ft: [number, number]; ht?: [number, number] }
+  score?: {
+    ft: [number, number]
+    ht?: [number, number]
+    et?: [number, number]  // after extra time (120 min)
+    p?: [number, number]   // penalty shootout goals
+  }
   goals1?: { name: string; minute: string }[]
   goals2?: { name: string; minute: string }[]
   group?: string
