@@ -110,12 +110,13 @@ interface TeamCircleProps {
   revealStage: number
   myStage: number
   staggerMs: number
+  matchIdx: number
 }
 
 function TeamCircle({
   circleKey, index, teamName, cx, cy, state, isActive,
   opponent, score, matchProbSelf, matchProbOpp,
-  onHover, onLeave, revealStage, myStage, staggerMs,
+  onHover, onLeave, revealStage, myStage, staggerMs, matchIdx,
 }: TeamCircleProps) {
   const isTbd = state === 'tbd'
   const flag = isTbd ? '?' : (FLAGS[teamName] ?? teamName.slice(0, 2))
@@ -126,8 +127,12 @@ function TeamCircle({
     : '#F0E8D8'
   const strokeW = (isActive || state === 'winner') ? 2.5 : 1.5
   const dash    = isTbd ? '4,3' : undefined
-  const opacity = state === 'loser' ? 0.25 : isTbd ? 0.6 : 1
   const fill    = isActive ? '#6B4A38' : '#5C3D2E'
+
+  // R32 losers start full-opacity and fade to 0.25 only when R16 slots pop in (stage 2),
+  // staggered per match so the loser fade syncs with the winner appearing in the R16 slot
+  const isR32Loser = myStage === 1 && state === 'loser'
+  const opacity = isR32Loser && revealStage < 2 ? 1 : (state === 'loser' ? 0.25 : isTbd ? 0.6 : 1)
 
   const animName     = isTbd ? 'idleFloatTbd' : 'idleFloat'
   const animDuration = isTbd ? '6s' : '3.8s'
@@ -141,17 +146,20 @@ function TeamCircle({
   }, [circleKey, teamName, cx, cy, opponent, score, matchProbSelf, matchProbOpp, state, onHover])
 
   const tBox = 'fill-box' as React.CSSProperties['transformBox']
-  const isRevealed = revealStage >= myStage
+  // myStage=0 → always visible (TBD inner slots: bracket skeleton shown from the start)
+  const isRevealed = myStage === 0 || revealStage >= myStage
 
-  const revealStyle: React.CSSProperties = !isRevealed
+  const revealStyle: React.CSSProperties = myStage === 0
     ? {}
-    : myStage === 1
-      ? { animation: 'bracketFadeIn 0.4s ease forwards' }
-      : {
-          animation: `bracketPopIn 0.3s ease ${staggerMs}ms both`,
-          transformOrigin: 'center',
-          transformBox: tBox,
-        }
+    : !isRevealed
+      ? {}
+      : myStage === 1
+        ? { animation: 'bracketFadeIn 0.4s ease forwards' }
+        : {
+            animation: `bracketPopIn 0.3s ease ${staggerMs}ms both`,
+            transformOrigin: 'center',
+            transformBox: tBox,
+          }
 
   return (
     <g style={{ pointerEvents: isRevealed ? undefined : 'none' }}>
@@ -164,7 +172,9 @@ function TeamCircle({
             style={{
               cursor: isTbd ? 'default' : 'pointer',
               transform: isActive ? 'scale(1.35)' : 'scale(1)',
-              transition: 'transform 0.15s ease-out',
+              transition: isR32Loser
+                ? `transform 0.15s ease-out, opacity 0.4s ${matchIdx * 80}ms ease`
+                : 'transform 0.15s ease-out',
               transformOrigin: 'center',
               transformBox: tBox,
               willChange: 'transform',
@@ -525,7 +535,7 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                 opponent={opp} score={score} date={m?.date}
                 matchProbSelf={ps} matchProbOpp={po}
                 onHover={onHover} onLeave={onLeave}
-                revealStage={revealStage} myStage={1} staggerMs={0}
+                revealStage={revealStage} myStage={1} staggerMs={0} matchIdx={Math.floor(i / 2)}
               />
             )
           })}
@@ -543,7 +553,10 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                 opponent={slot.opponent} score={slot.score} date={slot.date}
                 matchProbSelf={ps} matchProbOpp={po}
                 onHover={onHover} onLeave={onLeave}
-                revealStage={revealStage} myStage={2} staggerMs={j * 80}
+                revealStage={revealStage}
+                myStage={slot.team === 'TBD' ? 0 : 2}
+                staggerMs={slot.team === 'TBD' ? 0 : j * 80}
+                matchIdx={j}
               />
             )
           })}
@@ -561,7 +574,10 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                 opponent={slot.opponent} score={slot.score} date={slot.date}
                 matchProbSelf={ps} matchProbOpp={po}
                 onHover={onHover} onLeave={onLeave}
-                revealStage={revealStage} myStage={3} staggerMs={k * 80}
+                revealStage={revealStage}
+                myStage={slot.team === 'TBD' ? 0 : 3}
+                staggerMs={slot.team === 'TBD' ? 0 : k * 80}
+                matchIdx={Math.floor(k / 2)}
               />
             )
           })}
@@ -579,7 +595,10 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                 opponent={slot.opponent} score={slot.score} date={slot.date}
                 matchProbSelf={ps} matchProbOpp={po}
                 onHover={onHover} onLeave={onLeave}
-                revealStage={revealStage} myStage={4} staggerMs={l * 80}
+                revealStage={revealStage}
+                myStage={slot.team === 'TBD' ? 0 : 4}
+                staggerMs={slot.team === 'TBD' ? 0 : l * 80}
+                matchIdx={Math.floor(l / 2)}
               />
             )
           })}
@@ -597,7 +616,10 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                 opponent={slot.opponent} score={slot.score}
                 matchProbSelf={ps} matchProbOpp={po}
                 onHover={onHover} onLeave={onLeave}
-                revealStage={revealStage} myStage={5} staggerMs={n * 80}
+                revealStage={revealStage}
+                myStage={slot.team === 'TBD' ? 0 : 5}
+                staggerMs={slot.team === 'TBD' ? 0 : n * 80}
+                matchIdx={0}
               />
             )
           })}

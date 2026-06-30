@@ -125,26 +125,20 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
         <p className="font-body text-sm text-text-muted italic">Generating summary...</p>
       )}
       {bullets.length > 0 && (
-        <div className="relative">
-          <div
-            className="space-y-1.5 overflow-y-auto"
-            style={{
-              maxHeight: 200,
-              scrollbarWidth: 'thin',
-              scrollbarColor: '#C9A027 transparent',
-            } as React.CSSProperties}
-          >
-            {bullets.map((bullet, i) => (
-              <p key={i} className="font-body text-sm text-text-primary leading-snug flex gap-2">
-                <span style={{ color: '#C9A027', flexShrink: 0 }}>•</span>
-                <span>{bullet}</span>
-              </p>
-            ))}
-          </div>
-          <div
-            className="pointer-events-none absolute bottom-0 left-0 right-0"
-            style={{ height: 32, background: 'linear-gradient(to bottom, transparent, rgba(11,29,58,0.85))' }}
-          />
+        <div
+          className="space-y-1.5 overflow-y-auto"
+          style={{
+            maxHeight: 200,
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#C9A027 transparent',
+          } as React.CSSProperties}
+        >
+          {bullets.map((bullet, i) => (
+            <p key={i} className="font-body text-sm text-text-primary leading-snug flex gap-2">
+              <span style={{ color: '#C9A027', flexShrink: 0 }}>•</span>
+              <span>{bullet}</span>
+            </p>
+          ))}
         </div>
       )}
     </section>
@@ -580,6 +574,19 @@ export default function DashboardTabs({
     ? Math.round(descriptive.goal_timing.total_goals / 2.83)
     : 0
 
+  const teamsRemaining = (() => {
+    const eliminated = new Set<string>()
+    for (const m of worldcupMatches) {
+      if (!m.score || m.round.includes('Third')) continue
+      const isKnockout = ['Round of 32', 'Round of 16', 'Quarter', 'Semi', 'Final'].some(r => m.round.includes(r))
+      if (!isKnockout) continue
+      const [g1, g2] = m.score.ft
+      if (g1 > g2) eliminated.add(m.team2)
+      else if (g2 > g1) eliminated.add(m.team1)
+    }
+    return 32 - eliminated.size
+  })()
+
   return (
     <>
       <div className="space-y-0">
@@ -608,7 +615,7 @@ export default function DashboardTabs({
         <div className="space-y-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <StatCard label="Matches Played" value={matchesPlayed} />
-            <StatCard label="Teams Remaining" value={32} />
+            <StatCard label="Teams Remaining" value={teamsRemaining} />
             <StatCard label="Final Date" value="Jul 19" />
             <LeadingTile matches={worldcupMatches} />
           </div>

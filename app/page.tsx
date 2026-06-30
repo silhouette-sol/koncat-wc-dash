@@ -41,7 +41,7 @@ export default function Home() {
           }}
         >
           <span style={{ fontSize: 12, fontFamily: 'monospace', color: '#0B1D3A', fontWeight: 600 }}>
-            Built by ken b · KONCAT Always Building
+            Built by kenni_bo · KONCAT Always Building
           </span>
         </div>
         <div

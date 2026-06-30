@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TeamComparison } from '@/lib/types'
 import { getFlag } from '@/lib/flags'
 
@@ -36,13 +36,20 @@ export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const chartRef = useRef<any>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const animRef = useRef<number | null>(null)
+  const startRef = useRef<number | null>(null)
 
   const top10 = teams
     .filter(t => t.elo_win_prob >= 0.005)
     .sort((a, b) => b.elo_win_prob - a.elo_win_prob)
     .slice(0, 10)
 
+  const [displayedValues, setDisplayedValues] = useState<number[]>(() => top10.map(() => 0))
+
   useEffect(() => {
+    const targets = top10.map(t => parseFloat((t.elo_win_prob * 100).toFixed(2)))
+
     const initChart = () => {
       if (!canvasRef.current || !window.Chart) return
       if (chartRef.current) {
@@ -55,7 +62,7 @@ export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
         data: {
           labels: top10.map(t => t.name),
           datasets: [{
-            data: top10.map(t => parseFloat((t.elo_win_prob * 100).toFixed(2))),
+            data: top10.map(() => 0),
             backgroundColor: top10.map(t => NATIONAL_COLORS[t.name] ?? '#C4A882'),
             borderWidth: 2,
             borderColor: '#5C3D2E',
@@ -66,6 +73,7 @@ export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
           responsive: true,
           maintainAspectRatio: false,
           cutout: '62%',
+          animation: false,
           plugins: {
             legend: { display: false },
             tooltip: {
@@ -87,6 +95,22 @@ export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
           },
         },
       })
+
+      startRef.current = null
+      const animate = (timestamp: number) => {
+        if (startRef.current === null) startRef.current = timestamp
+        const elapsed = timestamp - startRef.current
+        const progress = Math.min(elapsed / 1200, 1)
+        const eased = 1 - Math.pow(1 - progress, 3)
+        const values = targets.map(t => parseFloat((t * eased).toFixed(2)))
+        setDisplayedValues(values)
+        if (chartRef.current) {
+          chartRef.current.data.datasets[0].data = values
+          chartRef.current.update('none')
+        }
+        if (progress < 1) animRef.current = requestAnimationFrame(animate)
+      }
+      animRef.current = requestAnimationFrame(animate)
     }
 
     if (window.Chart) {
@@ -99,10 +123,8 @@ export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
     }
 
     return () => {
-      if (chartRef.current) {
-        chartRef.current.destroy()
-        chartRef.current = null
-      }
+      if (animRef.current !== null) { cancelAnimationFrame(animRef.current); animRef.current = null }
+      if (chartRef.current) { chartRef.current.destroy(); chartRef.current = null }
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -131,7 +153,7 @@ export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-x-8 gap-y-2 w-full">
-          {top10.map(team => (
+          {top10.map((team, idx) => (
             <div key={team.name} className="flex items-center gap-2.5">
               <div
                 className="w-3 h-3 rounded-full shrink-0"
@@ -144,7 +166,7 @@ export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
                 {team.name}
               </span>
               <span className="font-mono-data text-sm font-medium text-text-primary ml-auto">
-                {(team.elo_win_prob * 100).toFixed(1)}%
+                {(displayedValues[idx] ?? 0).toFixed(1)}%
               </span>
             </div>
           ))}
