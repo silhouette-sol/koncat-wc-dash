@@ -42,6 +42,56 @@ html, body {
   50%       { filter: drop-shadow(0 0 12px rgba(201,160,39,0.9)); }
 }
 
+@keyframes bracketFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes bracketPopIn {
+  0%   { transform: scale(0);   opacity: 0; }
+  70%  { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes trophyGoldBurst {
+  0%   { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+/* ── My Model tab theme ─────────────────────────────────────── */
+
+.model-theme {
+  background-color: #1A1612;
+  background-image: repeating-radial-gradient(
+    circle at 0 0, transparent 0, rgba(255,255,255,0.02) 1px
+  );
+  padding: 20px;
+  border-radius: 2px;
+  margin: 0 -4px;
+}
+
+.model-theme .bg-card {
+  background-color: #3D332A !important;
+}
+
+.model-theme select:focus {
+  border-color: #8A6F4A !important;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.model-theme tbody tr:hover {
+  background-color: rgba(255,255,255,0.04) !important;
+  transition: background-color 0.15s;
+}
+
+.model-theme .doughnut-wrap {
+  transition: transform 0.2s ease;
+}
+.model-theme .doughnut-wrap:hover {
+  transform: scale(1.02);
+}
+
 body {
   background-color: #FFFFFF;
   background-image:

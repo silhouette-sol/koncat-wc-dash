@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { TeamComparison, WCMatch } from '@/lib/types'
 
 // ── Constants ──────────────────────────────────────────────────
@@ -94,7 +94,7 @@ interface HoverInfo {
 
 interface TeamCircleProps {
   circleKey: string
-  index: number           // global index for animation stagger
+  index: number
   teamName: string
   cx: number
   cy: number
@@ -107,12 +107,15 @@ interface TeamCircleProps {
   matchProbOpp?: number
   onHover: (key: string, info: HoverInfo) => void
   onLeave: () => void
+  revealStage: number
+  myStage: number
+  staggerMs: number
 }
 
 function TeamCircle({
   circleKey, index, teamName, cx, cy, state, isActive,
   opponent, score, matchProbSelf, matchProbOpp,
-  onHover, onLeave,
+  onHover, onLeave, revealStage, myStage, staggerMs,
 }: TeamCircleProps) {
   const isTbd = state === 'tbd'
   const flag = isTbd ? '?' : (FLAGS[teamName] ?? teamName.slice(0, 2))
@@ -126,7 +129,6 @@ function TeamCircle({
   const opacity = state === 'loser' ? 0.25 : isTbd ? 0.6 : 1
   const fill    = isActive ? '#6B4A38' : '#5C3D2E'
 
-  // Staggered idle animation
   const animName     = isTbd ? 'idleFloatTbd' : 'idleFloat'
   const animDuration = isTbd ? '6s' : '3.8s'
   const animDelay    = `${((index * 0.37) % (isTbd ? 6 : 3.8)).toFixed(2)}s`
@@ -139,49 +141,64 @@ function TeamCircle({
   }, [circleKey, teamName, cx, cy, opponent, score, matchProbSelf, matchProbOpp, state, onHover])
 
   const tBox = 'fill-box' as React.CSSProperties['transformBox']
+  const isRevealed = revealStage >= myStage
 
-  return (
-    // OUTER group: hover scale via CSS transition + opacity + mouse events
-    <g
-      onMouseEnter={handleEnter}
-      onMouseLeave={onLeave}
-      opacity={opacity}
-      style={{
-        cursor: isTbd ? 'default' : 'pointer',
-        transform: isActive ? 'scale(1.35)' : 'scale(1)',
-        transition: 'transform 0.15s ease-out',
-        transformOrigin: 'center',
-        transformBox: tBox,
-        willChange: 'transform',
-      }}
-    >
-      {/* INNER group: idle float animation, paused on hover */}
-      <g
-        style={{
-          animation: `${animName} ${animDuration} ease-in-out infinite`,
-          animationDelay: animDelay,
-          animationPlayState: isActive ? 'paused' : 'running',
+  const revealStyle: React.CSSProperties = !isRevealed
+    ? {}
+    : myStage === 1
+      ? { animation: 'bracketFadeIn 0.4s ease forwards' }
+      : {
+          animation: `bracketPopIn 0.3s ease ${staggerMs}ms both`,
           transformOrigin: 'center',
           transformBox: tBox,
-          willChange: 'transform',
-        }}
-      >
-        <circle cx={cx} cy={cy} r={CR}
-          fill={fill}
-          stroke={stroke}
-          strokeWidth={strokeW}
-          strokeDasharray={dash}
-        />
-        <text x={cx} y={cy}
-          textAnchor="middle" dominantBaseline="middle"
-          fontSize={isTbd ? 17 : 20}
-          fontFamily={EMOJI_FONT}
-          fill={state === 'loser' ? '#888' : '#F0E8D8'}
-          style={{ userSelect: 'none', pointerEvents: 'none' }}
-        >
-          {flag}
-        </text>
-      </g>
+        }
+
+  return (
+    <g style={{ pointerEvents: isRevealed ? undefined : 'none' }}>
+      {isRevealed && (
+        <g style={revealStyle}>
+          <g
+            onMouseEnter={handleEnter}
+            onMouseLeave={onLeave}
+            opacity={opacity}
+            style={{
+              cursor: isTbd ? 'default' : 'pointer',
+              transform: isActive ? 'scale(1.35)' : 'scale(1)',
+              transition: 'transform 0.15s ease-out',
+              transformOrigin: 'center',
+              transformBox: tBox,
+              willChange: 'transform',
+            }}
+          >
+            <g
+              style={{
+                animation: `${animName} ${animDuration} ease-in-out infinite`,
+                animationDelay: animDelay,
+                animationPlayState: isActive ? 'paused' : 'running',
+                transformOrigin: 'center',
+                transformBox: tBox,
+                willChange: 'transform',
+              }}
+            >
+              <circle cx={cx} cy={cy} r={CR}
+                fill={fill}
+                stroke={stroke}
+                strokeWidth={strokeW}
+                strokeDasharray={dash}
+              />
+              <text x={cx} y={cy}
+                textAnchor="middle" dominantBaseline="middle"
+                fontSize={isTbd ? 17 : 20}
+                fontFamily={EMOJI_FONT}
+                fill={state === 'loser' ? '#888' : '#F0E8D8'}
+                style={{ userSelect: 'none', pointerEvents: 'none' }}
+              >
+                {flag}
+              </text>
+            </g>
+          </g>
+        </g>
+      )}
     </g>
   )
 }
@@ -275,6 +292,28 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
   const [hovered, setHovered]       = useState<HoverInfo | null>(null)
   const [hoveredKey, setHoveredKey] = useState<string | null>(null)
   const [trophyHovered, setTrophyHovered] = useState(false)
+  const [revealStage, setRevealStage] = useState(0)
+  const [replayKey, setReplayKey]   = useState(0)
+
+  // Bracket reveal animation sequence
+  useEffect(() => {
+    setRevealStage(0)
+    // Stage 1: R32 fade in (t=100ms)
+    // Stage 2: R16 pop (t=800ms, after R32 400ms + 300ms wait)
+    // Stage 3: QF pop  (t=3580ms, after 31 R16 stagger slots * 80ms + 300ms)
+    // Stage 4: SF pop  (t=4440ms, after 7 QF slots * 80ms + 300ms)
+    // Stage 5: Final   (t=4980ms, after 3 SF slots * 80ms + 300ms)
+    // Stage 6: Trophy  (t=5360ms, after 1 Final slot * 80ms + 300ms)
+    const timers = [
+      setTimeout(() => setRevealStage(1), 100),
+      setTimeout(() => setRevealStage(2), 800),
+      setTimeout(() => setRevealStage(3), 3580),
+      setTimeout(() => setRevealStage(4), 4440),
+      setTimeout(() => setRevealStage(5), 4980),
+      setTimeout(() => setRevealStage(6), 5360),
+    ]
+    return () => timers.forEach(clearTimeout)
+  }, [replayKey])
 
   const onHover = useCallback((key: string, info: HoverInfo) => {
     setHovered(info)
@@ -470,7 +509,7 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
           {pairLines(4,  i => bracketAngle(i, 3), RADIUS.sf,   NODE_R.sffinal, p => bracketAngle(p, 4), RADIUS.final)}
           {finalToTrophy}
 
-          {/* R32 — global indices 0-31 */}
+          {/* R32 — stage 1, all together */}
           {r32Teams.map((name, i) => {
             const ck = `r32-${i}`
             const a = r32Angle(i)
@@ -486,11 +525,12 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                 opponent={opp} score={score} date={m?.date}
                 matchProbSelf={ps} matchProbOpp={po}
                 onHover={onHover} onLeave={onLeave}
+                revealStage={revealStage} myStage={1} staggerMs={0}
               />
             )
           })}
 
-          {/* R16 — global indices 32-47 */}
+          {/* R16 — stage 2, staggered by slot index */}
           {r16VisualSlots.map((slot, j) => {
             const ck = `r16-${j}`
             const [cx, cy] = svgPos(bracketAngle(j, 1), RADIUS.r16)
@@ -503,11 +543,12 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                 opponent={slot.opponent} score={slot.score} date={slot.date}
                 matchProbSelf={ps} matchProbOpp={po}
                 onHover={onHover} onLeave={onLeave}
+                revealStage={revealStage} myStage={2} staggerMs={j * 80}
               />
             )
           })}
 
-          {/* QF — global indices 48-55 */}
+          {/* QF — stage 3, staggered */}
           {qfSlots.map((slot, k) => {
             const ck = `qf-${k}`
             const [cx, cy] = svgPos(bracketAngle(k, 2), RADIUS.qf)
@@ -520,11 +561,12 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                 opponent={slot.opponent} score={slot.score} date={slot.date}
                 matchProbSelf={ps} matchProbOpp={po}
                 onHover={onHover} onLeave={onLeave}
+                revealStage={revealStage} myStage={3} staggerMs={k * 80}
               />
             )
           })}
 
-          {/* SF — global indices 56-59 */}
+          {/* SF — stage 4, staggered */}
           {sfSlots.map((slot, l) => {
             const ck = `sf-${l}`
             const [cx, cy] = svgPos(bracketAngle(l, 3), RADIUS.sf)
@@ -537,11 +579,12 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                 opponent={slot.opponent} score={slot.score} date={slot.date}
                 matchProbSelf={ps} matchProbOpp={po}
                 onHover={onHover} onLeave={onLeave}
+                revealStage={revealStage} myStage={4} staggerMs={l * 80}
               />
             )
           })}
 
-          {/* Final — global indices 60-61 */}
+          {/* Final — stage 5, staggered */}
           {finalSlots.map((slot, n) => {
             const ck = `final-${n}`
             const [cx, cy] = svgPos(bracketAngle(n, 4), RADIUS.final)
@@ -554,9 +597,18 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                 opponent={slot.opponent} score={slot.score}
                 matchProbSelf={ps} matchProbOpp={po}
                 onHover={onHover} onLeave={onLeave}
+                revealStage={revealStage} myStage={5} staggerMs={n * 80}
               />
             )
           })}
+
+          {/* Trophy champion glow burst at stage 6 */}
+          {revealStage >= 6 && champion && (
+            <circle cx={CX} cy={CY} r={TROPHY_R + 14}
+              fill="none" stroke="#C9A027" strokeWidth={3}
+              style={{ animation: 'trophyGoldBurst 2s ease-out forwards', opacity: 0 }}
+            />
+          )}
 
           {/* Trophy */}
           <g
@@ -621,6 +673,16 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
             <span className="font-mono-data text-[11px] text-text-muted">{label}</span>
           </div>
         ))}
+      </div>
+
+      <div className="flex justify-center">
+        <button
+          onClick={() => setReplayKey(k => k + 1)}
+          className="font-mono-data text-text-muted hover:text-text-primary transition-colors"
+          style={{ fontSize: 12 }}
+        >
+          Replay animation ↺
+        </button>
       </div>
 
       <div className="pb-2" />

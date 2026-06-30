@@ -44,8 +44,8 @@ def main():
     current_elo = update_with_wc_results(wc_matches, base_elo, xg_data)
 
     # ── STEP 4: MONTE CARLO SIMULATION ────────────────────────────────────
-    print("\n[4/6] Running Monte Carlo simulation (10,000 runs)...")
-    win_probs = run_simulation(wc_matches, current_elo, n=10000)
+    print("\n[4/6] Running Monte Carlo simulation (100,000 runs)...")
+    win_probs = run_simulation(wc_matches, current_elo, n=100000)
 
     # ── STEP 5: MODEL VS MARKET COMPARISON ────────────────────────────────
     print("\n[5/6] Model vs market comparison...")

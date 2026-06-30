@@ -18,6 +18,7 @@ import HeadToHead from './HeadToHead'
 import BuildingTab from './BuildingTab'
 import OnboardingOverlay from './OnboardingOverlay'
 import { getFlag } from '@/lib/flags'
+import { getPacificDateString } from '@/lib/dateUtils'
 
 // ── Types ─────────────────────────────────────────────────────
 
@@ -31,7 +32,7 @@ interface DashboardTabsProps {
   generatedAt: string
 }
 
-const TABS = ['BRACKET', 'OVERVIEW', 'MY MODEL', 'GROUPS', 'BUILDING'] as const
+const TABS = ['BRACKET', 'OVERVIEW', 'MY MODEL', 'GROUPS'] as const
 type Tab = typeof TABS[number]
 
 // ── Daily summary ─────────────────────────────────────────────
@@ -46,7 +47,7 @@ function parseBullets(text: string): string[] {
 }
 
 function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = getPacificDateString()
   const [bullets, setBullets] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [displayDate, setDisplayDate] = useState('')
@@ -98,26 +99,6 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
   if (displayMatches.length === 0) return null
   const isToday = displayDate === today
 
-  // Compute top 3 teams by points across all completed matches
-  const standingsMap: Record<string, { pts: number; gd: number; gf: number }> = {}
-  for (const m of matches) {
-    if (!m.score) continue
-    const [g1, g2] = m.score.ft
-    if (!standingsMap[m.team1]) standingsMap[m.team1] = { pts: 0, gd: 0, gf: 0 }
-    if (!standingsMap[m.team2]) standingsMap[m.team2] = { pts: 0, gd: 0, gf: 0 }
-    standingsMap[m.team1].gf += g1
-    standingsMap[m.team1].gd += g1 - g2
-    standingsMap[m.team2].gf += g2
-    standingsMap[m.team2].gd += g2 - g1
-    if (g1 > g2) { standingsMap[m.team1].pts += 3 }
-    else if (g2 > g1) { standingsMap[m.team2].pts += 3 }
-    else { standingsMap[m.team1].pts += 1; standingsMap[m.team2].pts += 1 }
-  }
-  const top3 = Object.entries(standingsMap)
-    .sort(([, a], [, b]) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf)
-    .slice(0, 3)
-
-
   return (
     <section
       className="rounded-sm px-5 py-4"
@@ -126,15 +107,18 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
       <p className="font-mono-data text-[10px] uppercase tracking-widest mb-2" style={{ color: '#C9A027' }}>
         {isToday ? 'WHAT HAPPENED TODAY' : `LAST MATCHDAY · ${displayDate}`}
       </p>
-      <div className="flex flex-wrap gap-x-6 gap-y-1 mb-3">
+      <div
+        className="scrollbar-hide mb-3"
+        style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', whiteSpace: 'nowrap' } as React.CSSProperties}
+      >
         {displayMatches.map((m, i) => (
-          <p key={i} className="font-body text-sm text-text-primary">
+          <span key={i} className="inline-block font-body text-sm text-text-primary mr-6">
             {getFlag(m.team1)} {m.team1}{' '}
             <span className="font-display text-base" style={{ color: '#C9A027' }}>
               {m.score!.ft[0]}–{m.score!.ft[1]}
             </span>{' '}
             {m.team2} {getFlag(m.team2)}
-          </p>
+          </span>
         ))}
       </div>
       {loading && (
@@ -145,7 +129,7 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
           <div
             className="space-y-1.5 overflow-y-auto"
             style={{
-              maxHeight: 180,
+              maxHeight: 200,
               scrollbarWidth: 'thin',
               scrollbarColor: '#C9A027 transparent',
             } as React.CSSProperties}
@@ -163,25 +147,6 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
           />
         </div>
       )}
-      {top3.length > 0 && (
-        <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(201,160,39,0.3)' }}>
-          <p className="font-mono-data text-[10px] uppercase tracking-widest mb-2" style={{ color: '#C9A027' }}>
-            Leading the tournament
-          </p>
-          <div
-            className="scrollbar-hide flex gap-4 pb-1"
-            style={{ overflowX: 'auto' }}
-          >
-            {top3.map(([team, { pts }]) => (
-              <div key={team} className="flex items-center gap-1.5 flex-shrink-0 whitespace-nowrap">
-                <span style={{ fontSize: 18 }}>{getFlag(team)}</span>
-                <span className="font-body text-[13px] font-semibold text-text-primary">{team}</span>
-                <span className="font-mono-data text-[13px]" style={{ color: '#C9A027' }}>{pts}pts</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </section>
   )
 }
@@ -189,7 +154,7 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
 // ── Recent matches with recap + YouTube ───────────────────────
 
 function RecentMatches({ matches }: { matches: WCMatch[] }) {
-  const today = new Date().toISOString().split('T')[0]
+  const today = getPacificDateString()
   const formatted = new Date(today + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   const todayMatches = matches.filter(m => m.score && m.date === today)
 
@@ -281,7 +246,7 @@ function CrazyStatOfDay({
   worldcupMatches: WCMatch[]
   teams: TeamComparison[]
 }) {
-  const today = new Date().toISOString().split('T')[0]
+  const today = getPacificDateString()
 
   // Only check today's completed matches
   const todayCompleted = worldcupMatches.filter(
@@ -438,8 +403,8 @@ function CrazyStatOfDay({
 // ── Compact upcoming predictions ──────────────────────────────
 
 function CompactUpcoming({ matches, teams }: { matches: WCMatch[]; teams: TeamComparison[] }) {
-  const today = new Date().toISOString().slice(0, 10)
-  const in3 = new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10)
+  const today = getPacificDateString()
+  const in3 = getPacificDateString(3)
   const upcoming = matches.filter(m => !m.score && m.date >= today && m.date <= in3)
     .sort((a, b) => a.date.localeCompare(b.date))
 
@@ -550,7 +515,7 @@ function AboutThisModel() {
             Monte Carlo Simulation
           </p>
           <p className="font-body text-sm text-text-muted leading-relaxed">
-            We simulate the entire tournament 10,000 times. Each match probability is derived from Elo ratings. The win % figures show how often each team wins the World Cup across all simulations.{' '}
+            We simulate the entire tournament 100,000 times. Each match probability is derived from Elo ratings. The win % figures show how often each team wins the World Cup across all simulations.{' '}
             <a
               href="https://en.wikipedia.org/wiki/Monte_Carlo_method"
               target="_blank"
@@ -564,6 +529,43 @@ function AboutThisModel() {
         </div>
       </div>
     </section>
+  )
+}
+
+// ── Leading the Tournament tile ───────────────────────────────
+
+function LeadingTile({ matches }: { matches: WCMatch[] }) {
+  const map: Record<string, { pts: number; gd: number; gf: number }> = {}
+  for (const m of matches) {
+    if (!m.score) continue
+    const [g1, g2] = m.score.ft
+    if (!map[m.team1]) map[m.team1] = { pts: 0, gd: 0, gf: 0 }
+    if (!map[m.team2]) map[m.team2] = { pts: 0, gd: 0, gf: 0 }
+    map[m.team1].gf += g1; map[m.team1].gd += g1 - g2
+    map[m.team2].gf += g2; map[m.team2].gd += g2 - g1
+    if (g1 > g2) { map[m.team1].pts += 3 }
+    else if (g2 > g1) { map[m.team2].pts += 3 }
+    else { map[m.team1].pts += 1; map[m.team2].pts += 1 }
+  }
+  const top3 = Object.entries(map)
+    .sort(([, a], [, b]) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf)
+    .slice(0, 3)
+
+  return (
+    <div className="bg-card border border-border/30 rounded-sm p-4 flex flex-col gap-1">
+      <p className="font-mono-data text-xs text-text-muted uppercase tracking-widest">
+        Leading the Tournament
+      </p>
+      <div className="flex flex-col mt-1" style={{ gap: 4 }}>
+        {top3.map(([team, { pts }]) => (
+          <div key={team} className="flex items-center gap-1.5">
+            <span style={{ fontSize: 14 }}>{getFlag(team)}</span>
+            <span className="font-body text-text-primary" style={{ fontSize: 12 }}>{team}</span>
+            <span className="font-mono-data font-bold" style={{ fontSize: 12, color: '#C9A027', marginLeft: 'auto' }}>{pts}pts</span>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -608,7 +610,7 @@ export default function DashboardTabs({
             <StatCard label="Matches Played" value={matchesPlayed} />
             <StatCard label="Teams Remaining" value={32} />
             <StatCard label="Final Date" value="Jul 19" />
-            <StatCard label="Simulations" value="10k" />
+            <LeadingTile matches={worldcupMatches} />
           </div>
 
           <DailySummaryCard matches={worldcupMatches} />
@@ -639,10 +641,12 @@ export default function DashboardTabs({
 
       {/* MY MODEL */}
       {activeTab === 'MY MODEL' && (
-        <div className="space-y-6">
+        <div className="model-theme space-y-6">
           <AboutThisModel />
 
-          <WinProbDoughnut teams={teams} />
+          <div className="doughnut-wrap">
+            <WinProbDoughnut teams={teams} />
+          </div>
 
           <CompactUpcoming matches={worldcupMatches} teams={teams} />
 
@@ -650,11 +654,6 @@ export default function DashboardTabs({
 
           <div className="pb-2" />
         </div>
-      )}
-
-      {/* BUILDING */}
-      {activeTab === 'BUILDING' && (
-        <BuildingTab descriptive={descriptive} worldcupMatches={worldcupMatches} />
       )}
 
       {/* GROUPS */}

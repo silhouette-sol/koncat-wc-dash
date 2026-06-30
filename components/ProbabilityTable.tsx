@@ -43,7 +43,7 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
               rel="noopener noreferrer"
               className="underline hover:text-text-primary transition-colors"
             >
-              10k simulations
+              100K simulations
             </a>
           </span>
         </div>
@@ -58,7 +58,7 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
           {explainerOpen && (
             <div className="mt-2 p-3 rounded-sm space-y-1.5" style={{ background: 'rgba(11,29,58,0.5)', border: '1px solid rgba(201,160,39,0.2)' }}>
               <p className="font-body text-xs text-text-muted leading-relaxed">
-                <strong className="text-text-primary">Model %</strong> = how often this team wins across 10,000 simulated tournaments using{' '}
+                <strong className="text-text-primary">Model %</strong> = how often this team wins across 100,000 simulated tournaments using{' '}
                 <a href="https://en.wikipedia.org/wiki/Elo_rating_system" target="_blank" rel="noopener noreferrer" className="underline hover:text-text-primary">Elo ratings</a>.
               </p>
               <p className="font-body text-xs text-text-muted leading-relaxed">
@@ -95,7 +95,7 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
                   Model%
                   <InfoTooltip
                     term="Model %"
-                    definition="How often this team wins the tournament across 10,000 Monte Carlo simulations. Each run uses Elo ratings to determine each match outcome."
+                    definition="How often this team wins the tournament across 100,000 Monte Carlo simulations. Each run uses Elo ratings to determine each match outcome."
                     link="https://en.wikipedia.org/wiki/Monte_Carlo_method"
                   />
                 </span>

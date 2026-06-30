@@ -109,7 +109,7 @@ export default function OnboardingOverlay() {
                   Monte Carlo Simulation
                 </p>
                 <p className="font-body text-sm text-text-muted leading-relaxed">
-                  We simulate the entire tournament 10,000 times. Each match outcome is drawn from Elo-based probabilities. The win % shows how often each team lifts the trophy across all simulations.
+                  We simulate the entire tournament 100,000 times. Each match outcome is drawn from Elo-based probabilities. The win % shows how often each team lifts the trophy across all simulations.
                 </p>
               </div>
               <div>

@@ -113,7 +113,7 @@ export default function WinProbDoughnut({ teams }: WinProbDoughnutProps) {
           MODEL WIN PROBABILITY
         </h2>
         <p className="font-mono-data text-xs text-text-muted mt-0.5">
-          How likely is each team to win the tournament based on 10,000 simulated tournaments using{' '}
+          How likely is each team to win the tournament based on 100,000 simulated tournaments using{' '}
           <a
             href="https://en.wikipedia.org/wiki/Elo_rating_system"
             target="_blank"
