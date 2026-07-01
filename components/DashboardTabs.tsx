@@ -532,34 +532,58 @@ function AboutThisModel() {
 function GoldenBootTile({ entries }: { entries: GoldenBootEntry[] }) {
   if (!entries.length) return (
     <div className="bg-card border border-border/30 rounded-sm p-4 flex flex-col justify-center">
-      <p className="font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Golden Boot Leader</p>
+      <p className="font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Golden Boot</p>
       <p className="font-body text-sm text-text-muted mt-2">No goals yet</p>
     </div>
   )
   const topGoals = entries[0].goals
-  const tied = entries.filter(e => e.goals === topGoals).sort((a, b) => a.player.localeCompare(b.player))
-  const top = tied[0]
-  const isTied = tied.length > 1
+  const leaders = entries.filter(e => e.goals === topGoals).sort((a, b) => a.player.localeCompare(b.player))
+
+  if (leaders.length === 1) {
+    const top = leaders[0]
+    return (
+      <div className="bg-card border border-border/30 rounded-sm p-4 flex flex-col gap-1">
+        <p className="font-mono-data text-[10px] text-text-muted uppercase tracking-widest">
+          Golden Boot Leader
+        </p>
+        <div className="flex flex-col items-center gap-0.5 mt-1">
+          <span style={{ fontSize: 24 }}>{getFlag(top.team)}</span>
+          <span className="font-body font-semibold text-text-primary text-center leading-snug" style={{ fontSize: 14 }}>
+            {top.player}
+          </span>
+          <span className="font-display font-bold" style={{ fontSize: 28, color: '#e3c27e', lineHeight: 1 }}>
+            {top.goals}
+          </span>
+          <span className="font-mono-data text-text-muted" style={{ fontSize: 11 }}>goals</span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-card border border-border/30 rounded-sm p-4 flex flex-col gap-1">
       <p className="font-mono-data text-[10px] text-text-muted uppercase tracking-widest">
-        Golden Boot Leader
+        Golden Boot
       </p>
-      <div className="flex flex-col items-center gap-0.5 mt-1">
-        <span style={{ fontSize: 24 }}>{getFlag(top.team)}</span>
-        <span className="font-body font-semibold text-text-primary text-center leading-snug" style={{ fontSize: 14 }}>
-          {top.player}
-        </span>
-        <div className="flex items-baseline gap-1">
-          <span className="font-display font-bold" style={{ fontSize: 28, color: '#e3c27e', lineHeight: 1 }}>
-            {top.goals}
-          </span>
-          {isTied && (
-            <span className="font-mono-data text-text-muted" style={{ fontSize: 10 }}>T-1</span>
-          )}
-        </div>
-        <span className="font-mono-data text-text-muted" style={{ fontSize: 11 }}>goals</span>
+      <div className="flex flex-col mt-1" style={{ gap: 6 }}>
+        {leaders.map((p, i) => (
+          <div key={p.player} className="flex items-center gap-2">
+            <span style={{ fontSize: 16, lineHeight: 1, fontFamily: "'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif" }}>
+              {getFlag(p.team)}
+            </span>
+            <span className="font-body font-medium text-text-primary flex-1 truncate" style={{ fontSize: 13 }}>
+              {p.player}
+            </span>
+            <div className="flex items-baseline gap-1 shrink-0">
+              <span className="font-display font-bold" style={{ fontSize: 14, color: '#e3c27e', lineHeight: 1 }}>
+                {p.goals}
+              </span>
+              {i === 0 && (
+                <span className="font-mono-data text-text-muted" style={{ fontSize: 9 }}>goals</span>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )
