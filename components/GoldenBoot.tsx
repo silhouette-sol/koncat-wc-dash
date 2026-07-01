@@ -60,7 +60,7 @@ export default function GoldenBoot({ entries }: GoldenBootProps) {
               <div className="w-full h-1 bg-border/20 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all"
-                  style={{ width: `${barWidth}%`, backgroundColor: '#C9A027' }}
+                  style={{ width: `${barWidth}%`, backgroundColor: '#e3c27e' }}
                 />
               </div>
             </div>

@@ -67,7 +67,7 @@ export default function SmallestNations({ nations }: SmallestNationsProps) {
         })}
       </div>
 
-      <div className="px-5 py-2.5 border-t border-border/40 bg-[#F0E8D8]/40">
+      <div className="px-5 py-2.5 border-t border-border/40" style={{ background: 'rgba(255,255,255,0.04)' }}>
         <p className="font-mono-data text-[10px] text-text-muted">
           Uruguay won in 1930 and 1950 with just 1.7M people — small nations have done it before.
         </p>

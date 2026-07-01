@@ -59,7 +59,7 @@ export default function AccuracyTracker({ showFullExplanation }: AccuracyTracker
           <p className="font-display text-5xl text-text-primary leading-none">
             {correct}/{total}
           </p>
-          <p className="font-display text-3xl leading-none pb-1" style={{ color: '#C9A027' }}>{pct}%</p>
+          <p className="font-display text-3xl leading-none pb-1" style={{ color: '#e3c27e' }}>{pct}%</p>
           <p className="font-mono-data text-xs text-text-muted pb-1">correct</p>
         </div>
         <div className="h-2 rounded-sm overflow-hidden flex">
@@ -69,7 +69,7 @@ export default function AccuracyTracker({ showFullExplanation }: AccuracyTracker
 
         {showFullExplanation && (
           <div className="border-t border-border/20 pt-4 space-y-2">
-            <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#C9A027' }}>
+            <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#e3c27e' }}>
               HOW THIS WORKS
             </p>
             <p className="font-body text-sm text-text-muted leading-relaxed">

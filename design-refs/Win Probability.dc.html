@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; min-height:100%; background:#07090e; }
+  @keyframes shimmer{ 0%{ background-position:160% 0; } 100%{ background-position:-60% 0; } }
+  @keyframes breathe{ 0%,100%{ opacity:.45; transform:scale(.92); } 50%{ opacity:1; transform:scale(1.05); } }
+  @keyframes rise{ 0%{ opacity:0; transform:translateY(14px); } 100%{ opacity:1; transform:none; } }
+</style>
+</helmet>
+<div data-screen-label="Win probability chart" style="min-height:100vh; width:100%; padding:clamp(16px,4vw,56px); display:flex; align-items:center; justify-content:center; font-family:system-ui,-apple-system,'Segoe UI',sans-serif; background:radial-gradient(60% 55% at 82% 6%, rgba(227,194,126,0.12), transparent 60%), radial-gradient(130% 120% at 18% 0%, #1b2436 0%, #0c0f17 46%, #07090e 100%);">
+  <div style="position:relative; width:100%; max-width:1080px; padding:clamp(22px,3.4vw,42px); border-radius:28px; overflow:hidden; background:linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)); backdrop-filter:blur(22px) saturate(1.25); -webkit-backdrop-filter:blur(22px) saturate(1.25); border:1px solid rgba(255,255,255,0.09); box-shadow:0 40px 120px -45px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.08);">
+
+    <div style="position:absolute; inset:0; pointer-events:none; background:linear-gradient(115deg, transparent 42%, rgba(255,255,255,0.05) 50%, transparent 58%); background-size:250% 100%; animation:shimmer 8s linear infinite;"></div>
+
+    <div style="position:relative; display:flex; align-items:center; gap:11px;">
+      <span style="width:9px; height:9px; border-radius:50%; background:{{ accent }}; box-shadow:0 0 14px {{ accent }};"></span>
+      <h2 style="margin:0; font-size:clamp(15px,1.7vw,18px); letter-spacing:0.15em; font-weight:600; color:#f3ede0; text-transform:uppercase;">Model Win Probability</h2>
+    </div>
+    <p style="position:relative; margin:9px 0 0; font-size:clamp(12.5px,1.3vw,14px); color:rgba(243,237,224,0.52); max-width:62ch; line-height:1.55;">How likely is each team to win the tournament, based on 100,000 simulated tournaments using <a href="#" style="color:{{ accent }}; text-decoration:none; border-bottom:1px solid rgba(227,194,126,0.45);">Elo ratings</a>.</p>
+
+    <div style="position:relative; margin:clamp(18px,2.4vw,26px) 0 0; height:1px; background:linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02));"></div>
+
+    <div style="position:relative; display:flex; flex-wrap:wrap; align-items:center; gap:clamp(20px,3vw,52px); margin-top:clamp(22px,3vw,34px);">
+
+      <div style="position:relative; flex:0 1 360px; width:clamp(220px,42vw,380px); aspect-ratio:1; min-width:200px; margin:0 auto;">
+        <sc-if value="{{ ambient }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute; inset:14%; border-radius:50%; background:{{ glowBg }}; filter:blur(22px); animation:breathe 4.6s ease-in-out infinite; pointer-events:none;"></div>
+        </sc-if>
+        <svg viewBox="0 0 200 200" style="position:relative; width:100%; height:100%; display:block; overflow:visible;">
+          <sc-for list="{{ segments }}" as="seg" hint-placeholder-count="10">
+            <circle cx="100" cy="100" r="78" fill="none" stroke="{{ seg.color }}" stroke-linecap="round" stroke-dasharray="{{ seg.dash }}" transform="{{ seg.transform }}" onMouseEnter="{{ seg.onEnter }}" onMouseLeave="{{ seg.onLeave }}" style="stroke-width:{{ seg.sw }}px; opacity:{{ seg.opacity }}; filter:{{ seg.filter }}; transition:stroke-width .35s ease, opacity .3s ease, filter .3s ease; cursor:pointer;"></circle>
+          </sc-for>
+        </svg>
+        <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; pointer-events:none; gap:3px;">
+          <span style="font-size:clamp(26px,4.4vw,36px); line-height:1;">{{ center.flag }}</span>
+          <div style="font-size:clamp(34px,6.2vw,52px); font-weight:700; color:#fff; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; line-height:1;">{{ center.pct }}<span style="font-size:0.5em; font-weight:600; opacity:0.75; margin-left:2px;">%</span></div>
+          <span style="font-size:clamp(13px,1.6vw,15px); color:rgba(255,255,255,0.72); font-weight:500;">{{ center.name }}</span>
+          <span style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.13em; color:{{ accent }}; margin-top:2px;">{{ center.label }}</span>
+        </div>
+      </div>
+
+      <div style="flex:1 1 360px; min-width:240px; display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:clamp(3px,0.8vw,7px);">
+        <sc-for list="{{ legend }}" as="item" hint-placeholder-count="10">
+          <div onMouseEnter="{{ item.onEnter }}" onMouseLeave="{{ item.onLeave }}" style="display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:12px; cursor:pointer; background:{{ item.bg }}; opacity:{{ item.opacity }}; transition:background .25s ease, opacity .25s ease;">
+            <span style="width:9px; height:9px; border-radius:50%; flex:none; background:{{ item.color }}; box-shadow:0 0 8px {{ item.glow }};"></span>
+            <span style="font-size:16px; line-height:1;">{{ item.flag }}</span>
+            <span style="flex:1; font-size:clamp(13px,1.4vw,15px); color:#ece6d8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ item.name }}</span>
+            <span style="font-variant-numeric:tabular-nums; font-weight:600; font-size:clamp(13px,1.4vw,15px); color:#fff;">{{ item.pctStr }}<span style="opacity:0.55; font-weight:500;">%</span></span>
+          </div>
+        </sc-for>
+      </div>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1080,&quot;height&quot;:600},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#e3c27e&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Style&quot;},&quot;thickness&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:16,&quot;min&quot;:8,&quot;max&quot;:28,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Style&quot;},&quot;gap&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:6,&quot;min&quot;:0,&quot;max&quot;:16,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Style&quot;},&quot;ambient&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Motion&quot;}}">
+class Component extends DCLogic {
+  state = { p: 0, hovered: null };
+
+  TEAMS = [
+    { name: 'France',      pct: 20.3, color: '#2138b8', flag: '\u{1F1EB}\u{1F1F7}' },
+    { name: 'England',     pct: 17.6, color: '#e23039', flag: '\u{1F3F4}\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}' },
+    { name: 'Spain',       pct: 13.5, color: '#c01528', flag: '\u{1F1EA}\u{1F1F8}' },
+    { name: 'Argentina',   pct: 6.4,  color: '#74b3e0', flag: '\u{1F1E6}\u{1F1F7}' },
+    { name: 'Brazil',      pct: 6.3,  color: '#00a14b', flag: '\u{1F1E7}\u{1F1F7}' },
+    { name: 'Germany',     pct: 4.5,  color: '#5a6068', flag: '\u{1F1E9}\u{1F1EA}' },
+    { name: 'Morocco',     pct: 4.4,  color: '#c1272d', flag: '\u{1F1F2}\u{1F1E6}' },
+    { name: 'Netherlands', pct: 4.1,  color: '#ff7a00', flag: '\u{1F1F3}\u{1F1F1}' },
+    { name: 'Portugal',    pct: 3.7,  color: '#0a8a44', flag: '\u{1F1F5}\u{1F1F9}' },
+    { name: 'Norway',      pct: 3.3,  color: '#ef3340', flag: '\u{1F1F3}\u{1F1F4}' },
+  ];
+
+  startAnim() {
+    if (this._started) return;
+    this._started = true;
+    const dur = 1700, start = Date.now();
+    const tick = () => {
+      const t = Math.min(1, (Date.now() - start) / dur);
+      const e = 1 - Math.pow(1 - t, 3);
+      this.setState({ p: e });
+      if (t < 1) this._timer = setTimeout(tick, 16);
+    };
+    tick();
+  }
+  componentDidMount() { this.startAnim(); }
+  componentWillUnmount() { clearTimeout(this._timer); }
+
+  hexA(h, a) {
+    h = h.replace('#', '');
+    if (h.length === 3) h = h.split('').map(c => c + c).join('');
+    const n = parseInt(h, 16);
+    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+  }
+
+  renderVals() {
+    const accent = this.props.accent ?? '#e3c27e';
+    const thickness = this.props.thickness ?? 16;
+    const gapPx = this.props.gap ?? 6;
+    const ambient = this.props.ambient ?? true;
+    const p = this.state.p;
+    const hov = this.state.hovered;
+
+    const R = 78, C = 2 * Math.PI * R;
+    const total = this.TEAMS.reduce((s, t) => s + t.pct, 0);
+    let leadIdx = 0;
+    this.TEAMS.forEach((t, i) => { if (t.pct > this.TEAMS[leadIdx].pct) leadIdx = i; });
+
+    const segments = [];
+    const legend = [];
+    let cum = 0;
+    this.TEAMS.forEach((t, i) => {
+      const frac = t.pct / total;
+      const segLen = frac * C;
+      const visLen = Math.max(0, segLen - gapPx);
+      const startOff = cum + gapPx / 2;
+      const drawn = Math.max(0, Math.min(visLen, p * C - startOff));
+      const angle = -90 + (startOff / C) * 360;
+      const active = hov === null || hov === i;
+      const started = drawn > 0.4;
+      segments.push({
+        color: t.color,
+        dash: `${drawn.toFixed(2)} ${C.toFixed(2)}`,
+        transform: `rotate(${angle.toFixed(3)} 100 100)`,
+        sw: hov === i ? thickness + 11 : thickness,
+        opacity: !started ? 0 : (active ? 1 : 0.22),
+        filter: hov === i ? `drop-shadow(0 0 14px ${this.hexA(t.color, 0.95)})` : 'none',
+        onEnter: () => this.setState({ hovered: i }),
+        onLeave: () => this.setState({ hovered: null }),
+        key: t.name,
+      });
+      legend.push({
+        color: t.color,
+        glow: this.hexA(t.color, 0.75),
+        flag: t.flag,
+        name: t.name,
+        pctStr: (t.pct * p).toFixed(1),
+        bg: hov === i ? 'rgba(255,255,255,0.07)' : 'transparent',
+        opacity: hov === null || hov === i ? 1 : 0.4,
+        onEnter: () => this.setState({ hovered: i }),
+        onLeave: () => this.setState({ hovered: null }),
+        key: t.name,
+      });
+      cum += segLen;
+    });
+
+    const showT = hov !== null ? this.TEAMS[hov] : this.TEAMS[leadIdx];
+    const cp = hov !== null ? 1 : p;
+    const center = {
+      flag: showT.flag,
+      pct: (showT.pct * cp).toFixed(1),
+      name: showT.name,
+      label: hov !== null ? 'Win probability' : 'Projected winner',
+    };
+
+    return {
+      accent,
+      ambient,
+      glowBg: `radial-gradient(closest-side, ${this.hexA(accent, 0.2)}, transparent 70%)`,
+      segments,
+      legend,
+      center,
+    };
+  }
+}
+</script>
+</body>
+</html>

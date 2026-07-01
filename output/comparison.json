@@ -1,84 +1,84 @@
 {
-  "generated_at": "2026-06-30T16:16:44.403996",
+  "generated_at": "2026-07-01T17:33:53.573994",
   "market_source": "prediction_market_odds",
   "simulation_runs": 10000,
   "teams": [
     {
       "name": "France",
-      "elo_rating": 1776,
-      "elo_win_prob": 0.2041,
+      "elo_rating": 1784,
+      "elo_win_prob": 0.2154,
       "market_win_prob": 0.217,
-      "delta": -0.0129,
+      "delta": -0.0016,
       "signal": "\u26aa neutral",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1564,
-      "path_note": "Could face Spain and Morocco before the Final"
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
     },
     {
       "name": "England",
       "elo_rating": 1761,
-      "elo_win_prob": 0.1794,
+      "elo_win_prob": 0.171,
       "market_win_prob": 0.143,
-      "delta": 0.0364,
+      "delta": 0.028,
       "signal": "\u26aa neutral",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1537,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1517,
+      "path_note": "Avoids Spain and Portugal until the Final \u2014 favorable bracket draw"
     },
     {
       "name": "Spain",
       "elo_rating": 1733,
-      "elo_win_prob": 0.1354,
+      "elo_win_prob": 0.1315,
       "market_win_prob": 0.154,
-      "delta": -0.0186,
+      "delta": -0.0225,
       "signal": "\u26aa neutral",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1567,
-      "path_note": "Could face France and Germany before the Final"
-    },
-    {
-      "name": "Argentina",
-      "elo_rating": 1666,
-      "elo_win_prob": 0.0619,
-      "market_win_prob": 0.133,
-      "delta": -0.0711,
-      "signal": "\ud83d\udd34 MARKET FAVORS",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1543,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1540,
+      "path_note": "Avoids England and Argentina until the Final \u2014 favorable bracket draw"
     },
     {
       "name": "Brazil",
       "elo_rating": 1665,
-      "elo_win_prob": 0.0616,
+      "elo_win_prob": 0.0623,
       "market_win_prob": 0.071,
-      "delta": -0.0094,
+      "delta": -0.0087,
       "signal": "\u26aa neutral",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
+    },
+    {
+      "name": "Argentina",
+      "elo_rating": 1666,
+      "elo_win_prob": 0.062,
+      "market_win_prob": 0.133,
+      "delta": -0.071,
+      "signal": "\ud83d\udd34 MARKET FAVORS",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1543,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1528,
+      "path_note": "Avoids Spain and Portugal until the Final \u2014 favorable bracket draw"
     },
     {
       "name": "Germany",
       "elo_rating": 1638,
-      "elo_win_prob": 0.0445,
+      "elo_win_prob": 0.0437,
       "market_win_prob": 0.071,
-      "delta": -0.0265,
+      "delta": -0.0273,
       "signal": "\u26aa neutral",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1575,
-      "path_note": "Could face Spain and Morocco before the Final"
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
     },
     {
       "name": "Morocco",
       "elo_rating": 1635,
-      "elo_win_prob": 0.0431,
+      "elo_win_prob": 0.0419,
       "market_win_prob": 0.028,
-      "delta": 0.0151,
+      "delta": 0.0139,
       "signal": "\u26aa neutral",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1575,
-      "path_note": "Could face France and Spain before the Final"
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
     },
     {
       "name": "Netherlands",
@@ -87,119 +87,108 @@
       "market_win_prob": 0.056,
       "delta": -0.0147,
       "signal": "\u26aa neutral",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1575,
-      "path_note": "Could face France and Spain before the Final"
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
+    },
+    {
+      "name": "Norway",
+      "elo_rating": 1629,
+      "elo_win_prob": 0.0397,
+      "market_win_prob": 0.032,
+      "delta": 0.0077,
+      "signal": "\u26aa neutral",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
     },
     {
       "name": "Portugal",
       "elo_rating": 1623,
-      "elo_win_prob": 0.0357,
+      "elo_win_prob": 0.0345,
       "market_win_prob": 0.091,
-      "delta": -0.0553,
+      "delta": -0.0565,
       "signal": "\ud83d\udd34 MARKET FAVORS",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1576,
-      "path_note": "Could face France and Germany before the Final"
-    },
-    {
-      "name": "Norway",
-      "elo_rating": 1617,
-      "elo_win_prob": 0.0324,
-      "market_win_prob": 0.032,
-      "delta": 0.0004,
-      "signal": "\u26aa neutral",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1547,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1555,
+      "path_note": "Avoids England and Argentina until the Final \u2014 favorable bracket draw"
     },
     {
       "name": "Belgium",
       "elo_rating": 1576,
-      "elo_win_prob": 0.0183,
+      "elo_win_prob": 0.0187,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1580,
-      "path_note": "Could face France and Spain before the Final"
+      "path_difficulty": "easy",
+      "avg_potential_opp_elo": 1562,
+      "path_note": "Avoids England and Argentina until the Final \u2014 favorable bracket draw"
+    },
+    {
+      "name": "Mexico",
+      "elo_rating": 1564,
+      "elo_win_prob": 0.0154,
+      "market_win_prob": 0.022,
+      "delta": -0.0066,
+      "signal": "\u26aa neutral",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
     },
     {
       "name": "Switzerland",
       "elo_rating": 1560,
-      "elo_win_prob": 0.0146,
+      "elo_win_prob": 0.0149,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1550,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1539,
+      "path_note": "Avoids Spain and Portugal until the Final \u2014 favorable bracket draw"
     },
     {
       "name": "Senegal",
       "elo_rating": 1559,
-      "elo_win_prob": 0.0144,
+      "elo_win_prob": 0.0142,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
       "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1581,
-      "path_note": "Could face France and Spain before the Final"
-    },
-    {
-      "name": "Colombia",
-      "elo_rating": 1543,
-      "elo_win_prob": 0.0114,
-      "market_win_prob": 0.022,
-      "delta": -0.0106,
-      "signal": "\u26aa neutral",
-      "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1551,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1565,
+      "path_note": "Could face Spain and Portugal before the Final"
     },
     {
       "name": "Croatia",
       "elo_rating": 1543,
-      "elo_win_prob": 0.0112,
+      "elo_win_prob": 0.0109,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
       "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1582,
-      "path_note": "Could face France and Germany before the Final"
+      "avg_potential_opp_elo": 1567,
+      "path_note": "Could face Belgium and Senegal before the Final"
     },
     {
-      "name": "Algeria",
-      "elo_rating": 1538,
-      "elo_win_prob": 0.011,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
-      "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1552,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
-    },
-    {
-      "name": "Mexico",
-      "elo_rating": 1542,
+      "name": "Colombia",
+      "elo_rating": 1543,
       "elo_win_prob": 0.0109,
       "market_win_prob": 0.022,
       "delta": -0.0111,
       "signal": "\u26aa neutral",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1552,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1541,
+      "path_note": "Avoids Spain and Portugal until the Final \u2014 favorable bracket draw"
     },
     {
-      "name": "Ivory Coast",
-      "elo_rating": 1537,
+      "name": "Algeria",
+      "elo_rating": 1538,
       "elo_win_prob": 0.0103,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1552,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1542,
+      "path_note": "Avoids Spain and Portugal until the Final \u2014 favorable bracket draw"
     },
     {
       "name": "Japan",
@@ -208,53 +197,64 @@
       "market_win_prob": 0.022,
       "delta": -0.0127,
       "signal": "\u26aa neutral",
-      "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1552,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
+    },
+    {
+      "name": "Ivory Coast",
+      "elo_rating": 1525,
+      "elo_win_prob": 0.008,
+      "market_win_prob": null,
+      "delta": null,
+      "signal": "no market data",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
     },
     {
       "name": "Austria",
       "elo_rating": 1517,
-      "elo_win_prob": 0.007,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1584,
-      "path_note": "Could face France and Germany before the Final"
-    },
-    {
-      "name": "DR Congo",
-      "elo_rating": 1508,
       "elo_win_prob": 0.0068,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
-      "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1554,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
+      "path_difficulty": "medium",
+      "avg_potential_opp_elo": 1571,
+      "path_note": "Could face Belgium and Senegal before the Final"
     },
     {
-      "name": "Ecuador",
-      "elo_rating": 1509,
-      "elo_win_prob": 0.0065,
+      "name": "DR Congo",
+      "elo_rating": 1508,
+      "elo_win_prob": 0.0064,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1554,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1545,
+      "path_note": "Avoids Spain and Portugal until the Final \u2014 favorable bracket draw"
+    },
+    {
+      "name": "Ecuador",
+      "elo_rating": 1487,
+      "elo_win_prob": 0.0043,
+      "market_win_prob": null,
+      "delta": null,
+      "signal": "no market data",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
     },
     {
       "name": "Egypt",
       "elo_rating": 1491,
-      "elo_win_prob": 0.0051,
+      "elo_win_prob": 0.0042,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1555,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1547,
+      "path_note": "Avoids Spain and Portugal until the Final \u2014 favorable bracket draw"
     },
     {
       "name": "Bosnia & Herzegovina",
@@ -264,35 +264,24 @@
       "delta": null,
       "signal": "no market data",
       "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1587,
-      "path_note": "Could face France and Spain before the Final"
+      "avg_potential_opp_elo": 1575,
+      "path_note": "Could face Spain and Portugal before the Final"
     },
     {
       "name": "USA",
       "elo_rating": 1475,
-      "elo_win_prob": 0.0036,
+      "elo_win_prob": 0.0033,
       "market_win_prob": 0.032,
-      "delta": -0.0284,
+      "delta": -0.0287,
       "signal": "\u26aa neutral",
       "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1587,
-      "path_note": "Could face France and Spain before the Final"
-    },
-    {
-      "name": "Sweden",
-      "elo_rating": 1471,
-      "elo_win_prob": 0.0034,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
-      "path_difficulty": "medium",
-      "avg_potential_opp_elo": 1588,
-      "path_note": "Could face Spain and Morocco before the Final"
+      "avg_potential_opp_elo": 1577,
+      "path_note": "Could face Spain and Portugal before the Final"
     },
     {
       "name": "Canada",
       "elo_rating": 1472,
-      "elo_win_prob": 0.0031,
+      "elo_win_prob": 0.003,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -303,24 +292,35 @@
     {
       "name": "Australia",
       "elo_rating": 1470,
-      "elo_win_prob": 0.0031,
+      "elo_win_prob": 0.003,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1556,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1549,
+      "path_note": "Avoids Spain and Portugal until the Final \u2014 favorable bracket draw"
+    },
+    {
+      "name": "Sweden",
+      "elo_rating": 1463,
+      "elo_win_prob": 0.0029,
+      "market_win_prob": null,
+      "delta": null,
+      "signal": "no market data",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
     },
     {
       "name": "Ghana",
       "elo_rating": 1456,
-      "elo_win_prob": 0.0028,
+      "elo_win_prob": 0.0024,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
       "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1557,
-      "path_note": "Avoids France and Spain until the Final \u2014 favorable bracket draw"
+      "avg_potential_opp_elo": 1551,
+      "path_note": "Avoids Spain and Portugal until the Final \u2014 favorable bracket draw"
     }
   ]
 }

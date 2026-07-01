@@ -37,7 +37,7 @@ export default function RootLayout({
       lang="en"
       className={`${bebasNeue.variable} ${dmSans.variable} ${dmMono.variable}`}
     >
-      <body className="bg-bg text-ink font-body min-h-screen">
+      <body className="font-body min-h-screen" style={{ color: '#f3ede0' }}>
         {children}
       </body>
     </html>

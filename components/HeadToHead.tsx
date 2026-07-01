@@ -65,7 +65,7 @@ export default function HeadToHead({ teams, wcMatches }: HeadToHeadProps) {
           <select
             value={team1}
             onChange={e => setTeam1(e.target.value)}
-            className="w-full sm:flex-1 bg-[#3D2A1E] border border-border text-text-primary font-body text-sm px-3 rounded-sm min-h-[44px]"
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#f3ede0', fontFamily: 'var(--font-dm-sans)', fontSize: 14, padding: '0 12px', borderRadius: 8, minHeight: 44, width: '100%' }}
           >
             <option value="">Select team...</option>
             {allTeamNames.map(name => (
@@ -74,11 +74,11 @@ export default function HeadToHead({ teams, wcMatches }: HeadToHeadProps) {
               </option>
             ))}
           </select>
-          <span className="font-display text-xl text-accent shrink-0">VS</span>
+          <span className="font-display text-xl shrink-0" style={{ color: '#e3c27e' }}>VS</span>
           <select
             value={team2}
             onChange={e => setTeam2(e.target.value)}
-            className="w-full sm:flex-1 bg-[#3D2A1E] border border-border text-text-primary font-body text-sm px-3 rounded-sm min-h-[44px]"
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#f3ede0', fontFamily: 'var(--font-dm-sans)', fontSize: 14, padding: '0 12px', borderRadius: 8, minHeight: 44, width: '100%' }}
           >
             <option value="">Select team...</option>
             {allTeamNames.map(name => (
@@ -93,8 +93,8 @@ export default function HeadToHead({ teams, wcMatches }: HeadToHeadProps) {
           disabled={!canSimulate || loading}
           className="w-full font-display text-sm tracking-widest transition-colors min-h-[44px]"
           style={{
-            background: !canSimulate || loading ? '#3D2A1E' : '#D4622A',
-            color: '#F0E8D8',
+            background: !canSimulate || loading ? 'rgba(255,255,255,0.06)' : '#e3c27e',
+            color: '#f3ede0',
             opacity: !canSimulate ? 0.5 : 1,
           }}
         >
@@ -111,8 +111,8 @@ export default function HeadToHead({ teams, wcMatches }: HeadToHeadProps) {
               </span>
             </div>
             <div className="h-3 rounded-sm overflow-hidden flex">
-              <div style={{ width: `${result.p1 * 100}%`, backgroundColor: '#D4622A' }} />
-              <div style={{ flex: 1, backgroundColor: '#5C3D2E' }} />
+              <div style={{ width: `${result.p1 * 100}%`, backgroundColor: '#e3c27e' }} />
+              <div style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.06)' }} />
             </div>
             {result.analysis && (
               <p className="font-body text-sm text-text-muted italic leading-relaxed">

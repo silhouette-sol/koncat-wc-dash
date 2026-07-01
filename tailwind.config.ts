@@ -9,17 +9,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: '#0B1D3A',
-        card: '#5C3D2E',
-        border: '#C9A027',
-        accent: '#D4622A',
-        gold: '#C9A027',
-        teal: '#1D9E75',
-        coral: '#D85A30',
-        'text-primary': '#F0E8D8',
-        'text-muted': '#C4A882',
-        ink: '#0B1D3A',
-        'ink-muted': '#5C3D2E',
+        bg:           '#07090e',
+        card:         'rgba(255,255,255,0.04)',
+        border:       'rgba(255,255,255,1)',   // base; use /9 for card outline, /20 for dividers
+        accent:       '#e3c27e',
+        gold:         '#e3c27e',
+        teal:         '#1D9E75',
+        coral:        '#D85A30',
+        'text-primary': '#f3ede0',
+        'text-muted':   'rgba(243,237,224,0.52)',
+        ink:          '#07090e',
+        'ink-muted':  'rgba(255,255,255,0.06)',
       },
       fontFamily: {
         display: ['var(--font-bebas)', 'sans-serif'],

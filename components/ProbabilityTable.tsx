@@ -56,7 +56,7 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
             {explainerOpen ? 'Hide explanation ↑' : 'What does this mean? ↓'}
           </button>
           {explainerOpen && (
-            <div className="mt-2 p-3 rounded-sm space-y-1.5" style={{ background: 'rgba(11,29,58,0.5)', border: '1px solid rgba(201,160,39,0.2)' }}>
+            <div className="mt-2 p-3 rounded-sm space-y-1.5" style={{ background: 'rgba(11,29,58,0.5)', border: '1px solid rgba(227,194,126,0.2)' }}>
               <p className="font-body text-xs text-text-muted leading-relaxed">
                 <strong className="text-text-primary">Model %</strong> = how often this team wins across 100,000 simulated tournaments using{' '}
                 <a href="https://en.wikipedia.org/wiki/Elo_rating_system" target="_blank" rel="noopener noreferrer" className="underline hover:text-text-primary">Elo ratings</a>.

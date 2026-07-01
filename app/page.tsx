@@ -29,29 +29,19 @@ export default function Home() {
           generatedAt={comparison.generated_at}
         />
       </main>
-      <footer>
-        <div style={{ height: 1, backgroundColor: '#C9A027' }} />
-        <div
-          style={{
-            backgroundColor: '#C9A027',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            padding: '16px 24px',
-          }}
-        >
-          <span style={{ fontSize: 12, fontFamily: 'monospace', color: '#0B1D3A', fontWeight: 600 }}>
+      <footer style={{
+        marginTop: 40,
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018))',
+        backdropFilter: 'blur(22px) saturate(1.25)',
+        borderTop: '1px solid rgba(255,255,255,0.09)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '16px 24px' }}>
+          <span style={{ fontSize: 12, fontFamily: 'ui-monospace,"DM Mono",monospace', color: '#e3c27e', fontWeight: 600 }}>
             Built by kenni_bo · KONCAT Always Building
           </span>
         </div>
-        <div
-          style={{
-            backgroundColor: '#C9A027',
-            textAlign: 'center',
-            padding: '6px 24px 10px',
-          }}
-        >
-          <span style={{ fontSize: 11, fontFamily: 'monospace', color: 'rgba(11,29,58,0.7)' }}>
+        <div style={{ textAlign: 'center', padding: '0 24px 12px' }}>
+          <span style={{ fontSize: 11, fontFamily: 'ui-monospace,"DM Mono",monospace', color: 'rgba(243,237,224,0.38)' }}>
             This site uses Vercel Analytics for anonymous visitor counts · No personal data is collected
           </span>
         </div>

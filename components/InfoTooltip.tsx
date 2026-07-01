@@ -28,7 +28,7 @@ export default function InfoTooltip({ term, definition, link }: InfoTooltipProps
         className="font-mono-data leading-none rounded-full inline-flex items-center justify-center transition-colors"
         style={{
           fontSize: 9, width: 14, height: 14,
-          color: '#C9A027', border: '1px solid rgba(201,160,39,0.5)',
+          color: '#e3c27e', border: '1px solid rgba(227,194,126,0.5)',
           verticalAlign: 'middle', flexShrink: 0,
         }}
         aria-label={`What is ${term}?`}
@@ -40,8 +40,8 @@ export default function InfoTooltip({ term, definition, link }: InfoTooltipProps
           className="absolute z-50 bottom-full left-1/2 mb-2 rounded-sm shadow-xl block"
           style={{
             transform: 'translateX(-50%)',
-            background: '#0B1D3A',
-            border: '1px solid rgba(201,160,39,0.4)',
+            background: 'rgba(7,9,14,0.9)',
+            border: '1px solid rgba(227,194,126,0.4)',
             width: 220,
             padding: '10px 12px',
             whiteSpace: 'normal',
@@ -50,7 +50,7 @@ export default function InfoTooltip({ term, definition, link }: InfoTooltipProps
         >
           <span
             className="font-mono-data uppercase tracking-widest block mb-1"
-            style={{ fontSize: 9, color: '#C9A027' }}
+            style={{ fontSize: 9, color: '#e3c27e' }}
           >
             {term}
           </span>
@@ -63,7 +63,7 @@ export default function InfoTooltip({ term, definition, link }: InfoTooltipProps
               target="_blank"
               rel="noopener noreferrer"
               className="font-mono-data underline mt-1.5 block hover:text-text-primary transition-colors"
-              style={{ fontSize: 10, color: '#C9A027' }}
+              style={{ fontSize: 10, color: '#e3c27e' }}
             >
               Learn more ↗
             </a>

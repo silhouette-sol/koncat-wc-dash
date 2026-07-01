@@ -9,25 +9,26 @@ export default function Header({ generatedAt }: HeaderProps) {
 
   return (
     <header className="flex items-start justify-between mb-6">
-      <div className="border-l-4 pl-4" style={{ borderColor: '#C9A027' }}>
-        <h1 className="font-display text-5xl tracking-wider leading-none" style={{ color: '#C9A027' }}>
+      <div className="border-l-4 pl-4" style={{ borderColor: '#e3c27e' }}>
+        <h1 className="font-display text-5xl tracking-wider leading-none" style={{ color: '#e3c27e' }}>
           WORLD CUP 2026
         </h1>
-        <p className="font-display text-2xl tracking-widest text-text-muted mt-1">
+        <p className="font-display text-2xl tracking-widest mt-1" style={{ color: 'rgba(243,237,224,0.52)' }}>
           KONCAT DASHBOARD
         </p>
-        <p className="font-mono-data text-xs text-text-muted mt-2">
-          Updated {formatted} <span style={{ color: '#C9A027' }}>· Check back daily for updated probabilities</span>
+        <p className="font-mono-data text-xs mt-2" style={{ color: 'rgba(243,237,224,0.52)' }}>
+          Updated {formatted}{' '}
+          <span style={{ color: '#e3c27e' }}>· Check back daily for updated probabilities</span>
         </p>
       </div>
       <div className="text-right">
         <span
           className="inline-block font-display text-sm tracking-widest px-3 py-1"
-          style={{ background: '#C9A027', color: '#0B1D3A' }}
+          style={{ background: '#e3c27e', color: '#07090e' }}
         >
           KONCAT
         </span>
-        <p className="font-mono-data text-xs text-text-muted mt-1">
+        <p className="font-mono-data text-xs mt-1" style={{ color: 'rgba(243,237,224,0.52)' }}>
           Built by kenni_bo
         </p>
       </div>

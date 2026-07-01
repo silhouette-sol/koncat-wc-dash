@@ -149,7 +149,7 @@ function PlayerCard({
   return (
     <div
       className="rounded-sm p-5"
-      style={{ background: '#5C3D2E', border: '1px solid rgba(201,160,39,0.3)' }}
+      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(227,194,126,0.3)' }}
     >
       {/* Two-column layout */}
       <div className="flex flex-col sm:flex-row gap-5">
@@ -162,7 +162,7 @@ function PlayerCard({
               <span style={{ fontSize: 22 }}>{player.flag}</span>
               <span
                 className="font-display tracking-wide leading-none"
-                style={{ fontSize: 22, color: '#C9A027' }}
+                style={{ fontSize: 22, color: '#e3c27e' }}
               >
                 {player.name}
               </span>
@@ -174,7 +174,7 @@ function PlayerCard({
 
           {/* Injury */}
           <div className="space-y-1">
-            <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#C9A027' }}>
+            <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#e3c27e' }}>
               The Injury
             </p>
             <p className="font-body text-sm font-semibold text-text-primary leading-snug">
@@ -190,7 +190,7 @@ function PlayerCard({
         <div className="sm:w-3/5 space-y-3">
           {/* Comeback */}
           <div className="space-y-1">
-            <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#C9A027' }}>
+            <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#e3c27e' }}>
               The Comeback
             </p>
             <p className="font-body text-sm text-text-primary leading-relaxed">
@@ -199,22 +199,22 @@ function PlayerCard({
           </div>
 
           {/* Divider */}
-          <div style={{ height: 1, background: 'rgba(201,160,39,0.3)' }} />
+          <div style={{ height: 1, background: 'rgba(227,194,126,0.3)' }} />
 
           {/* WC Stats */}
           <div className="space-y-1">
-            <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#C9A027' }}>
+            <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#e3c27e' }}>
               2026 World Cup
             </p>
             {teamStats ? (
               <div className="space-y-0.5">
                 <p className="font-body text-sm text-text-primary">
                   {goals > 0
-                    ? <><span style={{ color: '#C9A027', fontWeight: 700 }}>{goals} goal{goals !== 1 ? 's' : ''}</span>{' '}in {teamStats.matchesPlayed} match{teamStats.matchesPlayed !== 1 ? 'es' : ''}</>
+                    ? <><span style={{ color: '#e3c27e', fontWeight: 700 }}>{goals} goal{goals !== 1 ? 's' : ''}</span>{' '}in {teamStats.matchesPlayed} match{teamStats.matchesPlayed !== 1 ? 'es' : ''}</>
                     : <>{teamStats.matchesPlayed} match{teamStats.matchesPlayed !== 1 ? 'es' : ''} played</>
                   }
                 </p>
-                <p className="font-mono-data text-xs" style={{ color: teamStats.inKnockout ? '#1D9E75' : '#C4A882' }}>
+                <p className="font-mono-data text-xs" style={{ color: teamStats.inKnockout ? '#1D9E75' : 'rgba(243,237,224,0.52)' }}>
                   {player.country} · {teamStats.status}
                   {teamStats.inKnockout && ' ✓'}
                 </p>
@@ -236,7 +236,7 @@ export default function BuildingTab({ descriptive, worldcupMatches }: BuildingTa
     <div className="space-y-6">
       {/* Header */}
       <div className="space-y-1">
-        <h2 className="font-display text-4xl tracking-widest" style={{ color: '#C9A027' }}>
+        <h2 className="font-display text-4xl tracking-widest" style={{ color: '#e3c27e' }}>
           BUILDING BACK
         </h2>
         <p className="font-body text-base text-text-primary">
@@ -259,9 +259,9 @@ export default function BuildingTab({ descriptive, worldcupMatches }: BuildingTa
       {/* Footer note */}
       <div
         className="rounded-sm px-5 py-4"
-        style={{ background: 'rgba(11,29,58,0.5)', border: '1px solid rgba(201,160,39,0.2)' }}
+        style={{ background: 'rgba(11,29,58,0.5)', border: '1px solid rgba(227,194,126,0.2)' }}
       >
-        <p className="font-mono-data text-[10px] uppercase tracking-widest mb-2" style={{ color: '#C9A027' }}>
+        <p className="font-mono-data text-[10px] uppercase tracking-widest mb-2" style={{ color: '#e3c27e' }}>
           Why This Matters
         </p>
         <p className="font-body text-sm text-text-muted leading-relaxed">
@@ -274,7 +274,7 @@ export default function BuildingTab({ descriptive, worldcupMatches }: BuildingTa
           target="_blank"
           rel="noopener noreferrer"
           className="font-mono-data text-xs underline hover:text-text-primary transition-colors mt-2 inline-block"
-          style={{ color: '#C9A027' }}
+          style={{ color: '#e3c27e' }}
         >
           Learn more about ACL injuries in sport
         </a>

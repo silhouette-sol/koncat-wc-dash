@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Model Win Probability — Chart</title>
+<style>
+  /* ============================================================
+     WIN PROBABILITY CHART — standalone, framework-agnostic
+     Drop the .wpc-* markup + this CSS + the script into any site.
+     All visual tokens are documented in the handoff README.
+     ============================================================ */
+  :root {
+    --wpc-accent: #e3c27e;          /* gold accent (title dot, label, glow) */
+    --wpc-ink: #f3ede0;             /* primary text on dark */
+    --wpc-ink-dim: rgba(243,237,224,0.52);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: #07090e; }
+
+  /* ---- page wrapper (the dark stage; optional in your app) ---- */
+  .wpc-stage {
+    min-height: 100vh; width: 100%;
+    padding: clamp(16px, 4vw, 56px);
+    display: flex; align-items: center; justify-content: center;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background:
+      radial-gradient(60% 55% at 82% 6%, rgba(227,194,126,0.12), transparent 60%),
+      radial-gradient(130% 120% at 18% 0%, #1b2436 0%, #0c0f17 46%, #07090e 100%);
+  }
+
+  /* ---- frosted glass card ---- */
+  .wpc-card {
+    position: relative; width: 100%; max-width: 1080px;
+    padding: clamp(22px, 3.4vw, 42px);
+    border-radius: 28px; overflow: hidden;
+    background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018));
+    backdrop-filter: blur(22px) saturate(1.25);
+    -webkit-backdrop-filter: blur(22px) saturate(1.25);
+    border: 1px solid rgba(255,255,255,0.09);
+    box-shadow: 0 40px 120px -45px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  /* diagonal shimmer sweep across the glass */
+  .wpc-card::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,0.05) 50%, transparent 58%);
+    background-size: 250% 100%;
+    animation: wpc-shimmer 8s linear infinite;
+  }
+  @keyframes wpc-shimmer { 0% { background-position: 160% 0; } 100% { background-position: -60% 0; } }
+
+  /* ---- header ---- */
+  .wpc-titlerow { position: relative; display: flex; align-items: center; gap: 11px; }
+  .wpc-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--wpc-accent); box-shadow: 0 0 14px var(--wpc-accent); }
+  .wpc-title {
+    margin: 0; font-size: clamp(15px, 1.7vw, 18px); letter-spacing: 0.15em;
+    font-weight: 600; color: var(--wpc-ink); text-transform: uppercase;
+  }
+  .wpc-sub {
+    position: relative; margin: 9px 0 0; font-size: clamp(12.5px, 1.3vw, 14px);
+    color: var(--wpc-ink-dim); max-width: 62ch; line-height: 1.55;
+  }
+  .wpc-sub a { color: var(--wpc-accent); text-decoration: none; border-bottom: 1px solid rgba(227,194,126,0.45); }
+  .wpc-divider {
+    position: relative; margin: clamp(18px, 2.4vw, 26px) 0 0; height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02));
+  }
+
+  /* ---- body: donut + legend (wraps to stacked on narrow) ---- */
+  .wpc-body {
+    position: relative; display: flex; flex-wrap: wrap; align-items: center;
+    gap: clamp(20px, 3vw, 52px); margin-top: clamp(22px, 3vw, 34px);
+  }
+  .wpc-donut {
+    position: relative; flex: 0 1 360px; width: clamp(220px, 42vw, 380px);
+    aspect-ratio: 1; min-width: 200px; margin: 0 auto;
+  }
+  .wpc-glow {
+    position: absolute; inset: 14%; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(227,194,126,0.20), transparent 70%);
+    filter: blur(22px); animation: wpc-breathe 4.6s ease-in-out infinite; pointer-events: none;
+  }
+  @keyframes wpc-breathe { 0%,100% { opacity: .45; transform: scale(.92); } 50% { opacity: 1; transform: scale(1.05); } }
+  .wpc-svg { position: relative; width: 100%; height: 100%; display: block; overflow: visible; }
+  .wpc-seg {
+    fill: none; stroke-linecap: round; cursor: pointer;
+    transition: stroke-width .35s ease, opacity .3s ease, filter .3s ease;
+  }
+  .wpc-center {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    pointer-events: none; gap: 3px;
+  }
+  .wpc-center-flag { font-size: clamp(26px, 4.4vw, 36px); line-height: 1; }
+  .wpc-center-pct {
+    font-size: clamp(34px, 6.2vw, 52px); font-weight: 700; color: #fff;
+    letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1;
+  }
+  .wpc-center-pct small { font-size: 0.5em; font-weight: 600; opacity: 0.75; margin-left: 2px; }
+  .wpc-center-name { font-size: clamp(13px, 1.6vw, 15px); color: rgba(255,255,255,0.72); font-weight: 500; }
+  .wpc-center-label {
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.13em;
+    color: var(--wpc-accent); margin-top: 2px;
+  }
+
+  /* ---- legend ---- */
+  .wpc-legend {
+    flex: 1 1 360px; min-width: 240px; display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: clamp(3px, 0.8vw, 7px);
+  }
+  .wpc-row {
+    display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+    border-radius: 12px; cursor: pointer; background: transparent; opacity: 1;
+    transition: background .25s ease, opacity .25s ease;
+  }
+  .wpc-row-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .wpc-row-flag { font-size: 16px; line-height: 1; }
+  .wpc-row-name {
+    flex: 1; font-size: clamp(13px, 1.4vw, 15px); color: #ece6d8;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .wpc-row-pct { font-variant-numeric: tabular-nums; font-weight: 600; font-size: clamp(13px, 1.4vw, 15px); color: #fff; }
+  .wpc-row-pct span { opacity: 0.55; font-weight: 500; }
+</style>
+</head>
+<body>
+  <div class="wpc-stage">
+    <div id="winProbabilityChart"></div>
+  </div>
+
+  <script>
+  /* ============================================================
+     initWinProbabilityChart(mountEl, teams, options)
+       teams:   [{ name, pct, color, flag }]  — pct need NOT sum to 100;
+                segments are normalized to fill the ring. Legend shows raw pct.
+       options: { thickness=16, hoverGrow=11, gap=6, duration=1700, ambient=true }
+     Returns { update(newTeams) } so you can feed live data.
+     ============================================================ */
+  function initWinProbabilityChart(mountEl, teams, options) {
+    options = options || {};
+    var THICK   = options.thickness || 16;   // ring stroke width (px in 200-viewBox units)
+    var HOVER   = options.hoverGrow || 11;    // extra stroke width on hover
+    var GAP     = options.gap != null ? options.gap : 6; // gap between segments (arc px)
+    var DUR     = options.duration || 1700;   // sweep + count-up duration (ms)
+    var AMBIENT = options.ambient !== false;
+    var R = 78, C = 2 * Math.PI * R;          // ring radius + circumference (viewBox units)
+    var SVGNS = "http://www.w3.org/2000/svg";
+
+    var state = { p: 0, hovered: null };
+    var segEls = [], rowEls = [], pctEls = [];
+
+    function hexA(h, a) {
+      h = h.replace('#', '');
+      if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join('');
+      var n = parseInt(h, 16);
+      return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+    }
+    function leaderIndex() {
+      var li = 0;
+      teams.forEach(function (t, i) { if (t.pct > teams[li].pct) li = i; });
+      return li;
+    }
+
+    // ---- build DOM once ----
+    mountEl.innerHTML = '';
+    var card = document.createElement('div'); card.className = 'wpc-card';
+    card.innerHTML =
+      '<div class="wpc-titlerow"><span class="wpc-dot"></span>' +
+      '<h2 class="wpc-title">Model Win Probability</h2></div>' +
+      '<p class="wpc-sub">How likely is each team to win the tournament, based on 100,000 ' +
+      'simulated tournaments using <a href="#">Elo ratings</a>.</p>' +
+      '<div class="wpc-divider"></div>';
+
+    var body = document.createElement('div'); body.className = 'wpc-body';
+
+    // donut
+    var donut = document.createElement('div'); donut.className = 'wpc-donut';
+    if (AMBIENT) { var glow = document.createElement('div'); glow.className = 'wpc-glow'; donut.appendChild(glow); }
+    var svg = document.createElementNS(SVGNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 200 200'); svg.setAttribute('class', 'wpc-svg');
+    teams.forEach(function (t, i) {
+      var c = document.createElementNS(SVGNS, 'circle');
+      c.setAttribute('cx', 100); c.setAttribute('cy', 100); c.setAttribute('r', R);
+      c.setAttribute('class', 'wpc-seg'); c.setAttribute('stroke', t.color);
+      c.addEventListener('mouseenter', function () { state.hovered = i; render(); });
+      c.addEventListener('mouseleave', function () { state.hovered = null; render(); });
+      svg.appendChild(c); segEls.push(c);
+    });
+    donut.appendChild(svg);
+
+    var center = document.createElement('div'); center.className = 'wpc-center';
+    center.innerHTML =
+      '<span class="wpc-center-flag"></span>' +
+      '<div class="wpc-center-pct"><span class="num">0.0</span><small>%</small></div>' +
+      '<span class="wpc-center-name"></span>' +
+      '<span class="wpc-center-label"></span>';
+    donut.appendChild(center);
+    var cFlag = center.querySelector('.wpc-center-flag');
+    var cNum  = center.querySelector('.num');
+    var cName = center.querySelector('.wpc-center-name');
+    var cLabel= center.querySelector('.wpc-center-label');
+
+    // legend
+    var legend = document.createElement('div'); legend.className = 'wpc-legend';
+    teams.forEach(function (t, i) {
+      var row = document.createElement('div'); row.className = 'wpc-row';
+      row.innerHTML =
+        '<span class="wpc-row-dot" style="background:' + t.color +
+          '; box-shadow:0 0 8px ' + hexA(t.color, 0.75) + '"></span>' +
+        '<span class="wpc-row-flag">' + t.flag + '</span>' +
+        '<span class="wpc-row-name">' + t.name + '</span>' +
+        '<span class="wpc-row-pct"><b class="pct">0.0</b><span>%</span></span>';
+      row.addEventListener('mouseenter', function () { state.hovered = i; render(); });
+      row.addEventListener('mouseleave', function () { state.hovered = null; render(); });
+      legend.appendChild(row); rowEls.push(row); pctEls.push(row.querySelector('.pct'));
+    });
+
+    body.appendChild(donut); body.appendChild(legend);
+    card.appendChild(body); mountEl.appendChild(card);
+
+    // ---- render current state onto the DOM ----
+    function render() {
+      var p = state.p, hov = state.hovered;
+      var total = teams.reduce(function (s, t) { return s + t.pct; }, 0);
+      var cum = 0;
+      teams.forEach(function (t, i) {
+        var frac = t.pct / total;
+        var segLen = frac * C;
+        var visLen = Math.max(0, segLen - GAP);
+        var startOff = cum + GAP / 2;
+        var drawn = Math.max(0, Math.min(visLen, p * C - startOff));
+        var angle = -90 + (startOff / C) * 360;
+        var active = hov === null || hov === i;
+        var started = drawn > 0.4;
+        var el = segEls[i];
+        el.setAttribute('stroke-dasharray', drawn.toFixed(2) + ' ' + C.toFixed(2));
+        el.setAttribute('transform', 'rotate(' + angle.toFixed(3) + ' 100 100)');
+        el.style.strokeWidth = (hov === i ? THICK + HOVER : THICK) + 'px';
+        el.style.opacity = !started ? 0 : (active ? 1 : 0.22);
+        el.style.filter = hov === i ? 'drop-shadow(0 0 14px ' + hexA(t.color, 0.95) + ')' : 'none';
+        // legend
+        pctEls[i].textContent = (t.pct * p).toFixed(1);
+        rowEls[i].style.background = hov === i ? 'rgba(255,255,255,0.07)' : 'transparent';
+        rowEls[i].style.opacity = (hov === null || hov === i) ? 1 : 0.4;
+        cum += segLen;
+      });
+      var showI = hov !== null ? hov : leaderIndex();
+      var showT = teams[showI];
+      var cp = hov !== null ? 1 : p;
+      cFlag.textContent = showT.flag;
+      cNum.textContent = (showT.pct * cp).toFixed(1);
+      cName.textContent = showT.name;
+      cLabel.textContent = hov !== null ? 'Win probability' : 'Projected winner';
+    }
+
+    // ---- one-time sweep + count-up ----
+    function animate() {
+      var start = Date.now();
+      (function tick() {
+        var t = Math.min(1, (Date.now() - start) / DUR);
+        state.p = 1 - Math.pow(1 - t, 3);   // easeOutCubic
+        render();
+        if (t < 1) requestAnimationFrame(tick);
+      })();
+    }
+    animate();
+
+    return {
+      // feed new/changed data: rebuilds and replays the sweep with the new values
+      update: function (newTeams) { return initWinProbabilityChart(mountEl, newTeams, options); }
+    };
+  }
+
+  /* ---- demo data (replace with your live feed) ---- */
+  var TEAMS = [
+    { name: 'France',      pct: 20.3, color: '#2138b8', flag: '\u{1F1EB}\u{1F1F7}' },
+    { name: 'England',     pct: 17.6, color: '#e23039', flag: '\u{1F3F4}\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}' },
+    { name: 'Spain',       pct: 13.5, color: '#c01528', flag: '\u{1F1EA}\u{1F1F8}' },
+    { name: 'Argentina',   pct: 6.4,  color: '#74b3e0', flag: '\u{1F1E6}\u{1F1F7}' },
+    { name: 'Brazil',      pct: 6.3,  color: '#00a14b', flag: '\u{1F1E7}\u{1F1F7}' },
+    { name: 'Germany',     pct: 4.5,  color: '#5a6068', flag: '\u{1F1E9}\u{1F1EA}' },
+    { name: 'Morocco',     pct: 4.4,  color: '#c1272d', flag: '\u{1F1F2}\u{1F1E6}' },
+    { name: 'Netherlands', pct: 4.1,  color: '#ff7a00', flag: '\u{1F1F3}\u{1F1F1}' },
+    { name: 'Portugal',    pct: 3.7,  color: '#0a8a44', flag: '\u{1F1F5}\u{1F1F9}' },
+    { name: 'Norway',      pct: 3.3,  color: '#ef3340', flag: '\u{1F1F3}\u{1F1F4}' }
+  ];
+
+  initWinProbabilityChart(document.getElementById('winProbabilityChart'), TEAMS);
+  </script>
+</body>
+</html>

@@ -92,7 +92,7 @@ export default function GoalTiming({ bins, totalGoals, mostProductivePeriod, gol
         <div className="flex items-center gap-4">
           <div className="text-right">
             <p className="font-mono-data text-[10px] text-text-muted">Peak period</p>
-            <p className="font-display text-lg tracking-wider" style={{ color: '#C9A027' }}>
+            <p className="font-display text-lg tracking-wider" style={{ color: '#e3c27e' }}>
               {activePeak}&apos;
             </p>
           </div>
@@ -100,7 +100,7 @@ export default function GoalTiming({ bins, totalGoals, mostProductivePeriod, gol
             value={selectedTeam}
             onChange={e => setSelectedTeam(e.target.value)}
             className="font-mono-data text-xs text-text-primary bg-card border border-border/40 rounded-sm px-2 py-1.5 cursor-pointer focus:outline-none"
-            style={{ borderColor: 'rgba(201,160,39,0.4)' }}
+            style={{ borderColor: 'rgba(227,194,126,0.4)' }}
           >
             <option value="">All teams</option>
             {teams.map(t => (
@@ -126,7 +126,7 @@ export default function GoalTiming({ bins, totalGoals, mostProductivePeriod, gol
                   className="h-full rounded-sm transition-all duration-300"
                   style={{
                     width: `${barPct}%`,
-                    backgroundColor: late ? '#D4622A' : '#1D9E75',
+                    backgroundColor: late ? '#e3c27e' : '#1D9E75',
                   }}
                 />
               </div>
