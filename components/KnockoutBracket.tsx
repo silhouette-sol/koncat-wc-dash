@@ -19,7 +19,6 @@ const ROUND_DUR   = [0, 1.44, 1.44, 1.36, 1.36, 1.6]
 
 // ── Design tokens ──────────────────────────────────────────────
 const ACCENT    = '#e3c27e'
-const RING_C    = 'rgba(255,255,255,0.28)'
 const PH_FILL   = 'rgba(255,255,255,0.04)'
 const PH_STR    = 'rgba(255,255,255,0.16)'
 const PH_TXT    = 'rgba(255,255,255,0.34)'
@@ -28,9 +27,11 @@ const GUIDE_C   = 'rgba(255,255,255,0.05)'
 const LABEL_C   = 'rgba(255,255,255,0.38)'
 const CHIP_BG   = '#1a1d22'
 const CHIP_SHD  = '0 6px 16px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(0,0,0,0.18)'
+const RING_DEFAULT = '2px solid rgba(255,255,255,0.6)'
+const RING_GOLD    = `2.5px solid ${ACCENT}`
 
 // ── Easing ─────────────────────────────────────────────────────
-const clamp  = (v: number, a: number, b: number) => v < a ? a : v > b ? b : v
+const clamp   = (v: number, a: number, b: number) => v < a ? a : v > b ? b : v
 const easeOut = (p: number) => 1 - Math.pow(1 - p, 3)
 const easeIO  = (p: number) => p < 0.5 ? 4*p*p*p : 1 - Math.pow(-2*p+2, 3)/2
 
@@ -38,23 +39,40 @@ const easeIO  = (p: number) => p < 0.5 ? 4*p*p*p : 1 - Math.pow(-2*p+2, 3)/2
 const FLAGS: Record<string, string> = {
   France: '🇫🇷', Brazil: '🇧🇷', England: '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
   Spain: '🇪🇸', Argentina: '🇦🇷', Germany: '🇩🇪',
-  Morocco: '🇲🇦', USA: '🇺🇸', Norway: '🇳🇴',
+  Morocco: '🇲🇦', USA: '🇺🇸', 'United States': '🇺🇸', Norway: '🇳🇴',
   Japan: '🇯🇵', Portugal: '🇵🇹', Netherlands: '🇳🇱',
   Mexico: '🇲🇽', Colombia: '🇨🇴', Uruguay: '🇺🇾',
   Belgium: '🇧🇪', Croatia: '🇭🇷', Switzerland: '🇨🇭',
   Australia: '🇦🇺', Ecuador: '🇪🇨', Senegal: '🇸🇳',
-  Ghana: '🇬🇭', 'South Korea': '🇰🇷', Canada: '🇨🇦',
+  Ghana: '🇬🇭', 'South Korea': '🇰🇷', 'Korea Republic': '🇰🇷', Canada: '🇨🇦',
   Turkey: '🇹🇷', Algeria: '🇩🇿', Egypt: '🇪🇬',
-  Iran: '🇮🇷', Scotland: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', Paraguay: '🇵🇾',
+  Iran: '🇮🇷', 'IR Iran': '🇮🇷', Scotland: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', Paraguay: '🇵🇾',
   Austria: '🇦🇹', Sweden: '🇸🇪', 'Saudi Arabia': '🇸🇦',
   'Cape Verde': '🇨🇻', 'Cabo Verde': '🇨🇻',
   'Bosnia and Herzegovina': '🇧🇦', 'Bosnia & Herzegovina': '🇧🇦',
-  'New Zealand': '🇳🇿', 'DR Congo': '🇨🇩', Iraq: '🇮🇶',
+  'New Zealand': '🇳🇿', 'DR Congo': '🇨🇩', 'Congo DR': '🇨🇩', Iraq: '🇮🇶',
   Jordan: '🇯🇴', Haiti: '🇭🇹', Panama: '🇵🇦',
   'South Africa': '🇿🇦', 'Czech Republic': '🇨🇿', Qatar: '🇶🇦',
   Curacao: '🇨🇼', 'Curaçao': '🇨🇼', Uzbekistan: '🇺🇿',
-  'Ivory Coast': '🇨🇮', Tunisia: '🇹🇳',
+  'Ivory Coast': '🇨🇮', "Côte d'Ivoire": '🇨🇮', Tunisia: '🇹🇳',
 }
+
+// ── Team name normalization for Elo lookup ─────────────────────
+function normalizeTeamName(name: string): string {
+  const map: Record<string, string> = {
+    'United States': 'USA', 'IR Iran': 'Iran',
+    'Korea Republic': 'South Korea', "Côte d'Ivoire": 'Ivory Coast',
+    'Congo DR': 'DR Congo', 'Curaçao': 'Curacao', 'Cabo Verde': 'Cape Verde',
+    'Bosnia & Herzegovina': 'Bosnia and Herzegovina',
+  }
+  return map[name] ?? name
+}
+
+// ── Hover data types ───────────────────────────────────────────
+type NodeHoverData =
+  | { kind: 'completed'; team: string; flag: string; opponent: string; opponentFlag: string; won: boolean; score: string; probMyTeam: number }
+  | { kind: 'upcoming'; teamA: string; teamAFlag: string; teamB: string; teamBFlag: string; probA: number; probB: number; date: string; venue: string }
+  | { kind: 'tbd' }
 
 // ── Layout types ───────────────────────────────────────────────
 interface LTeam { name: string; flag: string }
@@ -87,21 +105,20 @@ interface Layout   {
 }
 
 // ── DOM slots ──────────────────────────────────────────────────
-interface NSlot { wrap: HTMLDivElement | null; ph: HTMLDivElement | null; flag: HTMLDivElement | null; gold: HTMLDivElement | null }
+interface NSlot {
+  wrap: HTMLDivElement | null
+  ph: HTMLDivElement | null
+  flag: HTMLDivElement | null
+  ring: HTMLDivElement | null
+  gold: HTMLDivElement | null
+}
 interface WSlot { wrap: HTMLDivElement | null }
 
-// ── Bracket tree builder (driven by real match data) ──────────
+// ── Bracket tree builder ───────────────────────────────────────
 function buildLayout(
   r32m: WCMatch[], r16m: WCMatch[], qfm: WCMatch[], sfm: WCMatch[], finm: WCMatch | undefined
 ): Layout {
-  const matchArrays: (WCMatch | undefined)[][] = [
-    [],
-    r32m,
-    r16m,
-    qfm,
-    sfm,
-    finm ? [finm] : [],
-  ]
+  const matchArrays: (WCMatch | undefined)[][] = [[], r32m, r16m, qfm, sfm, finm ? [finm] : []]
 
   const levels: { team: LTeam; angle: number }[][] = [
     r32m.flatMap((m, j) => [
@@ -185,35 +202,31 @@ function buildLayout(
     if (n.isLeaf && n.parentId) n.advanced = byId[n.parentId]?.winChildId === n.id
   })
 
-  // ── Compute upcoming R16 matches (unplayed, with at least one known team)
+  // ── Upcoming R16 matches
   const l1Nodes = nodes.filter(n => n.L === 1)
   const findL1Id = (teamRef: string): string | null => {
     const wm = teamRef.match(/^W(\d+)$/)
     if (wm) {
-      const mNum = parseInt(wm[1])
-      const idx = r32m.findIndex(m => m.num === mNum)
+      const idx = r32m.findIndex(m => m.num === parseInt(wm[1]))
       return idx >= 0 ? `1-${idx}` : null
     }
-    const nd = l1Nodes.find(n => n.team.name === teamRef)
-    return nd?.id ?? null
+    return l1Nodes.find(n => n.team.name === teamRef)?.id ?? null
   }
 
   const upcomingMatches: UMData[] = []
   for (let j = 0; j < r16m.length; j++) {
-    const m = r16m[j]
-    if (m.score) continue
-    const nodeAId = findL1Id(m.team1)
-    const nodeBId = findL1Id(m.team2)
+    const m = r16m[j]; if (m.score) continue
+    const nodeAId = findL1Id(m.team1), nodeBId = findL1Id(m.team2)
     if (!nodeAId || !nodeBId) continue
     const nodeA = byId[nodeAId], nodeB = byId[nodeBId]
     if (!nodeA || !nodeB) continue
     if (nodeA.team.name === 'TBD' && nodeB.team.name === 'TBD') continue
-    const bothKnown = nodeA.team.name !== 'TBD' && nodeB.team.name !== 'TBD'
     upcomingMatches.push({
       id: `um${j}`, nodeAId, nodeBId,
       teamA: nodeA.team.name, teamB: nodeB.team.name,
       teamAFlag: nodeA.team.flag, teamBFlag: nodeB.team.flag,
-      date: m.date, venue: m.ground ?? '', bothKnown,
+      date: m.date, venue: m.ground ?? '',
+      bothKnown: nodeA.team.name !== 'TBD' && nodeB.team.name !== 'TBD',
     })
   }
 
@@ -228,11 +241,8 @@ function buildLayout(
   }
 }
 
-// ── Component props ────────────────────────────────────────────
-interface KnockoutBracketProps {
-  matches: WCMatch[]
-  teams: TeamComparison[]
-}
+// ── Component ──────────────────────────────────────────────────
+interface KnockoutBracketProps { matches: WCMatch[]; teams: TeamComparison[] }
 
 export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps) {
   const { r32m, r16m, qfm, sfm, finm } = useMemo(() => {
@@ -249,10 +259,7 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
     }
   }, [matches])
 
-  const layout = useMemo(
-    () => buildLayout(r32m, r16m, qfm, sfm, finm),
-    [r32m, r16m, qfm, sfm, finm]
-  )
+  const layout = useMemo(() => buildLayout(r32m, r16m, qfm, sfm, finm), [r32m, r16m, qfm, sfm, finm])
 
   // ── DOM refs ────────────────────────────────────────────────
   const rootRef   = useRef<HTMLDivElement>(null)
@@ -273,11 +280,74 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
   const VS    = useRef<Record<string, HTMLDivElement | null>>({})
 
   // ── Tooltip state ────────────────────────────────────────────
-  const [hoveredMatch, setHoveredMatch] = useState<{ um: UMData; x: number; y: number } | null>(null)
+  const [hoveredNode, setHoveredNode] = useState<{ data: NodeHoverData; x: number; y: number } | null>(null)
   const tooltipTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isOverTooltipRef = useRef(false)
 
-  // ── Upcoming match sets ──────────────────────────────────────
+  // ── Elo helper ───────────────────────────────────────────────
+  const eloProb = useCallback((a: string, b: string): number => {
+    const eA = teams.find(t => t.name === normalizeTeamName(a))?.elo_rating ?? 1500
+    const eB = teams.find(t => t.name === normalizeTeamName(b))?.elo_rating ?? 1500
+    return Math.round((1 / (1 + Math.pow(10, (eB - eA) / 400))) * 100)
+  }, [teams])
+
+  // ── Hover data map (all nodes) ───────────────────────────────
+  const nodeHoverData = useMemo<Map<string, NodeHoverData>>(() => {
+    const map = new Map<string, NodeHoverData>()
+
+    // L0: R32 matches (played or upcoming)
+    for (let k = 0; k < 32; k++) {
+      const matchIdx = Math.floor(k / 2)
+      const m = r32m[matchIdx]; if (!m) continue
+      const isT1 = k % 2 === 0
+      const myTeam = isT1 ? m.team1 : m.team2
+      const opp    = isT1 ? m.team2 : m.team1
+      if (m.score) {
+        const res = getMatchResult(m)
+        const won = res.winner === myTeam
+        const p = eloProb(myTeam, opp)
+        map.set(`0-${k}`, {
+          kind: 'completed', team: myTeam, flag: FLAGS[myTeam] ?? '?',
+          opponent: opp, opponentFlag: FLAGS[opp] ?? '?',
+          won, score: res.displayScore, probMyTeam: isT1 ? p : 100 - p,
+        })
+      } else {
+        const p = eloProb(myTeam, opp)
+        map.set(`0-${k}`, {
+          kind: 'upcoming',
+          teamA: myTeam, teamAFlag: FLAGS[myTeam] ?? '?',
+          teamB: opp,   teamBFlag: FLAGS[opp] ?? '?',
+          probA: isT1 ? p : 100 - p,
+          probB: isT1 ? 100 - p : p,
+          date: m.date, venue: m.ground ?? '',
+        })
+      }
+    }
+
+    // L1: upcoming R16 matches
+    for (const um of layout.upcomingMatches) {
+      const p = um.bothKnown ? eloProb(um.teamA, um.teamB) : 50
+      const entry: NodeHoverData = {
+        kind: 'upcoming',
+        teamA: um.teamA, teamAFlag: um.teamAFlag,
+        teamB: um.teamB, teamBFlag: um.teamBFlag,
+        probA: p, probB: 100 - p,
+        date: um.date, venue: um.venue,
+      }
+      const nodeA = layout.byId[um.nodeAId], nodeB = layout.byId[um.nodeBId]
+      if (nodeA) map.set(um.nodeAId, nodeA.team.name !== 'TBD' ? entry : { kind: 'tbd' })
+      if (nodeB) map.set(um.nodeBId, nodeB.team.name !== 'TBD' ? entry : { kind: 'tbd' })
+    }
+
+    // TBD fallback for any remaining nodes
+    for (const node of layout.nodes) {
+      if (!map.has(node.id) && node.team.name === 'TBD') map.set(node.id, { kind: 'tbd' })
+    }
+
+    return map
+  }, [layout, r32m, eloProb])
+
+  // ── Upcoming match known-node set (for pulse rings) ──────────
   const upcomingNodeIds = useMemo(() => {
     const s = new Set<string>()
     for (const um of layout.upcomingMatches) {
@@ -286,16 +356,8 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
     return s
   }, [layout.upcomingMatches])
 
-  const nodeToUM = useMemo(() => {
-    const m = new Map<string, UMData>()
-    for (const um of layout.upcomingMatches) {
-      if (um.bothKnown) { m.set(um.nodeAId, um); m.set(um.nodeBId, um) }
-    }
-    return m
-  }, [layout.upcomingMatches])
-
   function slotN(id: string): NSlot {
-    if (!N.current[id]) N.current[id] = { wrap: null, ph: null, flag: null, gold: null }
+    if (!N.current[id]) N.current[id] = { wrap: null, ph: null, flag: null, ring: null, gold: null }
     return N.current[id]
   }
   function slotW(map: typeof T, id: string): WSlot {
@@ -307,16 +369,15 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
   const scheduleHide = useCallback(() => {
     if (tooltipTimerRef.current) clearTimeout(tooltipTimerRef.current)
     tooltipTimerRef.current = setTimeout(() => {
-      if (!isOverTooltipRef.current) setHoveredMatch(null)
+      if (!isOverTooltipRef.current) setHoveredNode(null)
     }, 150)
   }, [])
 
-  const showTooltip = useCallback((um: UMData, e: React.MouseEvent) => {
-    if (!um.bothKnown) return
+  const showNode = useCallback((data: NodeHoverData, e: React.MouseEvent) => {
     if (tooltipTimerRef.current) clearTimeout(tooltipTimerRef.current)
     const rect = wrapRef.current?.getBoundingClientRect()
     if (!rect) return
-    setHoveredMatch({ um, x: e.clientX - rect.left, y: e.clientY - rect.top })
+    setHoveredNode({ data, x: e.clientX - rect.left, y: e.clientY - rect.top })
   }, [])
 
   // ── Node position (includes idle float) ─────────────────────
@@ -325,17 +386,15 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
     const ramp = clamp((t - n.settleT) / 1.2, 0, 1)
     const rb = AMP[n.L] * Math.sin(t * 0.9 + n.phase) * ramp
     const tb = TANG[n.L] * Math.sin(t * 0.7 + n.phase * 1.3) * ramp
-    const R = n.radius + rb
-    return [CX + R * ux - uy * tb, CY + R * uy + ux * tb]
+    return [CX + (n.radius + rb) * ux - uy * tb, CY + (n.radius + rb) * uy + ux * tb]
   }
 
-  // ── Quadratic bezier control point (pulled 18% toward center)
   function ctrl(ax: number, ay: number, bx: number, by: number): [number, number] {
     const mx = (ax + bx) / 2, my = (ay + by) / 2
     return [mx + (CX - mx) * 0.18, my + (CY - my) * 0.18]
   }
 
-  // ── Pure update(t) — writes imperatively to all DOM refs ─────
+  // ── Pure update(t) ─────────────────────────────────────────
   function update(t: number) {
     if (rootRef.current && layerRef.current) {
       const s = rootRef.current.clientWidth / 1000
@@ -349,30 +408,69 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
       let op = 1, sc = 1
 
       if (n.isLeaf) {
-        const rp = clamp((t - n.revealStart) / 0.96, 0, 1), e = easeOut(rp)
+        // ── L0 reveal
+        const rp = clamp((t - n.revealStart) / 0.96, 0, 1)
+        const e = easeOut(rp)
         op = e; sc = 0.5 + 0.5 * e
-        if (!n.advanced) {
-          const d = clamp((t - n.parentFillEnd) / 0.8, 0, 1)
-          op *= 1 - 0.62 * d
+
+        // Determine match state
+        const parent = layout.byId[n.parentId]
+        const matchPlayed = parent && parent.team.name !== 'TBD'
+        const isEliminated = !n.advanced && matchPlayed
+
+        if (isEliminated) {
+          // Fade from 1.0 to 0.2 over 0.6s starting slightly before result reveal
+          const fadeProg = clamp((t - (n.parentFillEnd - 0.3)) / 0.6, 0, 1)
+          op *= Math.max(0.2, 1 - 0.8 * fadeProg)
+          if (r.ring) r.ring.style.opacity = String(Math.max(0.15, 0.6 * (1 - fadeProg)))
+          if (r.gold) r.gold.style.opacity = '0'
+          r.wrap.style.filter = fadeProg > 0.1 ? 'none' : `drop-shadow(0 0 8px rgba(227,194,126,${(0.5*(1-fadeProg)).toFixed(2)}))`
+        } else if (n.advanced) {
+          // Winner — gold glow intensifies
+          const goldOp = clamp((t - n.parentFillEnd + 0.48) / 0.8, 0, 1)
+          if (r.ring) r.ring.style.opacity = String(Math.max(0, 1 - goldOp * 0.85))
+          if (r.gold) r.gold.style.opacity = String(goldOp)
+          const gStr = (8 + 4 * goldOp).toFixed(1)
+          const gAlp = (0.5 + 0.3 * goldOp).toFixed(2)
+          r.wrap.style.filter = `drop-shadow(0 0 ${gStr}px rgba(227,194,126,${gAlp}))`
+        } else {
+          // Default: pending match — ambient white glow
+          const settled = clamp((t - n.settleT) / 1.2, 0, 1)
+          if (r.ring) r.ring.style.opacity = '1'
+          if (r.gold) r.gold.style.opacity = '0'
+          r.wrap.style.filter = settled > 0
+            ? `drop-shadow(0 0 8px rgba(227,194,126,${(0.5 * settled).toFixed(2)}))`
+            : 'none'
         }
-        if (r.gold) r.gold.style.opacity = n.advanced
-          ? String(clamp((t - n.parentFillEnd + 0.48) / 0.8, 0, 1))
-          : '0'
+
       } else {
+        // ── L1-L5 inner nodes
         const pf = clamp((t - n.fillStart) / n.fillDur, 0, 1)
         op = clamp((t - 1.12) / 1.28, 0, 1)
+        const isTBD = n.team.name === 'TBD'
+
         if (r.ph) r.ph.style.opacity = String(clamp((1 - clamp((pf - 0.15) / 0.4, 0, 1)) * 0.95, 0, 0.95))
         const fIn = clamp((pf - 0.78) / 0.22, 0, 1)
-        if (r.flag) r.flag.style.opacity = n.team.name !== 'TBD' ? String(fIn) : '0'
-        if (r.gold) r.gold.style.opacity = n.team.name !== 'TBD' ? String(fIn) : '0'
+        if (r.flag) r.flag.style.opacity = !isTBD ? String(fIn) : '0'
+        if (r.gold) r.gold.style.opacity = !isTBD ? String(fIn) : '0'
+        if (r.ring) r.ring.style.opacity = !isTBD ? String(Math.max(0, 1 - fIn * 0.85)) : '0.4'
+
         if (n.L === 5) sc = 0.55 + 0.45 * fIn
+
+        // Glow for known inner nodes; mute TBDs
+        if (isTBD) {
+          op = Math.min(op, 0.5)
+          r.wrap.style.filter = 'none'
+        } else {
+          r.wrap.style.filter = fIn > 0 ? `drop-shadow(0 0 ${(6 * fIn).toFixed(1)}px rgba(227,194,126,${(0.4 * fIn).toFixed(2)}))` : 'none'
+        }
       }
 
       r.wrap.style.opacity = String(op)
       r.wrap.style.transform = `translate(${p[0].toFixed(1)}px,${p[1].toFixed(1)}px) translate(-50%,-50%) scale(${sc})`
     }
 
-    // ── Winner edges
+    // ── Winner edges (gold, draws in)
     for (const ed of layout.edges) {
       const el = E.current[ed.id]; if (!el) continue
       const a = pos(layout.byId[ed.fromId], t), b = pos(layout.byId[ed.toId], t)
@@ -407,8 +505,7 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
       const dx = CX - x, dy = CY - y, dl = Math.hypot(dx, dy) || 1
       const arc = Math.sin(Math.PI * e) * 8
       x += (dx/dl) * arc; y += (dy/dl) * arc
-      const op = clamp(pf / 0.12, 0, 1) * (1 - clamp((pf - 0.9) / 0.1, 0, 1))
-      r.wrap.style.opacity = String(op)
+      r.wrap.style.opacity = String(clamp(pf / 0.12, 0, 1) * (1 - clamp((pf - 0.9) / 0.1, 0, 1)))
       r.wrap.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-50%)`
     }
 
@@ -420,9 +517,8 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
       const reach = 0.6 * easeIO(clamp(pf / 0.55, 0, 1))
       const a = pos(layout.byId[tr.fromId], t), b = pos(n, t)
       const x = a[0] + (b[0] - a[0]) * reach, y = a[1] + (b[1] - a[1]) * reach
-      const op = clamp(pf / 0.12, 0, 1) * (1 - clamp((pf - 0.5) / 0.35, 0, 1))
-      r.wrap.style.opacity = String(op * 0.88)
       const sc = 0.96 - 0.12 * clamp((pf - 0.4) / 0.4, 0, 1)
+      r.wrap.style.opacity = String(clamp(pf / 0.12, 0, 1) * (1 - clamp((pf - 0.5) / 0.35, 0, 1)) * 0.88)
       r.wrap.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-50%) scale(${sc})`
     }
 
@@ -432,38 +528,29 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
     // ── Champion caption + pulse rings
     const champ = layout.champion
     if (capRef.current) {
-      const showCap = champ.team.name !== 'TBD'
-        ? clamp((t - champ.fillStart - 0.56) / 1.12, 0, 1)
-        : 0
-      capRef.current.style.opacity = String(showCap)
+      capRef.current.style.opacity = String(champ.team.name !== 'TBD'
+        ? clamp((t - champ.fillStart - 0.56) / 1.12, 0, 1) : 0)
     }
-    const cEnd = champ.fillEnd
     pulseRefs.current.forEach((el, k) => {
       if (!el) return
-      const lt = t - (cEnd + k * 0.8)
+      const lt = t - (champ.fillEnd + k * 0.8)
       if (lt > 0 && lt < 2.4) {
-        const s = 0.3 + lt * 2.0
         el.style.opacity = String(0.55 * (1 - lt / 2.4))
-        el.style.transform = `translate(-50%,-50%) scale(${s})`
+        el.style.transform = `translate(-50%,-50%) scale(${0.3 + lt * 2.0})`
       } else {
         el.style.opacity = '0'
       }
     })
 
-    // ── Path forward lines (upcoming R16 matchups, fade in after R32 settles)
+    // ── Path forward lines (upcoming matchups, fade in after R32)
     const pfFadeIn = clamp((t - 6.5) / 1.5, 0, 1)
     for (const um of layout.upcomingMatches) {
       const a = pos(layout.byId[um.nodeAId], t)
       const b = pos(layout.byId[um.nodeBId], t)
       const [qcx, qcy] = ctrl(a[0], a[1], b[0], b[1])
       const dStr = `M${a[0].toFixed(1)} ${a[1].toFixed(1)} Q${qcx.toFixed(1)} ${qcy.toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}`
-      const elV = PF.current[um.id]
-      const elH = PFHit.current[um.id]
-      const elVS = VS.current[um.id]
-      if (elV) {
-        elV.setAttribute('d', dStr)
-        elV.style.opacity = String(pfFadeIn * (um.bothKnown ? 0.7 : 0.35))
-      }
+      const elV = PF.current[um.id], elH = PFHit.current[um.id], elVS = VS.current[um.id]
+      if (elV) { elV.setAttribute('d', dStr); elV.style.opacity = String(pfFadeIn * (um.bothKnown ? 0.7 : 0.35)) }
       if (elH) elH.setAttribute('d', dStr)
       if (elVS && um.bothKnown) {
         const mx = 0.25*a[0] + 0.5*qcx + 0.25*b[0]
@@ -474,20 +561,17 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
     }
   }
 
-  // ── RAF clock — runs forever, intro plays once ────────────────
+  // ── RAF clock ─────────────────────────────────────────────────
   useEffect(() => {
     startRef.current = performance.now()
     let raf: number
-    const loop = (now: number) => {
-      update((now - startRef.current) / 1000)
-      raf = requestAnimationFrame(loop)
-    }
+    const loop = (now: number) => { update((now - startRef.current) / 1000); raf = requestAnimationFrame(loop) }
     raf = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(raf)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layout])
 
-  // ── ResizeObserver: keep HTML chip layer scaled to SVG ────────
+  // ── ResizeObserver ─────────────────────────────────────────────
   useEffect(() => {
     const el = rootRef.current; if (!el) return
     const ro = new ResizeObserver(() => {
@@ -498,25 +582,27 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
     return () => ro.disconnect()
   }, [])
 
-  const replay = () => { startRef.current = performance.now() }
+  // ── Missing flag diagnostic ────────────────────────────────────
+  useEffect(() => {
+    for (const m of r32m) {
+      for (const team of [m.team1, m.team2]) {
+        const flag = FLAGS[team]
+        if (!flag || flag === '?') {
+          console.log('[bracket] MISSING FLAG:', team)
+        }
+      }
+    }
+  }, [r32m])
 
+  const replay = () => { startRef.current = performance.now() }
   const chipSize = (n: LNode) => n.size * 2
   const flagSize = (n: LNode) => n.size * (n.L === 5 ? 0.72 : 0.78)
-
-  // ── Elo probability for tooltip ──────────────────────────────
-  const getEloProb = (teamA: string, teamB: string): [number, number] => {
-    const eA = teams.find(t => t.name === teamA)?.elo_rating ?? 1500
-    const eB = teams.find(t => t.name === teamB)?.elo_rating ?? 1500
-    const p = Math.round((1 / (1 + Math.pow(10, (eB - eA) / 400))) * 100)
-    return [p, 100 - p]
-  }
 
   const fmtDate = (s: string) =>
     new Date(s + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
-  // ── Tooltip position calculation ─────────────────────────────
   const tooltipPos = (x: number, y: number, cW: number, cH: number) => {
-    const TW = 244, TH = 148
+    const TW = 250, TH = 152
     let left = x + 18, top = y - TH / 2
     if (left + TW > cW - 8) left = x - TW - 18
     if (left < 8) left = 8
@@ -525,6 +611,7 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
     return { left, top }
   }
 
+  // ── Render ─────────────────────────────────────────────────────
   return (
     <div className="space-y-4">
       <div>
@@ -536,169 +623,130 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
         </p>
       </div>
 
-      {/* Wrapper for tooltip overflow (outside the overflow:hidden root) */}
       <div ref={wrapRef} style={{ position: 'relative' }}>
-
-        {/* Main bracket canvas */}
         <div
           ref={rootRef}
           style={{
-            position: 'relative',
-            width: '100%',
-            aspectRatio: '1 / 1',
-            maxWidth: 860,
-            margin: '0 auto',
+            position: 'relative', width: '100%', aspectRatio: '1 / 1',
+            maxWidth: 860, margin: '0 auto',
             background: 'radial-gradient(circle at 50% 42%, #16181d 0%, #0b0c10 60%, #070809 100%)',
-            borderRadius: 20,
-            overflow: 'hidden',
+            borderRadius: 20, overflow: 'hidden',
           }}
         >
           {/* SVG layer */}
           <svg
             ref={svgRef}
             viewBox="0 0 1000 1000"
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible' }}
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'all' }}
           >
-            {/* Orbit guide circles */}
             {layout.labels.map((l, i) => (
               <circle key={`g${i}`} cx={CX} cy={CY} r={l.r} fill="none" stroke={GUIDE_C} strokeWidth={1} />
             ))}
-
-            {/* Round labels */}
             <g ref={labRef} style={{ opacity: 0 }}>
               {layout.labels.map((l, i) => (
-                <text key={`l${i}`}
-                  x={CX} y={CY - l.r + 6}
-                  textAnchor="middle" fill={LABEL_C}
-                  style={{ font: '600 13px ui-monospace,"DM Mono",monospace', letterSpacing: '0.22em', userSelect: 'none', pointerEvents: 'none' }}
-                >
+                <text key={`l${i}`} x={CX} y={CY - l.r + 6} textAnchor="middle" fill={LABEL_C}
+                  style={{ font: '600 13px ui-monospace,"DM Mono",monospace', letterSpacing: '0.22em', userSelect: 'none', pointerEvents: 'none' }}>
                   {l.t}
                 </text>
               ))}
             </g>
-
-            {/* Skeleton edges (dashed, full matchup tree) */}
+            {/* Skeleton */}
             {layout.skeleton.map(ed => (
-              <path key={ed.id}
-                ref={el => { S.current[ed.id] = el }}
-                fill="none" stroke={SKEL_C} strokeWidth={1.4}
-                strokeLinecap="round" strokeDasharray="5 8"
-                style={{ opacity: 0 }}
-              />
+              <path key={ed.id} ref={el => { S.current[ed.id] = el }}
+                fill="none" stroke={SKEL_C} strokeWidth={1.4} strokeLinecap="round" strokeDasharray="5 8" style={{ opacity: 0 }} />
             ))}
-
-            {/* Path forward lines — known upcoming matchups (solid gold) */}
+            {/* Path forward — known (solid gold) */}
             {layout.upcomingMatches.filter(um => um.bothKnown).map(um => (
-              <path key={`pf-${um.id}`}
-                ref={el => { PF.current[um.id] = el }}
-                fill="none" stroke={ACCENT} strokeWidth={1.5}
-                strokeLinecap="round"
-                style={{ opacity: 0, filter: `drop-shadow(0 0 4px ${ACCENT}55)` }}
-              />
+              <path key={`pf-${um.id}`} ref={el => { PF.current[um.id] = el }}
+                fill="none" stroke={ACCENT} strokeWidth={1.5} strokeLinecap="round"
+                style={{ opacity: 0, filter: `drop-shadow(0 0 4px ${ACCENT}55)` }} />
             ))}
-
-            {/* Path forward lines — partial matchups (dashed gold) */}
+            {/* Path forward — partial (dashed gold) */}
             {layout.upcomingMatches.filter(um => !um.bothKnown).map(um => (
-              <path key={`pf-${um.id}`}
-                ref={el => { PF.current[um.id] = el }}
-                fill="none" stroke={ACCENT} strokeWidth={1}
-                strokeLinecap="round" strokeDasharray="4 4"
-                style={{ opacity: 0 }}
-              />
+              <path key={`pf-${um.id}`} ref={el => { PF.current[um.id] = el }}
+                fill="none" stroke={ACCENT} strokeWidth={1} strokeLinecap="round" strokeDasharray="4 4"
+                style={{ opacity: 0 }} />
             ))}
-
-            {/* Winner edges (gold, draws in) */}
+            {/* Winner edges */}
             {layout.edges.map(ed => (
-              <path key={ed.id}
-                ref={el => { E.current[ed.id] = el }}
-                fill="none" stroke={ACCENT} strokeWidth={2}
-                strokeLinecap="round" pathLength={1} strokeDasharray={1}
-                style={{ strokeDashoffset: 1, opacity: 0, filter: `drop-shadow(0 0 3px ${ACCENT}55)` }}
-              />
+              <path key={ed.id} ref={el => { E.current[ed.id] = el }}
+                fill="none" stroke={ACCENT} strokeWidth={2} strokeLinecap="round"
+                pathLength={1} strokeDasharray={1}
+                style={{ strokeDashoffset: 1, opacity: 0, filter: `drop-shadow(0 0 3px ${ACCENT}55)` }} />
             ))}
-
-            {/* Hit areas for upcoming known matchup lines (transparent, wide for easy hover) */}
+            {/* Hit areas for upcoming line hover */}
             {layout.upcomingMatches.filter(um => um.bothKnown).map(um => (
-              <path key={`pfhit-${um.id}`}
-                ref={el => { PFHit.current[um.id] = el }}
+              <path key={`pfhit-${um.id}`} ref={el => { PFHit.current[um.id] = el }}
                 fill="none" stroke="transparent" strokeWidth={20}
-                style={{ cursor: 'pointer' }}
-                onMouseEnter={e => showTooltip(um, e)}
+                style={{ cursor: 'pointer', pointerEvents: 'all' }}
+                onMouseEnter={e => { const d = nodeHoverData.get(um.nodeAId); if (d) showNode(d, e) }}
                 onMouseLeave={scheduleHide}
               />
             ))}
           </svg>
 
-          {/* HTML chip layer — scaled by ResizeObserver, 1000×1000 units */}
+          {/* HTML chip layer — pointerEvents:none so SVG hit areas work through gaps */}
           <div
             ref={layerRef}
-            style={{ position: 'absolute', left: 0, top: 0, width: 1000, height: 1000, transformOrigin: '0 0' }}
+            style={{ position: 'absolute', left: 0, top: 0, width: 1000, height: 1000, transformOrigin: '0 0', pointerEvents: 'none' }}
           >
             {/* ── Node chips ── */}
             {layout.nodes.map(n => {
-              const um = nodeToUM.get(n.id)
+              const hd = nodeHoverData.get(n.id)
               return (
                 <div key={n.id}
                   ref={el => { slotN(n.id).wrap = el }}
-                  onMouseEnter={um ? e => showTooltip(um, e) : undefined}
-                  onMouseLeave={um ? scheduleHide : undefined}
+                  onMouseEnter={hd ? e => showNode(hd, e) : undefined}
+                  onMouseLeave={hd ? scheduleHide : undefined}
                   style={{
                     position: 'absolute', left: 0, top: 0,
                     width: chipSize(n), height: chipSize(n),
                     opacity: 0, willChange: 'transform, opacity',
-                    cursor: um ? 'pointer' : 'default',
+                    pointerEvents: hd ? 'auto' : 'none',
+                    cursor: hd ? 'pointer' : 'default',
                   }}
                 >
                   {/* Placeholder */}
                   {!n.isLeaf && n.L < 5 && (
-                    <div
-                      ref={el => { slotN(n.id).ph = el }}
+                    <div ref={el => { slotN(n.id).ph = el }}
                       style={{
                         position: 'absolute', inset: 0, borderRadius: '50%',
                         background: PH_FILL, border: `1.5px dashed ${PH_STR}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         color: PH_TXT, fontWeight: 600, fontSize: n.size * 0.8,
-                        fontFamily: 'ui-monospace,"DM Mono",monospace',
-                        opacity: 0,
-                      }}
-                    >
-                      ?
-                    </div>
+                        fontFamily: 'ui-monospace,"DM Mono",monospace', opacity: 0,
+                      }}>?</div>
                   )}
-                  {/* Flag chip */}
-                  <div
-                    ref={el => { slotN(n.id).flag = el }}
+                  {/* Flag */}
+                  <div ref={el => { slotN(n.id).flag = el }}
                     style={{
                       position: 'absolute', inset: 0, borderRadius: '50%',
                       backgroundColor: CHIP_BG, boxShadow: CHIP_SHD,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: flagSize(n), lineHeight: 1,
+                      fontFamily: "'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif",
                       opacity: n.isLeaf ? 1 : 0,
-                    }}
-                  >
+                    }}>
                     {n.team.flag}
                   </div>
-                  {/* Gloss overlay */}
+                  {/* Gloss */}
                   <div style={{
                     position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none',
                     background: 'radial-gradient(circle at 50% 26%, rgba(255,255,255,0.34), rgba(255,255,255,0) 62%)',
                   }} />
-                  {/* Neutral ring */}
-                  <div style={{
-                    position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none',
-                    border: `1.5px solid ${RING_C}`,
-                  }} />
-                  {/* Gold winner ring */}
-                  <div
-                    ref={el => { slotN(n.id).gold = el }}
+                  {/* Default ring — dynamically controlled (opacity driven by update) */}
+                  <div ref={el => { slotN(n.id).ring = el }}
+                    style={{
+                      position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none',
+                      border: RING_DEFAULT,
+                    }} />
+                  {/* Gold ring — fades in for winners */}
+                  <div ref={el => { slotN(n.id).gold = el }}
                     style={{
                       position: 'absolute', inset: -1, borderRadius: '50%', pointerEvents: 'none',
-                      border: `2.5px solid ${ACCENT}`,
-                      boxShadow: `0 0 13px ${ACCENT}77`,
-                      opacity: 0,
-                    }}
-                  />
-                  {/* Pulse ring for upcoming match nodes */}
+                      border: RING_GOLD, boxShadow: `0 0 13px ${ACCENT}77`, opacity: 0,
+                    }} />
+                  {/* Pulse ring for upcoming known match teams */}
                   {upcomingNodeIds.has(n.id) && (
                     <div style={{
                       position: 'absolute', inset: -2, borderRadius: '50%', pointerEvents: 'none',
@@ -712,198 +760,147 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
 
             {/* ── Winner travelers ── */}
             {layout.travelers.map(tr => (
-              <div key={tr.id}
-                ref={el => { slotW(T, tr.id).wrap = el }}
-                style={{
-                  position: 'absolute', left: 0, top: 0,
-                  width: chipSize(tr.node), height: chipSize(tr.node),
-                  opacity: 0, willChange: 'transform, opacity', zIndex: 5,
-                }}
-              >
-                <div style={{
-                  position: 'absolute', inset: 0, borderRadius: '50%',
-                  backgroundColor: CHIP_BG, boxShadow: CHIP_SHD,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: flagSize(tr.node), lineHeight: 1,
-                }}>
+              <div key={tr.id} ref={el => { slotW(T, tr.id).wrap = el }}
+                style={{ position: 'absolute', left: 0, top: 0, width: chipSize(tr.node), height: chipSize(tr.node), opacity: 0, willChange: 'transform, opacity', zIndex: 5, pointerEvents: 'none' }}>
+                <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: CHIP_BG, boxShadow: CHIP_SHD, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: flagSize(tr.node), lineHeight: 1, fontFamily: "'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif" }}>
                   {layout.byId[tr.fromId]?.team.flag ?? '?'}
                 </div>
                 <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none', background: 'radial-gradient(circle at 50% 26%, rgba(255,255,255,0.34), rgba(255,255,255,0) 62%)' }} />
-                <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none', border: `1.5px solid ${RING_C}` }} />
-                <div style={{ position: 'absolute', inset: -1, borderRadius: '50%', pointerEvents: 'none', border: `2.5px solid ${ACCENT}`, boxShadow: `0 0 13px ${ACCENT}77` }} />
+                <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none', border: RING_DEFAULT }} />
+                <div style={{ position: 'absolute', inset: -1, borderRadius: '50%', pointerEvents: 'none', border: RING_GOLD, boxShadow: `0 0 13px ${ACCENT}77` }} />
               </div>
             ))}
 
             {/* ── Loser travelers ── */}
-            {layout.loserTravelers.map(tr => {
-              const fromTeam = layout.byId[tr.fromId]?.team
-              return (
-                <div key={tr.id}
-                  ref={el => { slotW(LT, tr.id).wrap = el }}
-                  style={{
-                    position: 'absolute', left: 0, top: 0,
-                    width: chipSize(tr.node), height: chipSize(tr.node),
-                    opacity: 0, willChange: 'transform, opacity', zIndex: 4,
-                  }}
-                >
-                  <div style={{
-                    position: 'absolute', inset: 0, borderRadius: '50%',
-                    backgroundColor: CHIP_BG, boxShadow: CHIP_SHD,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: flagSize(tr.node), lineHeight: 1,
-                  }}>
-                    {fromTeam?.flag ?? '?'}
-                  </div>
-                  <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none', background: 'radial-gradient(circle at 50% 26%, rgba(255,255,255,0.34), rgba(255,255,255,0) 62%)' }} />
-                  <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none', border: `1.5px solid ${RING_C}` }} />
+            {layout.loserTravelers.map(tr => (
+              <div key={tr.id} ref={el => { slotW(LT, tr.id).wrap = el }}
+                style={{ position: 'absolute', left: 0, top: 0, width: chipSize(tr.node), height: chipSize(tr.node), opacity: 0, willChange: 'transform, opacity', zIndex: 4, pointerEvents: 'none' }}>
+                <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: CHIP_BG, boxShadow: CHIP_SHD, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: flagSize(tr.node), lineHeight: 1, fontFamily: "'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif" }}>
+                  {layout.byId[tr.fromId]?.team.flag ?? '?'}
                 </div>
-              )
-            })}
+                <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none', background: 'radial-gradient(circle at 50% 26%, rgba(255,255,255,0.34), rgba(255,255,255,0) 62%)' }} />
+                <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none', border: RING_DEFAULT }} />
+              </div>
+            ))}
 
-            {/* ── VS labels for upcoming known matchups ── */}
+            {/* ── VS labels ── */}
             {layout.upcomingMatches.filter(um => um.bothKnown).map(um => (
-              <div key={`vs-${um.id}`}
-                ref={el => { VS.current[um.id] = el }}
+              <div key={`vs-${um.id}`} ref={el => { VS.current[um.id] = el }}
                 style={{
-                  position: 'absolute', left: 0, top: 0,
-                  transform: 'translate(-50%,-50%)',
-                  fontSize: 9, fontWeight: 700, letterSpacing: '0.1em',
-                  color: ACCENT, opacity: 0, pointerEvents: 'none',
-                  background: 'rgba(0,0,0,0.45)',
-                  padding: '2px 5px', borderRadius: 10,
-                  fontFamily: 'ui-monospace,"DM Mono",monospace',
+                  position: 'absolute', left: 0, top: 0, transform: 'translate(-50%,-50%)',
+                  fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', color: ACCENT,
+                  opacity: 0, pointerEvents: 'none', background: 'rgba(0,0,0,0.45)',
+                  padding: '2px 5px', borderRadius: 10, fontFamily: 'ui-monospace,"DM Mono",monospace',
                   zIndex: 3, whiteSpace: 'nowrap',
-                }}
-              >
+                }}>
                 VS
               </div>
             ))}
 
-            {/* ── Champion celebration pulses ── */}
+            {/* ── Champion pulses ── */}
             {[0, 1, 2].map(k => (
-              <div key={`p${k}`}
-                ref={el => { pulseRefs.current[k] = el }}
-                style={{
-                  position: 'absolute', left: CX, top: CY,
-                  width: 150, height: 150, marginLeft: -75, marginTop: -75,
-                  borderRadius: '50%', border: `2px solid ${ACCENT}`,
-                  opacity: 0, pointerEvents: 'none',
-                  transform: 'translate(-50%,-50%) scale(0.3)',
-                }}
-              />
+              <div key={`p${k}`} ref={el => { pulseRefs.current[k] = el }}
+                style={{ position: 'absolute', left: CX, top: CY, width: 150, height: 150, marginLeft: -75, marginTop: -75, borderRadius: '50%', border: `2px solid ${ACCENT}`, opacity: 0, pointerEvents: 'none', transform: 'translate(-50%,-50%) scale(0.3)' }} />
             ))}
 
-            {/* ── Champion caption pill ── */}
-            <div
-              ref={capRef}
-              style={{
-                position: 'absolute', left: CX, top: CY + 110,
-                transform: 'translate(-50%, 0)',
-                textAlign: 'center', opacity: 0, pointerEvents: 'none',
-                padding: '10px 22px 12px', borderRadius: 18,
-                background: 'rgba(8,9,12,0.72)',
-                backdropFilter: 'blur(6px)',
-                boxShadow: `0 0 0 1px ${ACCENT}33, 0 8px 26px rgba(0,0,0,0.5)`,
-                fontFamily: 'ui-sans-serif,-apple-system,"Segoe UI",system-ui,sans-serif',
-                whiteSpace: 'nowrap',
-              }}
-            >
+            {/* ── Champion caption ── */}
+            <div ref={capRef}
+              style={{ position: 'absolute', left: CX, top: CY + 110, transform: 'translate(-50%, 0)', textAlign: 'center', opacity: 0, pointerEvents: 'none', padding: '10px 22px 12px', borderRadius: 18, background: 'rgba(8,9,12,0.72)', backdropFilter: 'blur(6px)', boxShadow: `0 0 0 1px ${ACCENT}33, 0 8px 26px rgba(0,0,0,0.5)`, fontFamily: 'ui-sans-serif,-apple-system,system-ui,sans-serif', whiteSpace: 'nowrap' }}>
               <div style={{ fontSize: 28, marginBottom: 3, filter: `drop-shadow(0 0 10px ${ACCENT}88)` }}>🏆</div>
-              <div style={{ color: '#fff', fontWeight: 700, fontSize: 24, letterSpacing: '0.01em', lineHeight: 1 }}>
-                {layout.champion.team.name}
-              </div>
-              <div style={{ color: ACCENT, fontWeight: 600, fontSize: 11, letterSpacing: '0.34em', marginTop: 6, fontFamily: 'ui-monospace,"DM Mono",monospace' }}>
-                WORLD CHAMPIONS 2026
-              </div>
+              <div style={{ color: '#fff', fontWeight: 700, fontSize: 24, letterSpacing: '0.01em', lineHeight: 1 }}>{layout.champion.team.name}</div>
+              <div style={{ color: ACCENT, fontWeight: 600, fontSize: 11, letterSpacing: '0.34em', marginTop: 6, fontFamily: 'ui-monospace,"DM Mono",monospace' }}>WORLD CHAMPIONS 2026</div>
             </div>
 
-            {/* ── Replay button ── */}
-            <button
-              onClick={replay}
-              style={{
-                position: 'absolute', right: 18, bottom: 16, zIndex: 10,
-                padding: '8px 16px', borderRadius: 999,
-                border: '1px solid rgba(255,255,255,0.18)',
-                background: 'rgba(255,255,255,0.06)',
-                backdropFilter: 'blur(8px)',
-                color: 'rgba(255,255,255,0.82)',
-                font: '600 12px ui-sans-serif,system-ui,sans-serif',
-                letterSpacing: '0.08em', cursor: 'pointer',
-              }}
-            >
+            {/* ── Replay ── */}
+            <button onClick={replay}
+              style={{ position: 'absolute', right: 18, bottom: 16, zIndex: 10, padding: '8px 16px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.18)', background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(8px)', color: 'rgba(255,255,255,0.82)', font: '600 12px ui-sans-serif,system-ui,sans-serif', letterSpacing: '0.08em', cursor: 'pointer', pointerEvents: 'auto' }}>
               ↻ REPLAY
             </button>
           </div>
         </div>
 
-        {/* ── Match probability tooltip (rendered outside overflow:hidden) ── */}
-        {hoveredMatch && (() => {
-          const { um, x, y } = hoveredMatch
-          const [probA, probB] = getEloProb(um.teamA, um.teamB)
+        {/* ── Match tooltip (outside overflow:hidden) ── */}
+        {hoveredNode && (() => {
+          const { data, x, y } = hoveredNode
           const cW = rootRef.current?.clientWidth ?? 600
           const cH = rootRef.current?.clientHeight ?? 600
           const { left, top } = tooltipPos(x, y, cW, cH)
-          const venueShort = um.venue ? um.venue.split('(')[0].trim() : ''
-          const dateLabel = `${fmtDate(um.date)}${venueShort ? ` · ${venueShort}` : ''}`
+          const MONO = 'ui-monospace,"DM Mono",monospace'
+          const BODY = 'var(--font-dm-sans),ui-sans-serif,system-ui,sans-serif'
           return (
             <div
               onMouseEnter={() => { isOverTooltipRef.current = true; if (tooltipTimerRef.current) clearTimeout(tooltipTimerRef.current) }}
               onMouseLeave={() => { isOverTooltipRef.current = false; scheduleHide() }}
               style={{
-                position: 'absolute', left, top, zIndex: 20,
-                width: 244, padding: '14px 18px',
-                background: 'rgba(11,18,36,0.95)',
-                backdropFilter: 'blur(16px)',
-                border: '1px solid rgba(227,194,126,0.3)',
-                borderRadius: 12,
-                boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
-                pointerEvents: 'auto',
+                position: 'absolute', left, top, zIndex: 20, width: 250, padding: '14px 18px',
+                background: 'rgba(11,18,36,0.95)', backdropFilter: 'blur(16px)',
+                border: '1px solid rgba(227,194,126,0.3)', borderRadius: 12,
+                boxShadow: '0 8px 32px rgba(0,0,0,0.6)', pointerEvents: 'auto',
               }}
             >
-              <p style={{
-                textAlign: 'center', fontSize: 9,
-                fontFamily: 'ui-monospace,"DM Mono",monospace',
-                color: 'rgba(243,237,224,0.52)', letterSpacing: '0.08em',
-                marginBottom: 10, textTransform: 'uppercase',
-              }}>
-                Match Probability
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <span style={{ fontSize: 18, lineHeight: 1 }}>{um.teamAFlag}</span>
-                <span style={{ flex: 1, fontSize: 13, color: '#f3ede0', fontWeight: 600, fontFamily: 'var(--font-dm-sans)' }}>{um.teamA}</span>
-                <span style={{ fontSize: 14, color: ACCENT, fontWeight: 700, fontFamily: 'ui-monospace,"DM Mono",monospace' }}>{probA}%</span>
-              </div>
-              <div style={{ height: 1, background: 'rgba(255,255,255,0.1)', marginBottom: 8 }} />
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                <span style={{ fontSize: 18, lineHeight: 1 }}>{um.teamBFlag}</span>
-                <span style={{ flex: 1, fontSize: 13, color: '#f3ede0', fontWeight: 600, fontFamily: 'var(--font-dm-sans)' }}>{um.teamB}</span>
-                <span style={{ fontSize: 14, color: ACCENT, fontWeight: 700, fontFamily: 'ui-monospace,"DM Mono",monospace' }}>{probB}%</span>
-              </div>
-              <p style={{
-                textAlign: 'center', fontSize: 9,
-                fontFamily: 'ui-monospace,"DM Mono",monospace',
-                color: 'rgba(243,237,224,0.52)',
-              }}>
-                {dateLabel}
-              </p>
+              {data.kind === 'tbd' && (
+                <p style={{ fontSize: 12, color: 'rgba(243,237,224,0.52)', fontFamily: MONO, textAlign: 'center' }}>
+                  TBD — awaiting result
+                </p>
+              )}
+
+              {data.kind === 'completed' && (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                    <span style={{ fontSize: 20, fontFamily: "'Apple Color Emoji','Segoe UI Emoji',sans-serif" }}>{data.flag}</span>
+                    <span style={{ flex: 1, fontSize: 14, color: '#f3ede0', fontWeight: 600, fontFamily: BODY }}>{data.team}</span>
+                    <span style={{ fontSize: 11, fontFamily: MONO, fontWeight: 700, color: data.won ? ACCENT : 'rgba(243,237,224,0.45)', letterSpacing: '0.06em' }}>
+                      {data.won ? 'WON' : 'OUT'}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: 12, color: 'rgba(243,237,224,0.6)', fontFamily: BODY, marginBottom: 6 }}>
+                    vs <span style={{ fontFamily: "'Apple Color Emoji','Segoe UI Emoji',sans-serif" }}>{data.opponentFlag}</span> {data.opponent} · {data.score}
+                  </p>
+                  <p style={{ fontSize: 11, color: 'rgba(243,237,224,0.38)', fontFamily: MONO }}>
+                    Had {data.probMyTeam}% chance to win
+                  </p>
+                </>
+              )}
+
+              {data.kind === 'upcoming' && (
+                <>
+                  <p style={{ textAlign: 'center', fontSize: 9, fontFamily: MONO, color: ACCENT, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+                    Match Probability
+                  </p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                    <span style={{ fontSize: 18, fontFamily: "'Apple Color Emoji','Segoe UI Emoji',sans-serif" }}>{data.teamAFlag}</span>
+                    <span style={{ flex: 1, fontSize: 13, color: '#f3ede0', fontWeight: 600, fontFamily: BODY }}>{data.teamA}</span>
+                    <span style={{ fontSize: 14, color: ACCENT, fontWeight: 700, fontFamily: MONO }}>{data.probA}%</span>
+                  </div>
+                  <div style={{ height: 1, background: 'rgba(255,255,255,0.1)', marginBottom: 8 }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                    <span style={{ fontSize: 18, fontFamily: "'Apple Color Emoji','Segoe UI Emoji',sans-serif" }}>{data.teamBFlag}</span>
+                    <span style={{ flex: 1, fontSize: 13, color: '#f3ede0', fontWeight: 600, fontFamily: BODY }}>{data.teamB}</span>
+                    <span style={{ fontSize: 14, color: ACCENT, fontWeight: 700, fontFamily: MONO }}>{data.probB}%</span>
+                  </div>
+                  <p style={{ textAlign: 'center', fontSize: 9, fontFamily: MONO, color: 'rgba(243,237,224,0.52)' }}>
+                    {fmtDate(data.date)}{data.venue ? ` · ${data.venue.split('(')[0].trim()}` : ''}
+                  </p>
+                </>
+              )}
             </div>
           )
         })()}
-
-      </div>{/* end wrapRef */}
+      </div>
 
       {/* Legend */}
       <div className="flex items-center gap-6 flex-wrap justify-center" style={{ opacity: 0.8 }}>
         {[
-          { border: `2.5px solid ${ACCENT}`, shadow: `0 0 8px ${ACCENT}66`, label: 'Winner / advancing' },
-          { border: `1.5px solid rgba(255,255,255,0.28)`, shadow: 'none', label: 'Eliminated', opacity: 0.35 },
-          { border: `1.5px dashed rgba(255,255,255,0.28)`, shadow: 'none', label: 'Match not yet played', opacity: 0.6 },
+          { border: RING_GOLD, shadow: `0 0 8px ${ACCENT}66`, label: 'Winner / advancing' },
+          { border: '2px solid rgba(255,255,255,0.6)', shadow: 'drop-shadow(0 0 8px rgba(227,194,126,0.5))', label: 'All 32 at start' },
+          { border: '1px solid rgba(255,255,255,0.15)', shadow: 'none', label: 'Eliminated', opacity: 0.2 },
           { border: `1.5px solid ${ACCENT}`, shadow: `0 0 6px ${ACCENT}55`, label: 'Upcoming known matchup', opacity: 0.7 },
         ].map(({ border, shadow, label, opacity }) => (
           <div key={label} className="flex items-center gap-2">
             <div style={{
               width: 20, height: 20, borderRadius: '50%',
-              backgroundColor: CHIP_BG, border, boxShadow: shadow,
+              backgroundColor: CHIP_BG, border, boxShadow: shadow.startsWith('drop') ? undefined : shadow,
+              filter: shadow.startsWith('drop') ? shadow : undefined,
               opacity: opacity ?? 1, flexShrink: 0,
             }} />
             <span style={{ fontFamily: 'ui-monospace,"DM Mono",monospace', fontSize: 11, color: 'rgba(243,237,224,0.52)' }}>
