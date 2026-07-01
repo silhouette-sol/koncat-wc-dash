@@ -111,10 +111,10 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
       </p>
       <div
         className="scrollbar-hide mb-3"
-        style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', whiteSpace: 'nowrap' } as React.CSSProperties}
+        style={{ display: 'flex', flexDirection: 'row', overflowX: 'auto', WebkitOverflowScrolling: 'touch', gap: 24, paddingBottom: 4 } as React.CSSProperties}
       >
         {displayMatches.map((m, i) => (
-          <span key={i} className="inline-block font-body text-sm text-text-primary mr-6">
+          <span key={i} className="font-body text-sm text-text-primary" style={{ flexShrink: 0, whiteSpace: 'nowrap' }}>
             {getFlag(m.team1)} {m.team1}{' '}
             <span className="font-display text-base" style={{ color: '#e3c27e' }}>
               {getMatchResult(m).displayScore}
@@ -620,11 +620,13 @@ export default function DashboardTabs({
       {/* OVERVIEW */}
       {activeTab === 'OVERVIEW' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatCard label="Matches Played" value={matchesPlayed} />
-            <StatCard label="Teams Remaining" value={teamsRemaining} />
-            <StatCard label="Final Date" value="Jul 19" />
-            <GoldenBootTile entries={descriptive.golden_boot} />
+          <div className="scroll-fade-right">
+            <div className="stat-tiles-row">
+              <StatCard label="Matches Played" value={matchesPlayed} />
+              <StatCard label="Teams Remaining" value={teamsRemaining} />
+              <StatCard label="Final Date" value="Jul 19" />
+              <GoldenBootTile entries={descriptive.golden_boot} />
+            </div>
           </div>
 
           <DailySummaryCard matches={worldcupMatches} />

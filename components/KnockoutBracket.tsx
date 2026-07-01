@@ -623,7 +623,8 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
         </p>
       </div>
 
-      <div ref={wrapRef} style={{ position: 'relative' }}>
+      <div className="scrollbar-hide" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
+      <div ref={wrapRef} style={{ position: 'relative', minWidth: 340 }}>
         <div
           ref={rootRef}
           style={{
@@ -886,6 +887,7 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
             </div>
           )
         })()}
+      </div>
       </div>
 
       {/* Legend */}

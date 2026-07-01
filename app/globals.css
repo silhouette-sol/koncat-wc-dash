@@ -30,7 +30,45 @@ body {
 
 /* ── Scrollbar hide utility ─────────────────────────────────── */
 
+.scrollbar-hide { scrollbar-width: none; }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* ── Stat tiles: horizontal scroll on mobile, 4-col grid on sm+ */
+.stat-tiles-row {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+.stat-tiles-row::-webkit-scrollbar { display: none; }
+.stat-tiles-row > * { flex-shrink: 0; min-width: 160px; }
+
+@media (min-width: 640px) {
+  .stat-tiles-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+  .stat-tiles-row > * { min-width: 0; }
+}
+
+/* ── Right-edge fade scroll hint (mobile only) ──────────────── */
+.scroll-fade-right { position: relative; }
+@media (max-width: 639px) {
+  .scroll-fade-right::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0;
+    width: 32px; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(7,9,14,0.8));
+    pointer-events: none;
+    z-index: 1;
+  }
+}
 
 /* ── Frosted glass card override (applies to every .bg-card) ── */
 

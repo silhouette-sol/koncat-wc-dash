@@ -72,7 +72,7 @@ export default function ProbabilityTable({ teams, squadValues }: ProbabilityTabl
         </div>
       </div>
 
-      <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
+      <div className="overflow-x-auto scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
         <table style={{ minWidth: 600, width: '100%' }}>
           <thead>
             <tr className="border-b border-border/30">
