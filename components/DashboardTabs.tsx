@@ -363,22 +363,6 @@ function CrazyStatOfDay({
     }
   }
 
-  // P6: today's biggest Elo mover
-  if (!line1) {
-    const todayTeams = new Set(todayCompleted.flatMap(m => [m.team1, m.team2]))
-    const todayMovers = descriptive.elo_movers.filter(
-      mv => mv.direction !== 'flat' &&
-        /^[A-Za-zÀ-ÿ\s&'()\-.]+$/.test(mv.team) &&
-        mv.team.length < 30 &&
-        todayTeams.has(mv.team)
-    )
-    const topMover = todayMovers.find(mv => mv.direction === 'up')
-    if (topMover) {
-      line1 = <>{topMover.team} gained <strong style={{ color: '#e3c27e' }}>{topMover.change} Elo points</strong> from today&apos;s result, one of the biggest jumps of the tournament.</>
-      line2 = `Rating went from ${topMover.pre_wc} to ${topMover.current}. Results are exceeding expectations.`
-    }
-  }
-
   if (!line1) return null
 
   return (
@@ -566,7 +550,7 @@ function GoldenBootTile({ entries }: { entries: GoldenBootEntry[] }) {
         Golden Boot
       </p>
       <div className="flex flex-col mt-1" style={{ gap: 6 }}>
-        {leaders.map((p, i) => (
+        {leaders.map((p) => (
           <div key={p.player} className="flex items-center gap-2">
             <span style={{ fontSize: 16, lineHeight: 1, fontFamily: "'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif" }}>
               {getFlag(p.team)}
@@ -578,9 +562,7 @@ function GoldenBootTile({ entries }: { entries: GoldenBootEntry[] }) {
               <span className="font-display font-bold" style={{ fontSize: 14, color: '#e3c27e', lineHeight: 1 }}>
                 {p.goals}
               </span>
-              {i === 0 && (
-                <span className="font-mono-data text-text-muted" style={{ fontSize: 9 }}>goals</span>
-              )}
+              <span className="font-mono-data text-text-muted" style={{ fontSize: 9 }}>goals</span>
             </div>
           </div>
         ))}
