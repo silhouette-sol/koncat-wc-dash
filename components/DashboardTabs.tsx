@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import {
-  TeamComparison, DescriptiveData, FunFactsData, WCMatch,
+  TeamComparison, DescriptiveData, FunFactsData, WCMatch, GoldenBootEntry,
 } from '@/lib/types'
 import StatCard from './StatCard'
 import WinProbDoughnut from './WinProbDoughnut'
@@ -104,9 +104,9 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
   return (
     <section
       className="rounded-sm px-5 py-4"
-      style={{ background: 'rgba(11,29,58,0.8)', borderLeft: '3px solid #C9A027', border: '1px solid rgba(201,160,39,0.35)' }}
+      style={{ background: 'rgba(7,9,14,0.8)', borderLeft: '3px solid #e3c27e', border: '1px solid rgba(227,194,126,0.35)' }}
     >
-      <p className="font-mono-data text-[10px] uppercase tracking-widest mb-2" style={{ color: '#C9A027' }}>
+      <p className="font-mono-data text-[10px] uppercase tracking-widest mb-2" style={{ color: '#e3c27e' }}>
         {isToday ? 'WHAT HAPPENED TODAY' : `LAST MATCHDAY · ${displayDate}`}
       </p>
       <div
@@ -116,7 +116,7 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
         {displayMatches.map((m, i) => (
           <span key={i} className="inline-block font-body text-sm text-text-primary mr-6">
             {getFlag(m.team1)} {m.team1}{' '}
-            <span className="font-display text-base" style={{ color: '#C9A027' }}>
+            <span className="font-display text-base" style={{ color: '#e3c27e' }}>
               {getMatchResult(m).displayScore}
             </span>{' '}
             {m.team2} {getFlag(m.team2)}
@@ -132,12 +132,12 @@ function DailySummaryCard({ matches }: { matches: WCMatch[] }) {
           style={{
             maxHeight: 200,
             scrollbarWidth: 'thin',
-            scrollbarColor: '#C9A027 transparent',
+            scrollbarColor: '#e3c27e transparent',
           } as React.CSSProperties}
         >
           {bullets.map((bullet, i) => (
             <p key={i} className="font-body text-sm text-text-primary leading-snug flex gap-2">
-              <span style={{ color: '#C9A027', flexShrink: 0 }}>•</span>
+              <span style={{ color: '#e3c27e', flexShrink: 0 }}>•</span>
               <span>{bullet}</span>
             </p>
           ))}
@@ -211,7 +211,7 @@ function RecentMatches({ matches }: { matches: WCMatch[] }) {
                     <button
                       onClick={() => getRecap(m)}
                       className="font-mono-data text-xs px-3 rounded-sm transition-colors min-h-[44px]"
-                      style={{ background: '#D4622A', color: '#F0E8D8' }}
+                      style={{ background: '#e3c27e', color: '#F0E8D8' }}
                     >
                       {loadingKey === key ? 'Generating...' : 'Get recap ↗'}
                     </button>
@@ -267,7 +267,7 @@ function CrazyStatOfDay({
       for (const [player, mins] of Object.entries(byPlayer)) {
         if (mins.length < 3) continue
         if (mins.every(min => !min.includes('+') && parseInt(min) <= 45)) {
-          line1 = <>{player} scored a first-half hat trick for <strong style={{ color: '#C9A027' }}>{team}</strong> against {opp}, all three before the break.</>
+          line1 = <>{player} scored a first-half hat trick for <strong style={{ color: '#e3c27e' }}>{team}</strong> against {opp}, all three before the break.</>
           line2 = `Minutes: ${mins.map(min => `${min}'`).join(', ')}. The cleanest kind of hat trick.`
           break outer1
         }
@@ -286,7 +286,7 @@ function CrazyStatOfDay({
         for (const g of goals) { ;(byPlayer[g.name] ??= []).push(g.minute) }
         for (const [player, mins] of Object.entries(byPlayer)) {
           if (mins.length >= 3) {
-            line1 = <>{player} scored a hat trick for <strong style={{ color: '#C9A027' }}>{team}</strong> against {opp} ({mins.map(min => `${min}'`).join(', ')}).</>
+            line1 = <>{player} scored a hat trick for <strong style={{ color: '#e3c27e' }}>{team}</strong> against {opp} ({mins.map(min => `${min}'`).join(', ')}).</>
             line2 = `Final: ${m.score!.ft[0]}–${m.score!.ft[1]}.`
             break outer2
           }
@@ -310,7 +310,7 @@ function CrazyStatOfDay({
       ]
       for (const [n, team, opp, half] of cases) {
         if (n >= 3) {
-          line1 = <><strong style={{ color: '#C9A027' }}>{team}</strong> scored {n} goals in the {half} half alone against {opp}.</>
+          line1 = <><strong style={{ color: '#e3c27e' }}>{team}</strong> scored {n} goals in the {half} half alone against {opp}.</>
           line2 = `Final score: ${ft1}–${ft2} (HT: ${ht1}–${ht2}).`
           break outer3
         }
@@ -331,7 +331,7 @@ function CrazyStatOfDay({
         const tScore = isT1 ? g1 : g2
         const oScore = isT1 ? g2 : g1
         const outcome = tScore > oScore ? 'win' : tScore === oScore ? 'draw' : 'hold on'
-        line1 = <>{stGoal.name} scored in stoppage time ({stGoal.minute}&apos;) to {outcome} for <strong style={{ color: '#C9A027' }}>{team}</strong> against {opp}.</>
+        line1 = <>{stGoal.name} scored in stoppage time ({stGoal.minute}&apos;) to {outcome} for <strong style={{ color: '#e3c27e' }}>{team}</strong> against {opp}.</>
         line2 = `Final: ${g1}–${g2}.`
         break outer4
       }
@@ -358,7 +358,7 @@ function CrazyStatOfDay({
       }
     }
     if (bestUpset && bestUpset.prob < 0.45) {
-      line1 = <>Today&apos;s upset: <strong style={{ color: '#C9A027' }}>{bestUpset.team}</strong> beat {bestUpset.opp}. The model gave them only{' '}<strong style={{ color: '#C9A027' }}>{(bestUpset.prob * 100).toFixed(0)}%</strong> chance to win.</>
+      line1 = <>Today&apos;s upset: <strong style={{ color: '#e3c27e' }}>{bestUpset.team}</strong> beat {bestUpset.opp}. The model gave them only{' '}<strong style={{ color: '#e3c27e' }}>{(bestUpset.prob * 100).toFixed(0)}%</strong> chance to win.</>
       line2 = `Final score: ${bestUpset.score}. Results on the pitch don't always follow the numbers.`
     }
   }
@@ -374,7 +374,7 @@ function CrazyStatOfDay({
     )
     const topMover = todayMovers.find(mv => mv.direction === 'up')
     if (topMover) {
-      line1 = <>{topMover.team} gained <strong style={{ color: '#C9A027' }}>{topMover.change} Elo points</strong> from today&apos;s result, one of the biggest jumps of the tournament.</>
+      line1 = <>{topMover.team} gained <strong style={{ color: '#e3c27e' }}>{topMover.change} Elo points</strong> from today&apos;s result, one of the biggest jumps of the tournament.</>
       line2 = `Rating went from ${topMover.pre_wc} to ${topMover.current}. Results are exceeding expectations.`
     }
   }
@@ -384,7 +384,7 @@ function CrazyStatOfDay({
   return (
     <div
       className="rounded-sm px-5 py-4"
-      style={{ background: 'rgba(11,29,58,0.8)', borderLeft: '3px solid #D4622A', border: '1px solid rgba(212,98,42,0.3)' }}
+      style={{ background: 'rgba(7,9,14,0.8)', borderLeft: '3px solid #e3c27e', border: '1px solid rgba(227,194,126,0.2)' }}
     >
       <p className="font-mono-data text-[10px] text-accent uppercase tracking-widest mb-2">
         Crazy stat of the day
@@ -429,12 +429,12 @@ function CompactUpcoming({ matches, teams }: { matches: WCMatch[]; teams: TeamCo
               <span className="font-body text-sm text-text-primary">
                 {getFlag(m.team1)}{' '}
                 {m.team1 === fav
-                  ? <strong style={{ color: '#C9A027' }}>{m.team1} ({(n1 * 100).toFixed(0)}%)</strong>
+                  ? <strong style={{ color: '#e3c27e' }}>{m.team1} ({(n1 * 100).toFixed(0)}%)</strong>
                   : <>{m.team1} ({(n1 * 100).toFixed(0)}%)</>
                 }
                 {' '}vs{' '}
                 {m.team2 === fav
-                  ? <strong style={{ color: '#C9A027' }}>{m.team2} ({(n2 * 100).toFixed(0)}%)</strong>
+                  ? <strong style={{ color: '#e3c27e' }}>{m.team2} ({(n2 * 100).toFixed(0)}%)</strong>
                   : <>{m.team2} ({(n2 * 100).toFixed(0)}%)</>
                 }
                 {' '}{getFlag(m.team2)}
@@ -459,10 +459,10 @@ function AboutThisModel() {
   return (
     <section
       className="rounded-sm px-5 py-5 space-y-4"
-      style={{ background: 'rgba(11,29,58,0.8)', border: '1px solid rgba(201,160,39,0.3)' }}
+      style={{ background: 'rgba(7,9,14,0.8)', border: '1px solid rgba(227,194,126,0.3)' }}
     >
       <div>
-        <h2 className="font-display text-2xl tracking-widest" style={{ color: '#C9A027' }}>
+        <h2 className="font-display text-2xl tracking-widest" style={{ color: '#e3c27e' }}>
           ABOUT THIS MODEL
         </h2>
         <p className="font-body text-sm text-text-muted mt-1 leading-relaxed">
@@ -471,7 +471,7 @@ function AboutThisModel() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <div className="space-y-2">
-          <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#C9A027' }}>
+          <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#e3c27e' }}>
             Data Sources
           </p>
           <p className="font-body text-sm text-text-muted leading-relaxed">
@@ -481,7 +481,7 @@ function AboutThisModel() {
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-text-primary transition-colors"
-              style={{ color: '#C9A027' }}
+              style={{ color: '#e3c27e' }}
             >
               World Football Elo
             </a>{' '}
@@ -489,7 +489,7 @@ function AboutThisModel() {
           </p>
         </div>
         <div className="space-y-2">
-          <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#C9A027' }}>
+          <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#e3c27e' }}>
             Elo Ratings
           </p>
           <p className="font-body text-sm text-text-muted leading-relaxed">
@@ -499,14 +499,14 @@ function AboutThisModel() {
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-text-primary transition-colors"
-              style={{ color: '#C9A027' }}
+              style={{ color: '#e3c27e' }}
             >
               Wikipedia ↗
             </a>
           </p>
         </div>
         <div className="space-y-2">
-          <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#C9A027' }}>
+          <p className="font-mono-data text-[10px] uppercase tracking-widest" style={{ color: '#e3c27e' }}>
             Monte Carlo Simulation
           </p>
           <p className="font-body text-sm text-text-muted leading-relaxed">
@@ -516,7 +516,7 @@ function AboutThisModel() {
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-text-primary transition-colors"
-              style={{ color: '#C9A027' }}
+              style={{ color: '#e3c27e' }}
             >
               Wikipedia ↗
             </a>
@@ -527,39 +527,39 @@ function AboutThisModel() {
   )
 }
 
-// ── Leading the Tournament tile ───────────────────────────────
+// ── Golden Boot Leader tile ───────────────────────────────────
 
-function LeadingTile({ matches }: { matches: WCMatch[] }) {
-  const map: Record<string, { pts: number; gd: number; gf: number }> = {}
-  for (const m of matches) {
-    if (!m.score) continue
-    const [g1, g2] = m.score.ft
-    if (!map[m.team1]) map[m.team1] = { pts: 0, gd: 0, gf: 0 }
-    if (!map[m.team2]) map[m.team2] = { pts: 0, gd: 0, gf: 0 }
-    map[m.team1].gf += g1; map[m.team1].gd += g1 - g2
-    map[m.team2].gf += g2; map[m.team2].gd += g2 - g1
-    const res = getMatchResult(m)
-    if (res.winner === m.team1) { map[m.team1].pts += 3 }
-    else if (res.winner === m.team2) { map[m.team2].pts += 3 }
-    else if (res.decidedBy === 'draw') { map[m.team1].pts += 1; map[m.team2].pts += 1 }
-  }
-  const top3 = Object.entries(map)
-    .sort(([, a], [, b]) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf)
-    .slice(0, 3)
+function GoldenBootTile({ entries }: { entries: GoldenBootEntry[] }) {
+  if (!entries.length) return (
+    <div className="bg-card border border-border/30 rounded-sm p-4 flex flex-col justify-center">
+      <p className="font-mono-data text-[10px] text-text-muted uppercase tracking-widest">Golden Boot Leader</p>
+      <p className="font-body text-sm text-text-muted mt-2">No goals yet</p>
+    </div>
+  )
+  const topGoals = entries[0].goals
+  const tied = entries.filter(e => e.goals === topGoals).sort((a, b) => a.player.localeCompare(b.player))
+  const top = tied[0]
+  const isTied = tied.length > 1
 
   return (
     <div className="bg-card border border-border/30 rounded-sm p-4 flex flex-col gap-1">
-      <p className="font-mono-data text-xs text-text-muted uppercase tracking-widest">
-        Leading the Tournament
+      <p className="font-mono-data text-[10px] text-text-muted uppercase tracking-widest">
+        Golden Boot Leader
       </p>
-      <div className="flex flex-col mt-1" style={{ gap: 4 }}>
-        {top3.map(([team, { pts }]) => (
-          <div key={team} className="flex items-center gap-1.5">
-            <span style={{ fontSize: 14 }}>{getFlag(team)}</span>
-            <span className="font-body text-text-primary" style={{ fontSize: 12 }}>{team}</span>
-            <span className="font-mono-data font-bold" style={{ fontSize: 12, color: '#C9A027', marginLeft: 'auto' }}>{pts}pts</span>
-          </div>
-        ))}
+      <div className="flex flex-col items-center gap-0.5 mt-1">
+        <span style={{ fontSize: 24 }}>{getFlag(top.team)}</span>
+        <span className="font-body font-semibold text-text-primary text-center leading-snug" style={{ fontSize: 14 }}>
+          {top.player}
+        </span>
+        <div className="flex items-baseline gap-1">
+          <span className="font-display font-bold" style={{ fontSize: 28, color: '#e3c27e', lineHeight: 1 }}>
+            {top.goals}
+          </span>
+          {isTied && (
+            <span className="font-mono-data text-text-muted" style={{ fontSize: 10 }}>T-1</span>
+          )}
+        </div>
+        <span className="font-mono-data text-text-muted" style={{ fontSize: 11 }}>goals</span>
       </div>
     </div>
   )
@@ -593,8 +593,14 @@ export default function DashboardTabs({
       <div className="space-y-0">
       {/* Tab navigation */}
       <div
-        className="scrollbar-hide rounded-sm mb-6 flex"
-        style={{ background: '#5C3D2E', overflowX: 'auto' }}
+        className="scrollbar-hide mb-6 flex"
+        style={{
+          background: 'rgba(255,255,255,0.04)',
+          backdropFilter: 'blur(12px)',
+          borderRadius: 12,
+          border: '1px solid rgba(255,255,255,0.07)',
+          overflowX: 'auto',
+        }}
       >
         {TABS.map(tab => (
           <button
@@ -602,8 +608,8 @@ export default function DashboardTabs({
             onClick={() => setActiveTab(tab)}
             className="relative flex-shrink-0 px-5 font-display text-sm tracking-widest transition-colors inline-flex items-center min-h-[44px]"
             style={{
-              color: activeTab === tab ? '#F0E8D8' : '#C4A882',
-              borderBottom: activeTab === tab ? '2px solid #C9A027' : '2px solid transparent',
+              color: activeTab === tab ? '#f3ede0' : 'rgba(243,237,224,0.45)',
+              borderBottom: activeTab === tab ? '2px solid #e3c27e' : '2px solid transparent',
             }}
           >
             {tab}
@@ -618,7 +624,7 @@ export default function DashboardTabs({
             <StatCard label="Matches Played" value={matchesPlayed} />
             <StatCard label="Teams Remaining" value={teamsRemaining} />
             <StatCard label="Final Date" value="Jul 19" />
-            <LeadingTile matches={worldcupMatches} />
+            <GoldenBootTile entries={descriptive.golden_boot} />
           </div>
 
           <DailySummaryCard matches={worldcupMatches} />
@@ -649,7 +655,7 @@ export default function DashboardTabs({
 
       {/* MY MODEL */}
       {activeTab === 'MY MODEL' && (
-        <div className="model-theme space-y-6">
+        <div className="space-y-6">
           <AboutThisModel />
 
           <div className="doughnut-wrap">
