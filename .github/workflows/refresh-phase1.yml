@@ -12,6 +12,8 @@ on:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Check date — skip after July 12
         id: date_check
@@ -26,12 +28,13 @@ jobs:
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: steps.date_check.outputs.skip == 'false'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         if: steps.date_check.outputs.skip == 'false'
         with:
           python-version: '3.11'
