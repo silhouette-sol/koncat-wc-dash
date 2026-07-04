@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T04:34:56.701320",
+  "generated_at": "2026-07-04T06:53:55.942930",
   "golden_boot": [
     {
       "player": "Lionel Messi",
@@ -690,13 +690,6 @@
       "direction": "up"
     },
     {
-      "team": "Cape Verde",
-      "pre_wc": 1408,
-      "current": 1430,
-      "change": 22,
-      "direction": "up"
-    },
-    {
       "team": "Morocco",
       "pre_wc": 1614,
       "current": 1635,
@@ -707,6 +700,13 @@
       "team": "Norway",
       "pre_wc": 1607,
       "current": 1629,
+      "change": 22,
+      "direction": "up"
+    },
+    {
+      "team": "Cape Verde",
+      "pre_wc": 1408,
+      "current": 1430,
       "change": 22,
       "direction": "up"
     },
@@ -753,6 +753,13 @@
       "direction": "up"
     },
     {
+      "team": "Belgium",
+      "pre_wc": 1571,
+      "current": 1575,
+      "change": 4,
+      "direction": "up"
+    },
+    {
       "team": "Croatia",
       "pre_wc": 1527,
       "current": 1531,
@@ -767,23 +774,16 @@
       "direction": "up"
     },
     {
-      "team": "Belgium",
-      "pre_wc": 1571,
-      "current": 1575,
-      "change": 4,
+      "team": "Ghana",
+      "pre_wc": 1441,
+      "current": 1444,
+      "change": 3,
       "direction": "up"
     },
     {
       "team": "Iran",
       "pre_wc": 1457,
       "current": 1460,
-      "change": 3,
-      "direction": "up"
-    },
-    {
-      "team": "Ghana",
-      "pre_wc": 1441,
-      "current": 1444,
       "change": 3,
       "direction": "up"
     },
@@ -816,7 +816,14 @@
       "direction": "flat"
     },
     {
-      "team": "W102",
+      "team": "W99",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W100",
       "pre_wc": 1500,
       "current": 1500,
       "change": 0,
@@ -824,6 +831,48 @@
     },
     {
       "team": "W86",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W102",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W93",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "Cura\u00e7ao",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W89",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W98",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W101",
       "pre_wc": 1500,
       "current": 1500,
       "change": 0,
@@ -844,69 +893,6 @@
       "direction": "flat"
     },
     {
-      "team": "W99",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W98",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "L101",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W100",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W93",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W96",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "Cura\u00e7ao",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W91",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W101",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
       "team": "W88",
       "pre_wc": 1500,
       "current": 1500,
@@ -914,14 +900,7 @@
       "direction": "flat"
     },
     {
-      "team": "W87",
-      "pre_wc": 1500,
-      "current": 1500,
-      "change": 0,
-      "direction": "flat"
-    },
-    {
-      "team": "W95",
+      "team": "L102",
       "pre_wc": 1500,
       "current": 1500,
       "change": 0,
@@ -935,14 +914,35 @@
       "direction": "flat"
     },
     {
-      "team": "W89",
+      "team": "W95",
       "pre_wc": 1500,
       "current": 1500,
       "change": 0,
       "direction": "flat"
     },
     {
-      "team": "L102",
+      "team": "W91",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W96",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "W87",
+      "pre_wc": 1500,
+      "current": 1500,
+      "change": 0,
+      "direction": "flat"
+    },
+    {
+      "team": "L101",
       "pre_wc": 1500,
       "current": 1500,
       "change": 0,
@@ -1012,16 +1012,16 @@
       "direction": "down"
     },
     {
-      "team": "New Zealand",
-      "pre_wc": 1374,
-      "current": 1346,
+      "team": "Qatar",
+      "pre_wc": 1328,
+      "current": 1300,
       "change": -28,
       "direction": "down"
     },
     {
-      "team": "Qatar",
-      "pre_wc": 1328,
-      "current": 1300,
+      "team": "New Zealand",
+      "pre_wc": 1374,
+      "current": 1346,
       "change": -28,
       "direction": "down"
     },
@@ -1033,16 +1033,16 @@
       "direction": "down"
     },
     {
-      "team": "Panama",
-      "pre_wc": 1464,
-      "current": 1428,
+      "team": "Algeria",
+      "pre_wc": 1551,
+      "current": 1516,
       "change": -36,
       "direction": "down"
     },
     {
-      "team": "Algeria",
-      "pre_wc": 1551,
-      "current": 1516,
+      "team": "Panama",
+      "pre_wc": 1464,
+      "current": 1428,
       "change": -36,
       "direction": "down"
     },
@@ -1054,16 +1054,16 @@
       "direction": "down"
     },
     {
-      "team": "Czech Republic",
-      "pre_wc": 1455,
-      "current": 1416,
+      "team": "Bosnia & Herzegovina",
+      "pre_wc": 1500,
+      "current": 1461,
       "change": -39,
       "direction": "down"
     },
     {
-      "team": "Bosnia & Herzegovina",
-      "pre_wc": 1500,
-      "current": 1461,
+      "team": "Czech Republic",
+      "pre_wc": 1455,
+      "current": 1416,
       "change": -39,
       "direction": "down"
     },
@@ -1526,18 +1526,12 @@
   "squad_ages": [
     {
       "team": "Belgium",
-      "avg_age": 23.6,
+      "avg_age": 23.7,
       "players": 26,
       "peak_window": "young"
     },
     {
       "team": "Senegal",
-      "avg_age": 23.8,
-      "players": 26,
-      "peak_window": "young"
-    },
-    {
-      "team": "Spain",
       "avg_age": 23.9,
       "players": 26,
       "peak_window": "young"
@@ -1549,8 +1543,8 @@
       "peak_window": "prime"
     },
     {
-      "team": "Morocco",
-      "avg_age": 24.2,
+      "team": "Spain",
+      "avg_age": 24.0,
       "players": 26,
       "peak_window": "prime"
     },
@@ -1561,14 +1555,20 @@
       "peak_window": "prime"
     },
     {
-      "team": "France",
-      "avg_age": 24.5,
+      "team": "Morocco",
+      "avg_age": 24.2,
       "players": 26,
       "peak_window": "prime"
     },
     {
       "team": "Sweden",
-      "avg_age": 24.5,
+      "avg_age": 24.2,
+      "players": 26,
+      "peak_window": "prime"
+    },
+    {
+      "team": "France",
+      "avg_age": 24.4,
       "players": 26,
       "peak_window": "prime"
     },
@@ -1591,20 +1591,14 @@
       "peak_window": "prime"
     },
     {
-      "team": "Norway",
+      "team": "USA",
       "avg_age": 25.1,
       "players": 26,
       "peak_window": "prime"
     },
     {
-      "team": "Switzerland",
-      "avg_age": 25.2,
-      "players": 26,
-      "peak_window": "prime"
-    },
-    {
-      "team": "Argentina",
-      "avg_age": 25.2,
+      "team": "Norway",
+      "avg_age": 25.1,
       "players": 26,
       "peak_window": "prime"
     },
@@ -1616,13 +1610,13 @@
     },
     {
       "team": "Netherlands",
-      "avg_age": 25.3,
+      "avg_age": 25.2,
       "players": 26,
       "peak_window": "prime"
     },
     {
-      "team": "USA",
-      "avg_age": 25.3,
+      "team": "Switzerland",
+      "avg_age": 25.4,
       "players": 26,
       "peak_window": "prime"
     },
@@ -1633,13 +1627,19 @@
       "peak_window": "prime"
     },
     {
-      "team": "Croatia",
-      "avg_age": 25.7,
+      "team": "Austria",
+      "avg_age": 25.5,
       "players": 26,
       "peak_window": "prime"
     },
     {
-      "team": "Austria",
+      "team": "Argentina",
+      "avg_age": 25.5,
+      "players": 26,
+      "peak_window": "prime"
+    },
+    {
+      "team": "Croatia",
       "avg_age": 25.7,
       "players": 26,
       "peak_window": "prime"
@@ -1675,13 +1675,13 @@
       "peak_window": "prime"
     },
     {
-      "team": "Australia",
+      "team": "Japan",
       "avg_age": 26.6,
       "players": 26,
       "peak_window": "prime"
     },
     {
-      "team": "Japan",
+      "team": "Australia",
       "avg_age": 26.6,
       "players": 26,
       "peak_window": "prime"
@@ -1693,13 +1693,13 @@
       "peak_window": "prime"
     },
     {
-      "team": "Panama",
+      "team": "South Africa",
       "avg_age": 26.9,
       "players": 26,
       "peak_window": "prime"
     },
     {
-      "team": "South Africa",
+      "team": "Panama",
       "avg_age": 26.9,
       "players": 26,
       "peak_window": "prime"
@@ -1711,14 +1711,14 @@
       "peak_window": "prime"
     },
     {
-      "team": "Paraguay",
-      "avg_age": 27.1,
+      "team": "Scotland",
+      "avg_age": 27.0,
       "players": 26,
       "peak_window": "prime"
     },
     {
-      "team": "Scotland",
-      "avg_age": 27.2,
+      "team": "Paraguay",
+      "avg_age": 27.1,
       "players": 26,
       "peak_window": "prime"
     },
@@ -1729,14 +1729,14 @@
       "peak_window": "prime"
     },
     {
-      "team": "Cape Verde",
+      "team": "Colombia",
       "avg_age": 27.3,
       "players": 26,
       "peak_window": "prime"
     },
     {
-      "team": "Colombia",
-      "avg_age": 27.5,
+      "team": "Cape Verde",
+      "avg_age": 27.3,
       "players": 26,
       "peak_window": "prime"
     },
@@ -1765,13 +1765,13 @@
       "peak_window": "prime"
     },
     {
-      "team": "Iran",
+      "team": "Egypt",
       "avg_age": 29.3,
       "players": 26,
       "peak_window": "veteran"
     },
     {
-      "team": "Egypt",
+      "team": "Iran",
       "avg_age": 29.3,
       "players": 26,
       "peak_window": "veteran"
