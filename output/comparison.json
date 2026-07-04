@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-07-04T04:31:20.414041",
+  "generated_at": "2026-07-04T04:34:56.424810",
   "market_source": "prediction_market_odds",
   "simulation_runs": 10000,
   "teams": [
     {
       "name": "France",
       "elo_rating": 1784,
-      "elo_win_prob": 0.2097,
+      "elo_win_prob": 0.209,
       "market_win_prob": 0.217,
-      "delta": -0.0073,
+      "delta": -0.008,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -17,9 +17,9 @@
     {
       "name": "England",
       "elo_rating": 1767,
-      "elo_win_prob": 0.1789,
+      "elo_win_prob": 0.1796,
       "market_win_prob": 0.143,
-      "delta": 0.0359,
+      "delta": 0.0366,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -28,9 +28,9 @@
     {
       "name": "Spain",
       "elo_rating": 1746,
-      "elo_win_prob": 0.1453,
+      "elo_win_prob": 0.1466,
       "market_win_prob": 0.154,
-      "delta": -0.0087,
+      "delta": -0.0074,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -39,9 +39,9 @@
     {
       "name": "Brazil",
       "elo_rating": 1665,
-      "elo_win_prob": 0.0598,
+      "elo_win_prob": 0.0604,
       "market_win_prob": 0.071,
-      "delta": -0.0112,
+      "delta": -0.0106,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -50,9 +50,9 @@
     {
       "name": "Argentina",
       "elo_rating": 1656,
-      "elo_win_prob": 0.0548,
+      "elo_win_prob": 0.0538,
       "market_win_prob": 0.133,
-      "delta": -0.0782,
+      "delta": -0.0792,
       "signal": "\ud83d\udd34 MARKET FAVORS",
       "path_difficulty": "easy",
       "avg_potential_opp_elo": 1478,
@@ -64,17 +64,6 @@
       "elo_win_prob": 0.0423,
       "market_win_prob": 0.071,
       "delta": -0.0287,
-      "signal": "\u26aa neutral",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
-    },
-    {
-      "name": "Morocco",
-      "elo_rating": 1635,
-      "elo_win_prob": 0.0409,
-      "market_win_prob": 0.028,
-      "delta": 0.0129,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -94,9 +83,20 @@
     {
       "name": "Netherlands",
       "elo_rating": 1633,
-      "elo_win_prob": 0.0392,
+      "elo_win_prob": 0.0404,
       "market_win_prob": 0.056,
-      "delta": -0.0168,
+      "delta": -0.0156,
+      "signal": "\u26aa neutral",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
+    },
+    {
+      "name": "Morocco",
+      "elo_rating": 1635,
+      "elo_win_prob": 0.0395,
+      "market_win_prob": 0.028,
+      "delta": 0.0115,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -105,9 +105,9 @@
     {
       "name": "Norway",
       "elo_rating": 1629,
-      "elo_win_prob": 0.0373,
+      "elo_win_prob": 0.0367,
       "market_win_prob": 0.032,
-      "delta": 0.0053,
+      "delta": 0.0047,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -116,7 +116,7 @@
     {
       "name": "Switzerland",
       "elo_rating": 1583,
-      "elo_win_prob": 0.0196,
+      "elo_win_prob": 0.0198,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -127,7 +127,7 @@
     {
       "name": "Belgium",
       "elo_rating": 1575,
-      "elo_win_prob": 0.0175,
+      "elo_win_prob": 0.0178,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -138,9 +138,9 @@
     {
       "name": "Mexico",
       "elo_rating": 1564,
-      "elo_win_prob": 0.0148,
+      "elo_win_prob": 0.015,
       "market_win_prob": 0.022,
-      "delta": -0.0072,
+      "delta": -0.007,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -149,7 +149,7 @@
     {
       "name": "Senegal",
       "elo_rating": 1559,
-      "elo_win_prob": 0.0135,
+      "elo_win_prob": 0.0132,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -160,24 +160,13 @@
     {
       "name": "Colombia",
       "elo_rating": 1555,
-      "elo_win_prob": 0.0133,
+      "elo_win_prob": 0.013,
       "market_win_prob": 0.022,
-      "delta": -0.0087,
+      "delta": -0.009,
       "signal": "\u26aa neutral",
       "path_difficulty": "easy",
       "avg_potential_opp_elo": 1498,
       "path_note": "Favorable draw \u2014 potential opponents trend below tournament average Elo"
-    },
-    {
-      "name": "Japan",
-      "elo_rating": 1531,
-      "elo_win_prob": 0.0087,
-      "market_win_prob": 0.022,
-      "delta": -0.0133,
-      "signal": "\u26aa neutral",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
     },
     {
       "name": "Croatia",
@@ -191,9 +180,20 @@
       "path_note": null
     },
     {
+      "name": "Japan",
+      "elo_rating": 1531,
+      "elo_win_prob": 0.0083,
+      "market_win_prob": 0.022,
+      "delta": -0.0137,
+      "signal": "\u26aa neutral",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
+    },
+    {
       "name": "Ivory Coast",
       "elo_rating": 1525,
-      "elo_win_prob": 0.0073,
+      "elo_win_prob": 0.0075,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -213,20 +213,9 @@
       "path_note": null
     },
     {
-      "name": "Austria",
-      "elo_rating": 1505,
-      "elo_win_prob": 0.0058,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
-    },
-    {
       "name": "DR Congo",
       "elo_rating": 1502,
-      "elo_win_prob": 0.0054,
+      "elo_win_prob": 0.0055,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -237,10 +226,21 @@
     {
       "name": "USA",
       "elo_rating": 1500,
-      "elo_win_prob": 0.0051,
+      "elo_win_prob": 0.0053,
       "market_win_prob": 0.032,
-      "delta": -0.0269,
+      "delta": -0.0267,
       "signal": "\u26aa neutral",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
+    },
+    {
+      "name": "Austria",
+      "elo_rating": 1505,
+      "elo_win_prob": 0.0053,
+      "market_win_prob": null,
+      "delta": null,
+      "signal": "no market data",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
       "path_note": null
@@ -248,7 +248,7 @@
     {
       "name": "Egypt",
       "elo_rating": 1490,
-      "elo_win_prob": 0.0045,
+      "elo_win_prob": 0.0042,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -259,7 +259,7 @@
     {
       "name": "Ecuador",
       "elo_rating": 1487,
-      "elo_win_prob": 0.004,
+      "elo_win_prob": 0.0041,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -268,20 +268,9 @@
       "path_note": null
     },
     {
-      "name": "Australia",
-      "elo_rating": 1471,
-      "elo_win_prob": 0.0031,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
-      "path_difficulty": "easy",
-      "avg_potential_opp_elo": 1515,
-      "path_note": "Favorable draw \u2014 potential opponents trend below tournament average Elo"
-    },
-    {
       "name": "Canada",
       "elo_rating": 1472,
-      "elo_win_prob": 0.0029,
+      "elo_win_prob": 0.0032,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -292,7 +281,7 @@
     {
       "name": "Sweden",
       "elo_rating": 1463,
-      "elo_win_prob": 0.0025,
+      "elo_win_prob": 0.0028,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -301,9 +290,20 @@
       "path_note": null
     },
     {
+      "name": "Australia",
+      "elo_rating": 1471,
+      "elo_win_prob": 0.0028,
+      "market_win_prob": null,
+      "delta": null,
+      "signal": "no market data",
+      "path_difficulty": "easy",
+      "avg_potential_opp_elo": 1515,
+      "path_note": "Favorable draw \u2014 potential opponents trend below tournament average Elo"
+    },
+    {
       "name": "Bosnia & Herzegovina",
       "elo_rating": 1461,
-      "elo_win_prob": 0.0024,
+      "elo_win_prob": 0.0026,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
