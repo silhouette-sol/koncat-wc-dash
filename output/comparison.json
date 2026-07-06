@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-07-05T22:35:15.871898",
+  "generated_at": "2026-07-06T04:42:34.222828",
   "market_source": "prediction_market_odds",
   "simulation_runs": 10000,
   "teams": [
     {
       "name": "France",
       "elo_rating": 1788,
-      "elo_win_prob": 0.2152,
+      "elo_win_prob": 0.2117,
       "market_win_prob": 0.217,
-      "delta": -0.0018,
+      "delta": -0.0053,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -16,11 +16,11 @@
     },
     {
       "name": "England",
-      "elo_rating": 1767,
-      "elo_win_prob": 0.1766,
+      "elo_rating": 1775,
+      "elo_win_prob": 0.1867,
       "market_win_prob": 0.143,
-      "delta": 0.0336,
-      "signal": "\u26aa neutral",
+      "delta": 0.0437,
+      "signal": "\ud83d\udfe2 MODEL FAVORS",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
       "path_note": null
@@ -28,9 +28,9 @@
     {
       "name": "Spain",
       "elo_rating": 1746,
-      "elo_win_prob": 0.1435,
+      "elo_win_prob": 0.1452,
       "market_win_prob": 0.154,
-      "delta": -0.0105,
+      "delta": -0.0088,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -39,9 +39,9 @@
     {
       "name": "Argentina",
       "elo_rating": 1656,
-      "elo_win_prob": 0.0524,
+      "elo_win_prob": 0.0523,
       "market_win_prob": 0.133,
-      "delta": -0.0806,
+      "delta": -0.0807,
       "signal": "\ud83d\udd34 MARKET FAVORS",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -61,9 +61,9 @@
     {
       "name": "Brazil",
       "elo_rating": 1648,
-      "elo_win_prob": 0.0482,
+      "elo_win_prob": 0.0475,
       "market_win_prob": 0.071,
-      "delta": -0.0228,
+      "delta": -0.0235,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -72,9 +72,9 @@
     {
       "name": "Norway",
       "elo_rating": 1647,
-      "elo_win_prob": 0.047,
+      "elo_win_prob": 0.0467,
       "market_win_prob": 0.032,
-      "delta": 0.015,
+      "delta": 0.0147,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -83,9 +83,9 @@
     {
       "name": "Germany",
       "elo_rating": 1638,
-      "elo_win_prob": 0.0414,
+      "elo_win_prob": 0.0408,
       "market_win_prob": 0.071,
-      "delta": -0.0296,
+      "delta": -0.0302,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -94,9 +94,9 @@
     {
       "name": "Portugal",
       "elo_rating": 1635,
-      "elo_win_prob": 0.0408,
+      "elo_win_prob": 0.0396,
       "market_win_prob": 0.091,
-      "delta": -0.0502,
+      "delta": -0.0514,
       "signal": "\ud83d\udd34 MARKET FAVORS",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -105,9 +105,9 @@
     {
       "name": "Netherlands",
       "elo_rating": 1633,
-      "elo_win_prob": 0.0399,
+      "elo_win_prob": 0.0383,
       "market_win_prob": 0.056,
-      "delta": -0.0161,
+      "delta": -0.0177,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -116,7 +116,7 @@
     {
       "name": "Switzerland",
       "elo_rating": 1583,
-      "elo_win_prob": 0.0195,
+      "elo_win_prob": 0.0196,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -127,7 +127,18 @@
     {
       "name": "Belgium",
       "elo_rating": 1575,
-      "elo_win_prob": 0.0172,
+      "elo_win_prob": 0.0169,
+      "market_win_prob": null,
+      "delta": null,
+      "signal": "no market data",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
+    },
+    {
+      "name": "Senegal",
+      "elo_rating": 1559,
+      "elo_win_prob": 0.0132,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -137,22 +148,11 @@
     },
     {
       "name": "Mexico",
-      "elo_rating": 1564,
-      "elo_win_prob": 0.014,
+      "elo_rating": 1556,
+      "elo_win_prob": 0.0124,
       "market_win_prob": 0.022,
-      "delta": -0.0079,
+      "delta": -0.0096,
       "signal": "\u26aa neutral",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
-    },
-    {
-      "name": "Senegal",
-      "elo_rating": 1559,
-      "elo_win_prob": 0.0133,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
       "path_note": null
@@ -160,9 +160,20 @@
     {
       "name": "Colombia",
       "elo_rating": 1555,
-      "elo_win_prob": 0.0128,
+      "elo_win_prob": 0.012,
       "market_win_prob": 0.022,
-      "delta": -0.0092,
+      "delta": -0.01,
+      "signal": "\u26aa neutral",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
+    },
+    {
+      "name": "Japan",
+      "elo_rating": 1531,
+      "elo_win_prob": 0.0086,
+      "market_win_prob": 0.022,
+      "delta": -0.0134,
       "signal": "\u26aa neutral",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
@@ -171,7 +182,7 @@
     {
       "name": "Croatia",
       "elo_rating": 1531,
-      "elo_win_prob": 0.0083,
+      "elo_win_prob": 0.008,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -180,20 +191,9 @@
       "path_note": null
     },
     {
-      "name": "Japan",
-      "elo_rating": 1531,
-      "elo_win_prob": 0.0083,
-      "market_win_prob": 0.022,
-      "delta": -0.0137,
-      "signal": "\u26aa neutral",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
-    },
-    {
       "name": "Ivory Coast",
       "elo_rating": 1525,
-      "elo_win_prob": 0.0077,
+      "elo_win_prob": 0.0071,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -204,18 +204,7 @@
     {
       "name": "Algeria",
       "elo_rating": 1516,
-      "elo_win_prob": 0.0065,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
-    },
-    {
-      "name": "DR Congo",
-      "elo_rating": 1502,
-      "elo_win_prob": 0.0054,
+      "elo_win_prob": 0.0066,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -226,7 +215,18 @@
     {
       "name": "Austria",
       "elo_rating": 1505,
-      "elo_win_prob": 0.0053,
+      "elo_win_prob": 0.0056,
+      "market_win_prob": null,
+      "delta": null,
+      "signal": "no market data",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
+    },
+    {
+      "name": "DR Congo",
+      "elo_rating": 1502,
+      "elo_win_prob": 0.0055,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -237,10 +237,21 @@
     {
       "name": "USA",
       "elo_rating": 1500,
-      "elo_win_prob": 0.0046,
+      "elo_win_prob": 0.0048,
       "market_win_prob": 0.032,
-      "delta": -0.0274,
+      "delta": -0.0272,
       "signal": "\u26aa neutral",
+      "path_difficulty": null,
+      "avg_potential_opp_elo": null,
+      "path_note": null
+    },
+    {
+      "name": "Ecuador",
+      "elo_rating": 1487,
+      "elo_win_prob": 0.0042,
+      "market_win_prob": null,
+      "delta": null,
+      "signal": "no market data",
       "path_difficulty": null,
       "avg_potential_opp_elo": null,
       "path_note": null
@@ -257,30 +268,8 @@
       "path_note": null
     },
     {
-      "name": "Ecuador",
-      "elo_rating": 1487,
-      "elo_win_prob": 0.0039,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
-    },
-    {
       "name": "Australia",
       "elo_rating": 1471,
-      "elo_win_prob": 0.0027,
-      "market_win_prob": null,
-      "delta": null,
-      "signal": "no market data",
-      "path_difficulty": null,
-      "avg_potential_opp_elo": null,
-      "path_note": null
-    },
-    {
-      "name": "Sweden",
-      "elo_rating": 1463,
       "elo_win_prob": 0.0026,
       "market_win_prob": null,
       "delta": null,
@@ -292,7 +281,7 @@
     {
       "name": "Bosnia & Herzegovina",
       "elo_rating": 1461,
-      "elo_win_prob": 0.0025,
+      "elo_win_prob": 0.0023,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",
@@ -301,9 +290,9 @@
       "path_note": null
     },
     {
-      "name": "Canada",
-      "elo_rating": 1456,
-      "elo_win_prob": 0.0024,
+      "name": "Sweden",
+      "elo_rating": 1463,
+      "elo_win_prob": 0.0022,
       "market_win_prob": null,
       "delta": null,
       "signal": "no market data",

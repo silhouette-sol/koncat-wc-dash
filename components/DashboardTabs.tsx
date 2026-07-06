@@ -17,6 +17,7 @@ import KnockoutBracket from './KnockoutBracket'
 import HeadToHead from './HeadToHead'
 import BuildingTab from './BuildingTab'
 import OnboardingOverlay from './OnboardingOverlay'
+import SquadValueRanking from './SquadValueRanking'
 import { getFlag } from '@/lib/flags'
 import { getPacificDateString } from '@/lib/dateUtils'
 import { getMatchResult } from '@/lib/matchResult'
@@ -636,6 +637,8 @@ export default function DashboardTabs({
           </div>
 
           <DailySummaryCard matches={worldcupMatches} />
+
+          <SquadValueRanking worldcupMatches={worldcupMatches} squadValues={squadValues} />
 
           <CrazyStatOfDay descriptive={descriptive} worldcupMatches={worldcupMatches} teams={teams} />
 

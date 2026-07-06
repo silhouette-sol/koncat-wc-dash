@@ -3152,6 +3152,42 @@
       "time": "18:00 UTC-6",
       "team1": "Mexico",
       "team2": "England",
+      "score": {
+        "ft": [
+          2,
+          3
+        ],
+        "ht": [
+          1,
+          2
+        ]
+      },
+      "goals1": [
+        {
+          "name": "Juli\u00e1n Qui\u00f1ones",
+          "minute": "42"
+        },
+        {
+          "name": "Ra\u00fal Jim\u00e9nez",
+          "minute": "69",
+          "penalty": true
+        }
+      ],
+      "goals2": [
+        {
+          "name": "Jude Bellingham",
+          "minute": "36"
+        },
+        {
+          "name": "Jude Bellingham",
+          "minute": "38"
+        },
+        {
+          "name": "Harry Kane",
+          "minute": "60",
+          "penalty": true
+        }
+      ],
       "ground": "Mexico City"
     },
     {
