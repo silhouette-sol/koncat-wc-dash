@@ -70,9 +70,13 @@ function normalizeTeamName(name: string): string {
 
 // ── Hover data types ───────────────────────────────────────────
 type NodeHoverData =
-  | { kind: 'completed'; team: string; flag: string; opponent: string; opponentFlag: string; won: boolean; score: string; probMyTeam: number }
+  | { kind: 'completed'; team: string; flag: string; opponent: string; opponentFlag: string; won: boolean; score: string; probMyTeam: number; statusLabel: string }
   | { kind: 'upcoming'; teamA: string; teamAFlag: string; teamB: string; teamBFlag: string; probA: number; probB: number; date: string; venue: string }
   | { kind: 'tbd' }
+type HoverSource = 'circle' | 'line'
+
+// ── Round labels by node level (index = LNode.L, 0 unused) ─────
+const ROUND_LABEL = ['', 'Round of 32', 'Round of 16', 'Quarterfinals', 'Semifinals', 'Final']
 
 // ── Layout types ───────────────────────────────────────────────
 interface LTeam { name: string; flag: string }
@@ -86,11 +90,12 @@ interface LNode {
   winChildId: string | null; loseChildId: string | null
 }
 interface LEdge    { id: string; fromId: string; toId: string; fillStart: number }
+interface LLoserEdge { id: string; fromId: string; toId: string; fillStart: number }
 interface LTrav    { id: string; fromId: string; node: LNode }
 interface LSkel    { id: string; fromId: string; toId: string; isWinner: boolean; level: number; pStart: number; pEnd: number }
 interface UMData   {
   id: string
-  nodeAId: string; nodeBId: string
+  nodeAId: string; nodeBId: string; parentId: string
   teamA: string; teamB: string
   teamAFlag: string; teamBFlag: string
   date: string; venue: string
@@ -98,10 +103,24 @@ interface UMData   {
 }
 interface Layout   {
   nodes: LNode[]; byId: Record<string, LNode>
-  edges: LEdge[]; travelers: LTrav[]; loserTravelers: LTrav[]
+  edges: LEdge[]; loserEdges: LLoserEdge[]; travelers: LTrav[]; loserTravelers: LTrav[]
   skeleton: LSkel[]; champion: LNode
   labels: { t: string; r: number }[]
   upcomingMatches: UMData[]
+}
+
+// ── Elimination status for a node's team, walking the bracket tree ──
+function eliminationLabel(byId: Record<string, LNode>, nodeId: string): string {
+  let cur = byId[nodeId]
+  if (!cur) return ''
+  const teamName = cur.team.name
+  while (cur.parentId) {
+    const parent = byId[cur.parentId]
+    if (!parent || parent.team.name === 'TBD') return 'Still in tournament'
+    if (parent.team.name !== teamName) return `Eliminated in ${ROUND_LABEL[parent.L]}`
+    cur = parent
+  }
+  return 'World Champions 🏆'
 }
 
 // ── DOM slots ──────────────────────────────────────────────────
@@ -127,19 +146,48 @@ function buildLayout(
     ]),
   ]
 
+  // Resolve which two previous-level slots feed match j at level L —
+  // by the match's own team1/team2 identity, NOT by adjacent index.
+  // Official knockout seeding pairs winners non-sequentially (e.g. the
+  // real Round of 16 fixture is "Paraguay vs France", pairing R32
+  // winners #1 and #4 — not the adjacent #0/#1 that index math would
+  // assume), so positional pairing silently produces the wrong node
+  // mapping. `ref` is either a resolved team name or a "W<num>"
+  // placeholder referencing an undecided previous-round match by its
+  // global match number.
+  const resolveChildIdx = (L: number, ref: string | undefined): number => {
+    if (!ref) return -1
+    const wm = ref.match(/^W(\d+)$/)
+    if (wm) {
+      const num = parseInt(wm[1], 10)
+      return matchArrays[L - 1]?.findIndex(mm => mm?.num === num) ?? -1
+    }
+    return levels[L - 1].findIndex(e => e.team.name === ref)
+  }
+
+  const childIdx: [number, number][][] = [[]]
   for (let L = 1; L <= 5; L++) {
     const cnt = 32 >> L
+    childIdx[L] = []
+    for (let j = 0; j < cnt; j++) {
+      const match = matchArrays[L][j]
+      childIdx[L].push(match ? [resolveChildIdx(L, match.team1), resolveChildIdx(L, match.team2)] : [-1, -1])
+    }
+
     levels[L] = []
     for (let j = 0; j < cnt; j++) {
-      const cA = levels[L-1][2*j], cB = levels[L-1][2*j+1]
+      const [iA, iB] = childIdx[L][j]
+      const cA = iA >= 0 ? levels[L-1][iA] : undefined
+      const cB = iB >= 0 ? levels[L-1][iB] : undefined
       const match = matchArrays[L][j]
       const winner = match ? getMatchResult(match).winner : null
       const team: LTeam = winner
-        ? cA.team.name === winner ? cA.team
-          : cB.team.name === winner ? cB.team
+        ? cA?.team.name === winner ? cA.team
+          : cB?.team.name === winner ? cB.team
           : { name: winner, flag: FLAGS[winner] ?? '?' }
         : { name: 'TBD', flag: '?' }
-      levels[L].push({ team, angle: (cA.angle + cB.angle) / 2 })
+      const angle = cA && cB ? (cA.angle + cB.angle) / 2 : (levels[L-1][2*j]?.angle ?? 0)
+      levels[L].push({ team, angle })
     }
   }
 
@@ -170,11 +218,14 @@ function buildLayout(
     })
   }
 
-  const edges: LEdge[] = [], travelers: LTrav[] = [], loserTravelers: LTrav[] = [], skeleton: LSkel[] = []
+  const edges: LEdge[] = [], loserEdges: LLoserEdge[] = []
+  const travelers: LTrav[] = [], loserTravelers: LTrav[] = [], skeleton: LSkel[] = []
   for (let L = 1; L <= 5; L++) {
     for (let j = 0; j < (32 >> L); j++) {
       const node = byId[`${L}-${j}`]
-      const cA = byId[`${L-1}-${2*j}`], cB = byId[`${L-1}-${2*j+1}`]
+      const [iA, iB] = childIdx[L][j]
+      const cA = iA >= 0 ? byId[`${L-1}-${iA}`] : undefined, cB = iB >= 0 ? byId[`${L-1}-${iB}`] : undefined
+      if (!cA || !cB) continue
       cA.parentId = node.id; cA.parentFillStart = node.fillStart; cA.parentFillEnd = node.fillEnd
       cB.parentId = node.id; cB.parentFillStart = node.fillStart; cB.parentFillEnd = node.fillEnd
 
@@ -190,7 +241,10 @@ function buildLayout(
         edges.push({ id: `e${node.id}`, fromId: winChild.id, toId: node.id, fillStart: node.fillStart })
         travelers.push({ id: `t${node.id}`, fromId: winChild.id, node })
       }
-      if (loseChild) loserTravelers.push({ id: `L${node.id}`, fromId: loseChild.id, node })
+      if (loseChild) {
+        loserTravelers.push({ id: `L${node.id}`, fromId: loseChild.id, node })
+        loserEdges.push({ id: `le${node.id}`, fromId: loseChild.id, toId: node.id, fillStart: node.fillStart })
+      }
 
       skeleton.push(
         { id: `sA${node.id}`, fromId: cA.id, toId: node.id, isWinner: winChild?.id === cA.id, level: L, pStart: node.fillStart, pEnd: node.fillEnd },
@@ -202,36 +256,31 @@ function buildLayout(
     if (n.isLeaf && n.parentId) n.advanced = byId[n.parentId]?.winChildId === n.id
   })
 
-  // ── Upcoming R16 matches
-  const l1Nodes = nodes.filter(n => n.L === 1)
-  const findL1Id = (teamRef: string): string | null => {
-    const wm = teamRef.match(/^W(\d+)$/)
-    if (wm) {
-      const idx = r32m.findIndex(m => m.num === parseInt(wm[1]))
-      return idx >= 0 ? `1-${idx}` : null
-    }
-    return l1Nodes.find(n => n.team.name === teamRef)?.id ?? null
-  }
-
+  // ── Upcoming matches at every round — both feeder nodes resolved via
+  // the same identity-based childIdx mapping used above, so a line drawn
+  // between two teams always passes through the actual shared match node.
   const upcomingMatches: UMData[] = []
-  for (let j = 0; j < r16m.length; j++) {
-    const m = r16m[j]; if (m.score) continue
-    const nodeAId = findL1Id(m.team1), nodeBId = findL1Id(m.team2)
-    if (!nodeAId || !nodeBId) continue
-    const nodeA = byId[nodeAId], nodeB = byId[nodeBId]
-    if (!nodeA || !nodeB) continue
-    if (nodeA.team.name === 'TBD' && nodeB.team.name === 'TBD') continue
-    upcomingMatches.push({
-      id: `um${j}`, nodeAId, nodeBId,
-      teamA: nodeA.team.name, teamB: nodeB.team.name,
-      teamAFlag: nodeA.team.flag, teamBFlag: nodeB.team.flag,
-      date: m.date, venue: m.ground ?? '',
-      bothKnown: nodeA.team.name !== 'TBD' && nodeB.team.name !== 'TBD',
-    })
+  for (let L = 1; L <= 5; L++) {
+    const ms = matchArrays[L]
+    for (let j = 0; j < ms.length; j++) {
+      const m = ms[j]; if (!m || m.score) continue
+      const node = byId[`${L}-${j}`]
+      const [iA, iB] = childIdx[L][j]
+      const cA = iA >= 0 ? byId[`${L-1}-${iA}`] : undefined, cB = iB >= 0 ? byId[`${L-1}-${iB}`] : undefined
+      if (!node || !cA || !cB) continue
+      if (cA.team.name === 'TBD' && cB.team.name === 'TBD') continue
+      upcomingMatches.push({
+        id: `um${L}-${j}`, nodeAId: cA.id, nodeBId: cB.id, parentId: node.id,
+        teamA: cA.team.name, teamB: cB.team.name,
+        teamAFlag: cA.team.flag, teamBFlag: cB.team.flag,
+        date: m.date, venue: m.ground ?? '',
+        bothKnown: cA.team.name !== 'TBD' && cB.team.name !== 'TBD',
+      })
+    }
   }
 
   return {
-    nodes, byId, edges, travelers, loserTravelers, skeleton,
+    nodes, byId, edges, loserEdges, travelers, loserTravelers, skeleton,
     champion: byId['5-0'],
     labels: [
       { t: 'ROUND OF 32', r: RADII[0] }, { t: 'ROUND OF 16', r: RADII[1] },
@@ -273,14 +322,16 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
   const N  = useRef<Record<string, NSlot>>({})
   const T  = useRef<Record<string, WSlot>>({})
   const LT = useRef<Record<string, WSlot>>({})
-  const E  = useRef<Record<string, SVGPathElement | null>>({})
-  const S  = useRef<Record<string, SVGPathElement | null>>({})
+  const E    = useRef<Record<string, SVGPathElement | null>>({})
+  const LE   = useRef<Record<string, SVGPathElement | null>>({})
+  const EHit = useRef<Record<string, SVGPathElement | null>>({})
+  const S    = useRef<Record<string, SVGPathElement | null>>({})
   const PF    = useRef<Record<string, SVGPathElement | null>>({})
   const PFHit = useRef<Record<string, SVGPathElement | null>>({})
   const VS    = useRef<Record<string, HTMLDivElement | null>>({})
 
   // ── Tooltip state ────────────────────────────────────────────
-  const [hoveredNode, setHoveredNode] = useState<{ data: NodeHoverData; x: number; y: number } | null>(null)
+  const [hoveredNode, setHoveredNode] = useState<{ data: NodeHoverData; x: number; y: number; source: HoverSource } | null>(null)
   const tooltipTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isOverTooltipRef = useRef(false)
 
@@ -310,6 +361,7 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
           kind: 'completed', team: myTeam, flag: FLAGS[myTeam] ?? '?',
           opponent: opp, opponentFlag: FLAGS[opp] ?? '?',
           won, score: res.displayScore, probMyTeam: isT1 ? p : 100 - p,
+          statusLabel: eliminationLabel(layout.byId, `0-${k}`),
         })
       } else {
         const p = eloProb(myTeam, opp)
@@ -324,7 +376,48 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
       }
     }
 
-    // L1: upcoming R16 matches
+    // L1-L5: each node's own producing match (Round of 16 through Final).
+    // Without this, only the outer R32 ring ever gets hover data — every
+    // decided inner-round node (the majority once the bracket progresses)
+    // has no entry, so its chip renders with pointerEvents:'none' and no
+    // handlers at all, which reads as "hover is completely broken."
+    const matchArrays: (WCMatch | undefined)[][] = [[], r32m, r16m, qfm, sfm, finm ? [finm] : []]
+    for (let L = 1; L <= 5; L++) {
+      const ms = matchArrays[L]
+      for (let j = 0; j < ms.length; j++) {
+        const m = ms[j]; if (!m) continue
+        const nodeId = `${L}-${j}`
+        const node = layout.byId[nodeId]; if (!node || node.team.name === 'TBD') continue
+        const cA = layout.byId[`${L-1}-${2*j}`], cB = layout.byId[`${L-1}-${2*j+1}`]
+        if (!cA || !cB) continue
+        if (m.score) {
+          const winner = node.team.name
+          const winnerIsA = cA.team.name === winner
+          const opp = winnerIsA ? cB.team.name : cA.team.name
+          const oppFlag = winnerIsA ? cB.team.flag : cA.team.flag
+          const res = getMatchResult(m)
+          const p = eloProb(winner, opp)
+          map.set(nodeId, {
+            kind: 'completed', team: winner, flag: node.team.flag,
+            opponent: opp, opponentFlag: oppFlag,
+            won: true, score: res.displayScore, probMyTeam: p,
+            statusLabel: eliminationLabel(layout.byId, nodeId),
+          })
+        } else if (cA.team.name !== 'TBD' && cB.team.name !== 'TBD') {
+          const p = eloProb(cA.team.name, cB.team.name)
+          map.set(nodeId, {
+            kind: 'upcoming',
+            teamA: cA.team.name, teamAFlag: cA.team.flag,
+            teamB: cB.team.name, teamBFlag: cB.team.flag,
+            probA: p, probB: 100 - p,
+            date: m.date, venue: m.ground ?? '',
+          })
+        }
+      }
+    }
+
+    // L1: upcoming R16 matches (overrides the generic pass above with
+    // bothKnown-aware handling for matches that haven't happened yet)
     for (const um of layout.upcomingMatches) {
       const p = um.bothKnown ? eloProb(um.teamA, um.teamB) : 50
       const entry: NodeHoverData = {
@@ -345,13 +438,13 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
     }
 
     return map
-  }, [layout, r32m, eloProb])
+  }, [layout, r32m, r16m, qfm, sfm, finm, eloProb])
 
   // ── Upcoming match known-node set (for pulse rings) ──────────
   const upcomingNodeIds = useMemo(() => {
     const s = new Set<string>()
     for (const um of layout.upcomingMatches) {
-      if (um.bothKnown) { s.add(um.nodeAId); s.add(um.nodeBId) }
+      if (um.bothKnown) { s.add(um.nodeAId); s.add(um.nodeBId); s.add(um.parentId) }
     }
     return s
   }, [layout.upcomingMatches])
@@ -373,11 +466,11 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
     }, 150)
   }, [])
 
-  const showNode = useCallback((data: NodeHoverData, e: React.MouseEvent) => {
+  const showNode = useCallback((data: NodeHoverData, e: React.MouseEvent, source: HoverSource = 'circle') => {
     if (tooltipTimerRef.current) clearTimeout(tooltipTimerRef.current)
     const rect = wrapRef.current?.getBoundingClientRect()
     if (!rect) return
-    setHoveredNode({ data, x: e.clientX - rect.left, y: e.clientY - rect.top })
+    setHoveredNode({ data, x: e.clientX - rect.left, y: e.clientY - rect.top, source })
   }, [])
 
   // ── Node position (includes idle float) ─────────────────────
@@ -470,7 +563,7 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
       r.wrap.style.transform = `translate(${p[0].toFixed(1)}px,${p[1].toFixed(1)}px) translate(-50%,-50%) scale(${sc})`
     }
 
-    // ── Winner edges (gold, draws in)
+    // ── Winner edges (gold, solid, draws in) — completed match, winning half
     for (const ed of layout.edges) {
       const el = E.current[ed.id]; if (!el) continue
       const a = pos(layout.byId[ed.fromId], t), b = pos(layout.byId[ed.toId], t)
@@ -478,7 +571,33 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
       el.setAttribute('d', `M${a[0].toFixed(1)} ${a[1].toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}`)
       const pe = clamp((t - ed.fillStart) / 0.72, 0, 1)
       el.style.strokeDashoffset = String(1 - pe)
-      el.style.opacity = pe > 0 ? '0.9' : '0'
+      el.style.opacity = pe > 0 ? '0.7' : '0'
+    }
+
+    // ── Loser edges (gold, dashed, muted) — completed match, losing half
+    for (const ed of layout.loserEdges) {
+      const el = LE.current[ed.id]; if (!el) continue
+      const a = pos(layout.byId[ed.fromId], t), b = pos(layout.byId[ed.toId], t)
+      const [cx, cy] = ctrl(a[0], a[1], b[0], b[1])
+      el.setAttribute('d', `M${a[0].toFixed(1)} ${a[1].toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}`)
+      const pe = clamp((t - ed.fillStart) / 0.72, 0, 1)
+      el.style.opacity = String(pe * 0.25)
+    }
+
+    // ── Completed-match hit paths (wide invisible stroke spanning both
+    // the winner and loser segments, so hovering either half shows the
+    // same match tooltip)
+    for (const n of layout.nodes) {
+      if (!n.winChildId || !n.loseChildId) continue
+      const el = EHit.current[n.id]; if (!el) continue
+      const winPos = pos(layout.byId[n.winChildId], t)
+      const losePos = pos(layout.byId[n.loseChildId], t)
+      const nodePos = pos(n, t)
+      const [c1x, c1y] = ctrl(winPos[0], winPos[1], nodePos[0], nodePos[1])
+      const [c2x, c2y] = ctrl(nodePos[0], nodePos[1], losePos[0], losePos[1])
+      el.setAttribute('d',
+        `M${winPos[0].toFixed(1)} ${winPos[1].toFixed(1)} Q${c1x.toFixed(1)} ${c1y.toFixed(1)} ${nodePos[0].toFixed(1)} ${nodePos[1].toFixed(1)} ` +
+        `Q${c2x.toFixed(1)} ${c2y.toFixed(1)} ${losePos[0].toFixed(1)} ${losePos[1].toFixed(1)}`)
     }
 
     // ── Skeleton
@@ -542,20 +661,25 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
       }
     })
 
-    // ── Path forward lines (upcoming matchups, fade in after R32)
+    // ── Path forward lines (upcoming matchups, fade in after R32) —
+    // routed through the shared match node so the line visibly connects
+    // both teams via the slot they're both converging on
     const pfFadeIn = clamp((t - 6.5) / 1.5, 0, 1)
     for (const um of layout.upcomingMatches) {
+      const parent = layout.byId[um.parentId]
       const a = pos(layout.byId[um.nodeAId], t)
       const b = pos(layout.byId[um.nodeBId], t)
-      const [qcx, qcy] = ctrl(a[0], a[1], b[0], b[1])
-      const dStr = `M${a[0].toFixed(1)} ${a[1].toFixed(1)} Q${qcx.toFixed(1)} ${qcy.toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}`
+      const node = parent ? pos(parent, t) : ctrl(a[0], a[1], b[0], b[1])
+      const [c1x, c1y] = ctrl(a[0], a[1], node[0], node[1])
+      const [c2x, c2y] = ctrl(node[0], node[1], b[0], b[1])
+      const dStr =
+        `M${a[0].toFixed(1)} ${a[1].toFixed(1)} Q${c1x.toFixed(1)} ${c1y.toFixed(1)} ${node[0].toFixed(1)} ${node[1].toFixed(1)} ` +
+        `Q${c2x.toFixed(1)} ${c2y.toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}`
       const elV = PF.current[um.id], elH = PFHit.current[um.id], elVS = VS.current[um.id]
       if (elV) { elV.setAttribute('d', dStr); elV.style.opacity = String(pfFadeIn * (um.bothKnown ? 0.7 : 0.35)) }
       if (elH) elH.setAttribute('d', dStr)
       if (elVS && um.bothKnown) {
-        const mx = 0.25*a[0] + 0.5*qcx + 0.25*b[0]
-        const my = 0.25*a[1] + 0.5*qcy + 0.25*b[1]
-        elVS.style.transform = `translate(${mx.toFixed(1)}px,${my.toFixed(1)}px) translate(-50%,-50%)`
+        elVS.style.transform = `translate(${node[0].toFixed(1)}px,${node[1].toFixed(1)}px) translate(-50%,-50%)`
         elVS.style.opacity = String(pfFadeIn * 0.8)
       }
     }
@@ -593,6 +717,21 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
       }
     }
   }, [r32m])
+
+  // ── Node-mapping diagnostic — logs every completed match with its two
+  // feeder teams, the winner, and the match node id, read directly off the
+  // resolved edges (not re-derived by index) so this reflects exactly what
+  // gets drawn. A line that looks wrong can be checked against this list.
+  useEffect(() => {
+    for (const ed of layout.edges) {
+      const node = layout.byId[ed.toId]
+      const winner = layout.byId[ed.fromId]
+      const loserEdge = layout.loserEdges.find(le => le.toId === ed.toId)
+      const loser = loserEdge ? layout.byId[loserEdge.fromId] : null
+      if (!node || !winner || !loser) continue
+      console.log(ROUND_LABEL[node.L], winner.team.name, loser.team.name, node.team.name, node.id)
+    }
+  }, [layout])
 
   const replay = () => { startRef.current = performance.now() }
   const chipSize = (n: LNode) => n.size * 2
@@ -651,36 +790,56 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                 </text>
               ))}
             </g>
-            {/* Skeleton */}
+            {/* Skeleton — faint background guides */}
             {layout.skeleton.map(ed => (
               <path key={ed.id} ref={el => { S.current[ed.id] = el }}
                 fill="none" stroke={SKEL_C} strokeWidth={1.4} strokeLinecap="round" strokeDasharray="5 8" style={{ opacity: 0 }} />
             ))}
-            {/* Path forward — known (solid gold) */}
-            {layout.upcomingMatches.filter(um => um.bothKnown).map(um => (
-              <path key={`pf-${um.id}`} ref={el => { PF.current[um.id] = el }}
-                fill="none" stroke={ACCENT} strokeWidth={1.5} strokeLinecap="round"
-                style={{ opacity: 0, filter: `drop-shadow(0 0 4px ${ACCENT}55)` }} />
+
+            {/* ── Completed match connections ── */}
+            {/* Loser half — dashed, muted: "this team went no further" */}
+            {layout.loserEdges.map(ed => (
+              <path key={ed.id} ref={el => { LE.current[ed.id] = el }}
+                fill="none" stroke={ACCENT} strokeWidth={1.5} strokeLinecap="round" strokeDasharray="3 4"
+                style={{ opacity: 0 }} />
             ))}
-            {/* Path forward — partial (dashed gold) */}
+            {/* Winner half — solid gold, draws in */}
+            {layout.edges.map(ed => (
+              <path key={ed.id} ref={el => { E.current[ed.id] = el }}
+                fill="none" stroke={ACCENT} strokeWidth={1.5} strokeLinecap="round"
+                pathLength={1} strokeDasharray={1}
+                style={{ strokeDashoffset: 1, opacity: 0, filter: `drop-shadow(0 0 3px ${ACCENT}55)` }} />
+            ))}
+
+            {/* ── Upcoming match connections (paint above completed lines) ── */}
+            {/* Partial — one team known, dashed static */}
             {layout.upcomingMatches.filter(um => !um.bothKnown).map(um => (
               <path key={`pf-${um.id}`} ref={el => { PF.current[um.id] = el }}
                 fill="none" stroke={ACCENT} strokeWidth={1} strokeLinecap="round" strokeDasharray="4 4"
                 style={{ opacity: 0 }} />
             ))}
-            {/* Winner edges */}
-            {layout.edges.map(ed => (
-              <path key={ed.id} ref={el => { E.current[ed.id] = el }}
-                fill="none" stroke={ACCENT} strokeWidth={2} strokeLinecap="round"
-                pathLength={1} strokeDasharray={1}
-                style={{ strokeDashoffset: 1, opacity: 0, filter: `drop-shadow(0 0 3px ${ACCENT}55)` }} />
+            {/* Both known — animated flowing dashes toward the shared match node */}
+            {layout.upcomingMatches.filter(um => um.bothKnown).map(um => (
+              <path key={`pf-${um.id}`} ref={el => { PF.current[um.id] = el }}
+                className="wpc-flow-inward"
+                fill="none" stroke={ACCENT} strokeWidth={2} strokeLinecap="round" strokeDasharray="6 3"
+                style={{ opacity: 0, filter: `drop-shadow(0 0 4px ${ACCENT}55)` }} />
             ))}
-            {/* Hit areas for upcoming line hover */}
+
+            {/* ── Hit areas (wide, invisible, always on top within the SVG) ── */}
+            {layout.nodes.filter(n => n.winChildId && n.loseChildId).map(n => (
+              <path key={`ehit-${n.id}`} ref={el => { EHit.current[n.id] = el }}
+                fill="none" stroke="transparent" strokeWidth={20}
+                style={{ cursor: 'pointer', pointerEvents: 'all' }}
+                onMouseEnter={e => { const d = nodeHoverData.get(n.id); if (d) showNode(d, e, 'line') }}
+                onMouseLeave={scheduleHide}
+              />
+            ))}
             {layout.upcomingMatches.filter(um => um.bothKnown).map(um => (
               <path key={`pfhit-${um.id}`} ref={el => { PFHit.current[um.id] = el }}
                 fill="none" stroke="transparent" strokeWidth={20}
                 style={{ cursor: 'pointer', pointerEvents: 'all' }}
-                onMouseEnter={e => { const d = nodeHoverData.get(um.nodeAId); if (d) showNode(d, e) }}
+                onMouseEnter={e => { const d = nodeHoverData.get(um.nodeAId); if (d) showNode(d, e, 'line') }}
                 onMouseLeave={scheduleHide}
               />
             ))}
@@ -822,12 +981,13 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
 
         {/* ── Match tooltip (outside overflow:hidden) ── */}
         {hoveredNode && (() => {
-          const { data, x, y } = hoveredNode
+          const { data, x, y, source } = hoveredNode
           const cW = rootRef.current?.clientWidth ?? 600
           const cH = rootRef.current?.clientHeight ?? 600
           const { left, top } = tooltipPos(x, y, cW, cH)
           const MONO = 'ui-monospace,"DM Mono",monospace'
           const BODY = 'var(--font-dm-sans),ui-sans-serif,system-ui,sans-serif'
+          const EMOJI = "'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif"
           return (
             <div
               onMouseEnter={() => { isOverTooltipRef.current = true; if (tooltipTimerRef.current) clearTimeout(tooltipTimerRef.current) }}
@@ -845,20 +1005,46 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                 </p>
               )}
 
-              {data.kind === 'completed' && (
+              {data.kind === 'completed' && source === 'circle' && (
                 <>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                    <span style={{ fontSize: 20, fontFamily: "'Apple Color Emoji','Segoe UI Emoji',sans-serif" }}>{data.flag}</span>
+                    <span style={{ fontSize: 20, fontFamily: EMOJI }}>{data.flag}</span>
                     <span style={{ flex: 1, fontSize: 14, color: '#f3ede0', fontWeight: 600, fontFamily: BODY }}>{data.team}</span>
                     <span style={{ fontSize: 11, fontFamily: MONO, fontWeight: 700, color: data.won ? ACCENT : 'rgba(243,237,224,0.45)', letterSpacing: '0.06em' }}>
                       {data.won ? 'WON' : 'OUT'}
                     </span>
                   </div>
                   <p style={{ fontSize: 12, color: 'rgba(243,237,224,0.6)', fontFamily: BODY, marginBottom: 6 }}>
-                    vs <span style={{ fontFamily: "'Apple Color Emoji','Segoe UI Emoji',sans-serif" }}>{data.opponentFlag}</span> {data.opponent} · {data.score}
+                    vs <span style={{ fontFamily: EMOJI }}>{data.opponentFlag}</span> {data.opponent} · {data.score}
                   </p>
-                  <p style={{ fontSize: 11, color: 'rgba(243,237,224,0.38)', fontFamily: MONO }}>
+                  <p style={{ fontSize: 11, color: 'rgba(243,237,224,0.38)', fontFamily: MONO, marginBottom: 4 }}>
                     Had {data.probMyTeam}% chance to win
+                  </p>
+                  <p style={{ fontSize: 11, fontFamily: MONO, fontWeight: 600, color: data.statusLabel.startsWith('Eliminated') ? 'rgba(243,237,224,0.45)' : ACCENT }}>
+                    {data.statusLabel}
+                  </p>
+                </>
+              )}
+
+              {data.kind === 'completed' && source === 'line' && (
+                <>
+                  <p style={{ textAlign: 'center', fontSize: 9, fontFamily: MONO, color: ACCENT, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+                    Completed Match
+                  </p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                    <span style={{ fontSize: 18, fontFamily: EMOJI }}>{data.flag}</span>
+                    <span style={{ flex: 1, fontSize: 13, color: '#f3ede0', fontWeight: 600, fontFamily: BODY }}>{data.team}</span>
+                  </div>
+                  <div style={{ height: 1, background: 'rgba(255,255,255,0.1)', marginBottom: 8 }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                    <span style={{ fontSize: 18, fontFamily: EMOJI }}>{data.opponentFlag}</span>
+                    <span style={{ flex: 1, fontSize: 13, color: '#f3ede0', fontWeight: 600, fontFamily: BODY }}>{data.opponent}</span>
+                  </div>
+                  <p style={{ textAlign: 'center', fontSize: 13, color: ACCENT, fontWeight: 700, fontFamily: MONO, marginBottom: 6 }}>
+                    {data.score}
+                  </p>
+                  <p style={{ textAlign: 'center', fontSize: 10, color: 'rgba(243,237,224,0.52)', fontFamily: MONO }}>
+                    {data.team} advanced
                   </p>
                 </>
               )}

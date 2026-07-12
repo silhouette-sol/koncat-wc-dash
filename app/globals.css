@@ -103,3 +103,11 @@ body {
   0%, 100% { opacity: 0.5; box-shadow: 0 0 6px rgba(227,194,126,0.35); }
   50%       { opacity: 1;   box-shadow: 0 0 16px rgba(227,194,126,0.75); }
 }
+
+@keyframes wpc-flow-inward {
+  from { stroke-dashoffset: 18; }
+  to   { stroke-dashoffset: 0; }
+}
+.wpc-flow-inward {
+  animation: wpc-flow-inward 1.5s linear infinite;
+}
