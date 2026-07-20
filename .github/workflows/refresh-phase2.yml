@@ -1,9 +1,6 @@
 name: Phase 2 — Refresh Twice Daily (July 12 to July 20)
 
 on:
-  schedule:
-    - cron: '0 21 * * *'   # 2pm PST — after afternoon matches
-    - cron: '0 4 * * *'    # 9pm PST — after evening matches
   workflow_dispatch:
 
 jobs:

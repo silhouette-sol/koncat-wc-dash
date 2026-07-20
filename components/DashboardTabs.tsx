@@ -583,18 +583,6 @@ export default function DashboardTabs({
     ? Math.round(descriptive.goal_timing.total_goals / 2.83)
     : 0
 
-  const teamsRemaining = (() => {
-    const eliminated = new Set<string>()
-    for (const m of worldcupMatches) {
-      if (!m.score || m.round.includes('Third')) continue
-      const isKnockout = ['Round of 32', 'Round of 16', 'Quarter', 'Semi', 'Final'].some(r => m.round.includes(r))
-      if (!isKnockout) continue
-      const { winner } = getMatchResult(m)
-      if (winner) eliminated.add(winner === m.team1 ? m.team2 : m.team1)
-    }
-    return 32 - eliminated.size
-  })()
-
   return (
     <>
       <div className="space-y-0">
@@ -630,7 +618,7 @@ export default function DashboardTabs({
           <div className="scroll-fade-right">
             <div className="stat-tiles-row">
               <StatCard label="Matches Played" value={matchesPlayed} />
-              <StatCard label="Teams Remaining" value={teamsRemaining} />
+              <StatCard label="Teams Remaining" value={1} sub="Spain 🇪🇸" />
               <StatCard label="Final Date" value="Jul 19" />
               <GoldenBootTile entries={descriptive.golden_boot} />
             </div>

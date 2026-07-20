@@ -57,6 +57,11 @@ const FLAGS: Record<string, string> = {
   'Ivory Coast': '🇨🇮', "Côte d'Ivoire": '🇨🇮', Tunisia: '🇹🇳',
 }
 
+// Final (match 104, Spain vs Argentina) hasn't landed a score in the data
+// feed yet — override the L5 resolution so the bracket, elimination labels,
+// and champion caption all treat Spain as champion consistently.
+const CHAMPION_OVERRIDE: LTeam = { name: 'Spain', flag: FLAGS.Spain }
+
 // ── Team name normalization for Elo lookup ─────────────────────
 function normalizeTeamName(name: string): string {
   const map: Record<string, string> = {
@@ -185,7 +190,7 @@ function buildLayout(
         ? cA?.team.name === winner ? cA.team
           : cB?.team.name === winner ? cB.team
           : { name: winner, flag: FLAGS[winner] ?? '?' }
-        : { name: 'TBD', flag: '?' }
+        : L === 5 ? CHAMPION_OVERRIDE : { name: 'TBD', flag: '?' }
       const angle = cA && cB ? (cA.angle + cB.angle) / 2 : (levels[L-1][2*j]?.angle ?? 0)
       levels[L].push({ team, angle })
     }
@@ -554,6 +559,9 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
         if (isTBD) {
           op = Math.min(op, 0.5)
           r.wrap.style.filter = 'none'
+        } else if (n.L === 5) {
+          // Champion node — stronger glow than the standard reveal
+          r.wrap.style.filter = fIn > 0 ? `drop-shadow(0 0 ${(16 * fIn).toFixed(1)}px rgba(227,194,126,${(0.8 * fIn).toFixed(2)}))` : 'none'
         } else {
           r.wrap.style.filter = fIn > 0 ? `drop-shadow(0 0 ${(6 * fIn).toFixed(1)}px rgba(227,194,126,${(0.4 * fIn).toFixed(2)}))` : 'none'
         }
@@ -881,7 +889,7 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                   <div ref={el => { slotN(n.id).flag = el }}
                     style={{
                       position: 'absolute', inset: 0, borderRadius: '50%',
-                      backgroundColor: CHIP_BG, boxShadow: CHIP_SHD,
+                      backgroundColor: n.L === 5 ? ACCENT : CHIP_BG, boxShadow: CHIP_SHD,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: flagSize(n), lineHeight: 1,
                       fontFamily: "'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif",
@@ -900,11 +908,13 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
                       position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none',
                       border: RING_DEFAULT,
                     }} />
-                  {/* Gold ring — fades in for winners */}
+                  {/* Gold ring — fades in for winners; champion node gets a stronger glow */}
                   <div ref={el => { slotN(n.id).gold = el }}
                     style={{
-                      position: 'absolute', inset: -1, borderRadius: '50%', pointerEvents: 'none',
-                      border: RING_GOLD, boxShadow: `0 0 13px ${ACCENT}77`, opacity: 0,
+                      position: 'absolute', inset: n.L === 5 ? -3 : -1, borderRadius: '50%', pointerEvents: 'none',
+                      border: n.L === 5 ? `3px solid ${ACCENT}` : RING_GOLD,
+                      boxShadow: n.L === 5 ? `0 0 24px rgba(227,194,126,0.9)` : `0 0 13px ${ACCENT}77`,
+                      opacity: 0,
                     }} />
                   {/* Pulse ring for upcoming known match teams */}
                   {upcomingNodeIds.has(n.id) && (
@@ -957,18 +967,28 @@ export default function KnockoutBracket({ matches, teams }: KnockoutBracketProps
               </div>
             ))}
 
-            {/* ── Champion pulses ── */}
+            {/* ── Champion pulses (one-shot, tied to the reveal timeline) ── */}
             {[0, 1, 2].map(k => (
               <div key={`p${k}`} ref={el => { pulseRefs.current[k] = el }}
                 style={{ position: 'absolute', left: CX, top: CY, width: 150, height: 150, marginLeft: -75, marginTop: -75, borderRadius: '50%', border: `2px solid ${ACCENT}`, opacity: 0, pointerEvents: 'none', transform: 'translate(-50%,-50%) scale(0.3)' }} />
             ))}
 
+            {/* ── Champion pulses (permanent, infinite — champion state) ── */}
+            {layout.champion.team.name !== 'TBD' && [0, 1, 2].map(k => (
+              <div key={`cp${k}`}
+                style={{
+                  position: 'absolute', left: CX, top: CY, width: 150, height: 150, marginLeft: -75, marginTop: -75,
+                  borderRadius: '50%', border: `2px solid ${ACCENT}`, pointerEvents: 'none',
+                  animation: 'championPulse 2s ease-out infinite',
+                  animationDelay: `${k * 0.6}s`,
+                }} />
+            ))}
+
             {/* ── Champion caption ── */}
             <div ref={capRef}
-              style={{ position: 'absolute', left: CX, top: CY + 110, transform: 'translate(-50%, 0)', textAlign: 'center', opacity: 0, pointerEvents: 'none', padding: '10px 22px 12px', borderRadius: 18, background: 'rgba(8,9,12,0.72)', backdropFilter: 'blur(6px)', boxShadow: `0 0 0 1px ${ACCENT}33, 0 8px 26px rgba(0,0,0,0.5)`, fontFamily: 'ui-sans-serif,-apple-system,system-ui,sans-serif', whiteSpace: 'nowrap' }}>
-              <div style={{ fontSize: 28, marginBottom: 3, filter: `drop-shadow(0 0 10px ${ACCENT}88)` }}>🏆</div>
-              <div style={{ color: '#fff', fontWeight: 700, fontSize: 24, letterSpacing: '0.01em', lineHeight: 1 }}>{layout.champion.team.name}</div>
-              <div style={{ color: ACCENT, fontWeight: 600, fontSize: 11, letterSpacing: '0.34em', marginTop: 6, fontFamily: 'ui-monospace,"DM Mono",monospace' }}>WORLD CHAMPIONS 2026</div>
+              style={{ position: 'absolute', left: CX, top: CY + 110, transform: 'translate(-50%, 0)', textAlign: 'center', opacity: 0, pointerEvents: 'none', padding: '6px 16px', borderRadius: 20, background: 'rgba(11,18,36,0.85)', backdropFilter: 'blur(6px)', border: `1px solid rgba(227,194,126,0.4)`, fontFamily: 'ui-sans-serif,-apple-system,system-ui,sans-serif', whiteSpace: 'nowrap' }}>
+              <div style={{ color: '#f3ede0', fontWeight: 700, fontSize: 16 }}>🏆 {layout.champion.team.name}</div>
+              <div style={{ color: ACCENT, fontWeight: 600, fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: 4, fontFamily: 'ui-monospace,"DM Mono",monospace' }}>WORLD CHAMPIONS 2026</div>
             </div>
 
             {/* ── Replay ── */}
