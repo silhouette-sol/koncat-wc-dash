@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-20T01:46:42.574616",
+  "generated_at": "2026-07-20T02:04:49.770186",
   "golden_boot": [
     {
       "player": "Kylian Mbapp\u00e9",
@@ -692,16 +692,16 @@
       "direction": "up"
     },
     {
-      "team": "Netherlands",
-      "pre_wc": 1623,
-      "current": 1647,
+      "team": "Morocco",
+      "pre_wc": 1608,
+      "current": 1632,
       "change": 24,
       "direction": "up"
     },
     {
-      "team": "Morocco",
-      "pre_wc": 1608,
-      "current": 1632,
+      "team": "Netherlands",
+      "pre_wc": 1623,
+      "current": 1647,
       "change": 24,
       "direction": "up"
     },
@@ -776,13 +776,6 @@
       "direction": "up"
     },
     {
-      "team": "Croatia",
-      "pre_wc": 1524,
-      "current": 1528,
-      "change": 4,
-      "direction": "up"
-    },
-    {
       "team": "Sweden",
       "pre_wc": 1465,
       "current": 1469,
@@ -790,16 +783,23 @@
       "direction": "up"
     },
     {
-      "team": "Iran",
-      "pre_wc": 1456,
-      "current": 1459,
-      "change": 3,
+      "team": "Croatia",
+      "pre_wc": 1524,
+      "current": 1528,
+      "change": 4,
       "direction": "up"
     },
     {
       "team": "Ghana",
       "pre_wc": 1441,
       "current": 1444,
+      "change": 3,
+      "direction": "up"
+    },
+    {
+      "team": "Iran",
+      "pre_wc": 1456,
+      "current": 1459,
       "change": 3,
       "direction": "up"
     },
@@ -916,16 +916,16 @@
       "direction": "down"
     },
     {
-      "team": "Panama",
-      "pre_wc": 1462,
-      "current": 1426,
+      "team": "Algeria",
+      "pre_wc": 1551,
+      "current": 1514,
       "change": -36,
       "direction": "down"
     },
     {
-      "team": "Algeria",
-      "pre_wc": 1551,
-      "current": 1514,
+      "team": "Panama",
+      "pre_wc": 1462,
+      "current": 1426,
       "change": -36,
       "direction": "down"
     },
@@ -944,16 +944,16 @@
       "direction": "down"
     },
     {
-      "team": "Bosnia & Herzegovina",
-      "pre_wc": 1500,
-      "current": 1460,
+      "team": "Haiti",
+      "pre_wc": 1445,
+      "current": 1405,
       "change": -40,
       "direction": "down"
     },
     {
-      "team": "Haiti",
-      "pre_wc": 1445,
-      "current": 1405,
+      "team": "Bosnia & Herzegovina",
+      "pre_wc": 1500,
+      "current": 1460,
       "change": -40,
       "direction": "down"
     },
@@ -1549,6 +1549,12 @@
       "peak_window": "prime"
     },
     {
+      "team": "Switzerland",
+      "avg_age": 27.8,
+      "players": 26,
+      "peak_window": "prime"
+    },
+    {
       "team": "Canada",
       "avg_age": 27.8,
       "players": 26,
@@ -1556,12 +1562,6 @@
     },
     {
       "team": "Croatia",
-      "avg_age": 27.8,
-      "players": 26,
-      "peak_window": "prime"
-    },
-    {
-      "team": "Switzerland",
       "avg_age": 27.8,
       "players": 26,
       "peak_window": "prime"
@@ -1591,6 +1591,12 @@
       "peak_window": "prime"
     },
     {
+      "team": "Colombia",
+      "avg_age": 29.1,
+      "players": 26,
+      "peak_window": "veteran"
+    },
+    {
       "team": "Australia",
       "avg_age": 29.1,
       "players": 26,
@@ -1598,12 +1604,6 @@
     },
     {
       "team": "Paraguay",
-      "avg_age": 29.1,
-      "players": 26,
-      "peak_window": "veteran"
-    },
-    {
-      "team": "Colombia",
       "avg_age": 29.1,
       "players": 26,
       "peak_window": "veteran"
@@ -1633,13 +1633,13 @@
       "peak_window": "veteran"
     },
     {
-      "team": "Iran",
+      "team": "Mexico",
       "avg_age": 30.0,
       "players": 26,
       "peak_window": "veteran"
     },
     {
-      "team": "Mexico",
+      "team": "Iran",
       "avg_age": 30.0,
       "players": 26,
       "peak_window": "veteran"
@@ -1651,15 +1651,15 @@
       "peak_window": "veteran"
     },
     {
-      "team": "Saudi Arabia",
-      "avg_age": 31.0,
-      "players": 17,
-      "peak_window": "veteran"
-    },
-    {
       "team": "Haiti",
       "avg_age": 31.0,
       "players": 26,
+      "peak_window": "veteran"
+    },
+    {
+      "team": "Saudi Arabia",
+      "avg_age": 31.0,
+      "players": 17,
       "peak_window": "veteran"
     },
     {

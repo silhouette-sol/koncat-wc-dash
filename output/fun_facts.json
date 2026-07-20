@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-20T01:46:42.574626",
+  "generated_at": "2026-07-20T02:04:49.770195",
   "historical_patterns": [
     {
       "id": "home_advantage",
@@ -87,44 +87,29 @@
   "quirky_angles": {
     "foreign_coaches": [
       {
+        "team": "Switzerland",
+        "coach": "Murat Yakin",
+        "nationality": "Swiss"
+      },
+      {
         "team": "Spain",
         "coach": "Luis de la Fuente",
         "nationality": "Spanish"
       },
       {
-        "team": "Cura\u00e7ao",
-        "coach": "Remko Bicentini",
-        "nationality": "Dutch"
+        "team": "Uruguay",
+        "coach": "Marcelo Bielsa",
+        "nationality": "Argentine"
       },
       {
-        "team": "Australia",
-        "coach": "Tony Popovic",
-        "nationality": "Australian"
+        "team": "Japan",
+        "coach": "Hajime Moriyasu",
+        "nationality": "Japanese"
       },
       {
-        "team": "South Africa",
-        "coach": "Hugo Broos",
-        "nationality": "Belgian"
-      },
-      {
-        "team": "Qatar",
-        "coach": "Marquez Lopez",
-        "nationality": "Spanish"
-      },
-      {
-        "team": "Saudi Arabia",
-        "coach": "Roberto Mancini",
-        "nationality": "Italian"
-      },
-      {
-        "team": "Netherlands",
-        "coach": "Ronald Koeman",
-        "nationality": "Dutch"
-      },
-      {
-        "team": "Ivory Coast",
-        "coach": "Emerse Fa\u00e9",
-        "nationality": "Ivorian"
+        "team": "Jordan",
+        "coach": "Hussein Ammouta",
+        "nationality": "Moroccan"
       },
       {
         "team": "Norway",
@@ -132,59 +117,24 @@
         "nationality": "Norwegian"
       },
       {
-        "team": "Canada",
-        "coach": "Jesse Marsch",
-        "nationality": "American"
+        "team": "Mexico",
+        "coach": "Javier Aguirre",
+        "nationality": "Mexican"
       },
       {
-        "team": "Paraguay",
-        "coach": "Gustavo Alfaro",
+        "team": "Colombia",
+        "coach": "N\u00e9stor Lorenzo",
         "nationality": "Argentine"
       },
       {
-        "team": "Tunisia",
-        "coach": "Jalel Kadri",
-        "nationality": "Tunisian"
+        "team": "Qatar",
+        "coach": "Marquez Lopez",
+        "nationality": "Spanish"
       },
       {
-        "team": "Brazil",
-        "coach": "Dorival Junior",
-        "nationality": "Brazilian"
-      },
-      {
-        "team": "Iran",
-        "coach": "Amir Ghalenoei",
-        "nationality": "Iranian"
-      },
-      {
-        "team": "New Zealand",
-        "coach": "Darren Bazeley",
-        "nationality": "New Zealander"
-      },
-      {
-        "team": "Egypt",
-        "coach": "Hossam Hassan",
-        "nationality": "Egyptian"
-      },
-      {
-        "team": "Panama",
-        "coach": "Thomas Christiansen",
-        "nationality": "Danish"
-      },
-      {
-        "team": "USA",
-        "coach": "Mauricio Pochettino",
-        "nationality": "Argentine"
-      },
-      {
-        "team": "Cape Verde",
-        "coach": "Pedro Leit\u00e3o Brito",
-        "nationality": "Cape Verdean"
-      },
-      {
-        "team": "Japan",
-        "coach": "Hajime Moriyasu",
-        "nationality": "Japanese"
+        "team": "South Africa",
+        "coach": "Hugo Broos",
+        "nationality": "Belgian"
       },
       {
         "team": "Algeria",
@@ -197,13 +147,38 @@
         "nationality": "Slovenian"
       },
       {
-        "team": "South Korea",
-        "coach": "Hong Myung-bo",
-        "nationality": "South Korean"
+        "team": "Brazil",
+        "coach": "Dorival Junior",
+        "nationality": "Brazilian"
       },
       {
-        "team": "Colombia",
-        "coach": "N\u00e9stor Lorenzo",
+        "team": "Cape Verde",
+        "coach": "Pedro Leit\u00e3o Brito",
+        "nationality": "Cape Verdean"
+      },
+      {
+        "team": "Haiti",
+        "coach": "Marc Collat",
+        "nationality": "French"
+      },
+      {
+        "team": "Belgium",
+        "coach": "Domenico Tedesco",
+        "nationality": "Italian"
+      },
+      {
+        "team": "Morocco",
+        "coach": "Walid Regragui",
+        "nationality": "Moroccan"
+      },
+      {
+        "team": "Portugal",
+        "coach": "Roberto Martinez",
+        "nationality": "Spanish"
+      },
+      {
+        "team": "USA",
+        "coach": "Mauricio Pochettino",
         "nationality": "Argentine"
       },
       {
@@ -212,9 +187,24 @@
         "nationality": "French"
       },
       {
-        "team": "Morocco",
-        "coach": "Walid Regragui",
-        "nationality": "Moroccan"
+        "team": "Australia",
+        "coach": "Tony Popovic",
+        "nationality": "Australian"
+      },
+      {
+        "team": "England",
+        "coach": "Thomas Tuchel",
+        "nationality": "German"
+      },
+      {
+        "team": "Scotland",
+        "coach": "Steve Clarke",
+        "nationality": "Scottish"
+      },
+      {
+        "team": "Ecuador",
+        "coach": "Sebasti\u00e1n Beccacece",
+        "nationality": "Argentine"
       },
       {
         "team": "Ghana",
@@ -227,49 +217,14 @@
         "nationality": "Spanish"
       },
       {
-        "team": "Croatia",
-        "coach": "Zlatko Dali\u0107",
-        "nationality": "Croatian"
+        "team": "Tunisia",
+        "coach": "Jalel Kadri",
+        "nationality": "Tunisian"
       },
       {
-        "team": "Belgium",
-        "coach": "Domenico Tedesco",
-        "nationality": "Italian"
-      },
-      {
-        "team": "England",
-        "coach": "Thomas Tuchel",
-        "nationality": "German"
-      },
-      {
-        "team": "Uruguay",
-        "coach": "Marcelo Bielsa",
-        "nationality": "Argentine"
-      },
-      {
-        "team": "Scotland",
-        "coach": "Steve Clarke",
-        "nationality": "Scottish"
-      },
-      {
-        "team": "Sweden",
-        "coach": "Jon Dahl Tomasson",
-        "nationality": "Danish"
-      },
-      {
-        "team": "Austria",
-        "coach": "Ralf Rangnick",
-        "nationality": "German"
-      },
-      {
-        "team": "Mexico",
-        "coach": "Javier Aguirre",
-        "nationality": "Mexican"
-      },
-      {
-        "team": "Haiti",
-        "coach": "Marc Collat",
-        "nationality": "French"
+        "team": "Egypt",
+        "coach": "Hossam Hassan",
+        "nationality": "Egyptian"
       },
       {
         "team": "Argentina",
@@ -277,14 +232,49 @@
         "nationality": "Argentine"
       },
       {
-        "team": "Jordan",
-        "coach": "Hussein Ammouta",
-        "nationality": "Moroccan"
+        "team": "Saudi Arabia",
+        "coach": "Roberto Mancini",
+        "nationality": "Italian"
       },
       {
-        "team": "Switzerland",
-        "coach": "Murat Yakin",
-        "nationality": "Swiss"
+        "team": "Turkey",
+        "coach": "Vincenzo Montella",
+        "nationality": "Italian"
+      },
+      {
+        "team": "New Zealand",
+        "coach": "Darren Bazeley",
+        "nationality": "New Zealander"
+      },
+      {
+        "team": "Ivory Coast",
+        "coach": "Emerse Fa\u00e9",
+        "nationality": "Ivorian"
+      },
+      {
+        "team": "Sweden",
+        "coach": "Jon Dahl Tomasson",
+        "nationality": "Danish"
+      },
+      {
+        "team": "South Korea",
+        "coach": "Hong Myung-bo",
+        "nationality": "South Korean"
+      },
+      {
+        "team": "Austria",
+        "coach": "Ralf Rangnick",
+        "nationality": "German"
+      },
+      {
+        "team": "Iran",
+        "coach": "Amir Ghalenoei",
+        "nationality": "Iranian"
+      },
+      {
+        "team": "Canada",
+        "coach": "Jesse Marsch",
+        "nationality": "American"
       },
       {
         "team": "France",
@@ -297,51 +287,56 @@
         "nationality": "Senegalese"
       },
       {
-        "team": "Turkey",
-        "coach": "Vincenzo Montella",
-        "nationality": "Italian"
+        "team": "Panama",
+        "coach": "Thomas Christiansen",
+        "nationality": "Danish"
       },
       {
-        "team": "Portugal",
-        "coach": "Roberto Martinez",
-        "nationality": "Spanish"
+        "team": "Cura\u00e7ao",
+        "coach": "Remko Bicentini",
+        "nationality": "Dutch"
       },
       {
-        "team": "Ecuador",
-        "coach": "Sebasti\u00e1n Beccacece",
+        "team": "Paraguay",
+        "coach": "Gustavo Alfaro",
         "nationality": "Argentine"
+      },
+      {
+        "team": "Croatia",
+        "coach": "Zlatko Dali\u0107",
+        "nationality": "Croatian"
+      },
+      {
+        "team": "Netherlands",
+        "coach": "Ronald Koeman",
+        "nationality": "Dutch"
       }
     ],
     "smallest_nations": [
       {
         "team": "Croatia",
         "population_millions": 3.9,
-        "win_prob": 0.00852
+        "win_prob": 0.00866
       },
       {
         "team": "Norway",
         "population_millions": 5.5,
-        "win_prob": 0.04727
+        "win_prob": 0.04848
       },
       {
         "team": "Switzerland",
         "population_millions": 8.7,
-        "win_prob": 0.01797
-      },
-      {
-        "team": "Austria",
-        "population_millions": 9.1,
-        "win_prob": 0.00517
+        "win_prob": 0.01824
       },
       {
         "team": "Portugal",
         "population_millions": 10.3,
-        "win_prob": 0.03466
+        "win_prob": 0.03535
       },
       {
         "team": "Belgium",
         "population_millions": 11.6,
-        "win_prob": 0.0197
+        "win_prob": 0.02096
       }
     ]
   }
