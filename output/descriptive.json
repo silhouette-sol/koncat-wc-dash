@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-20T02:04:49.770186",
+  "generated_at": "2026-07-20T02:06:08.992338",
   "golden_boot": [
     {
       "player": "Kylian Mbapp\u00e9",
@@ -706,16 +706,16 @@
       "direction": "up"
     },
     {
-      "team": "Brazil",
-      "pre_wc": 1625,
-      "current": 1647,
+      "team": "Cape Verde",
+      "pre_wc": 1406,
+      "current": 1428,
       "change": 22,
       "direction": "up"
     },
     {
-      "team": "Cape Verde",
-      "pre_wc": 1406,
-      "current": 1428,
+      "team": "Brazil",
+      "pre_wc": 1625,
+      "current": 1647,
       "change": 22,
       "direction": "up"
     },
@@ -790,16 +790,16 @@
       "direction": "up"
     },
     {
-      "team": "Ghana",
-      "pre_wc": 1441,
-      "current": 1444,
+      "team": "Iran",
+      "pre_wc": 1456,
+      "current": 1459,
       "change": 3,
       "direction": "up"
     },
     {
-      "team": "Iran",
-      "pre_wc": 1456,
-      "current": 1459,
+      "team": "Ghana",
+      "pre_wc": 1441,
+      "current": 1444,
       "change": 3,
       "direction": "up"
     },
@@ -916,16 +916,16 @@
       "direction": "down"
     },
     {
-      "team": "Algeria",
-      "pre_wc": 1551,
-      "current": 1514,
+      "team": "Panama",
+      "pre_wc": 1462,
+      "current": 1426,
       "change": -36,
       "direction": "down"
     },
     {
-      "team": "Panama",
-      "pre_wc": 1462,
-      "current": 1426,
+      "team": "Algeria",
+      "pre_wc": 1551,
+      "current": 1514,
       "change": -36,
       "direction": "down"
     },
@@ -1477,13 +1477,13 @@
       "peak_window": "prime"
     },
     {
-      "team": "Belgium",
+      "team": "Portugal",
       "avg_age": 26.0,
       "players": 26,
       "peak_window": "prime"
     },
     {
-      "team": "Portugal",
+      "team": "Belgium",
       "avg_age": 26.0,
       "players": 26,
       "peak_window": "prime"
@@ -1531,7 +1531,7 @@
       "peak_window": "prime"
     },
     {
-      "team": "Uruguay",
+      "team": "Austria",
       "avg_age": 27.6,
       "players": 26,
       "peak_window": "prime"
@@ -1543,14 +1543,8 @@
       "peak_window": "prime"
     },
     {
-      "team": "Austria",
+      "team": "Uruguay",
       "avg_age": 27.6,
-      "players": 26,
-      "peak_window": "prime"
-    },
-    {
-      "team": "Switzerland",
-      "avg_age": 27.8,
       "players": 26,
       "peak_window": "prime"
     },
@@ -1562,6 +1556,12 @@
     },
     {
       "team": "Croatia",
+      "avg_age": 27.8,
+      "players": 26,
+      "peak_window": "prime"
+    },
+    {
+      "team": "Switzerland",
       "avg_age": 27.8,
       "players": 26,
       "peak_window": "prime"
